@@ -31,7 +31,10 @@ public class User {
     //image
     private String userImage;
 
+    //do nothing
+    public User() {
 
+    }
 
     //for login purposes
     public User(String username, String password) {

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- using material design color scheme -->
+
     <color name="colorPrimary">#48CFAD</color>
     <color name="colorPrimaryDark">#37BC9B</color>
-    <color name="colorAccent">#48CFAD</color>
+    <color name="colorAccent">#A5D6A7</color>
+    <color name="colorMainBackground">#F5F7FA</color>
+
     <!-- #F5F7FA -->
 
     <color name="bg_login">#26ae90</color>

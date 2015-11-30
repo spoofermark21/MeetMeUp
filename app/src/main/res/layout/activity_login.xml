@@ -2,25 +2,49 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/colorPrimary"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:background="@color/colorMainBackground"
+    android:orientation="vertical">
+
+    <!--
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar">
+
+    </include>
+
+    No toolbar in login... only the logo of meetmeup
+    -->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight=".30"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/meetmeup"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight=".70"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:paddingRight="20dp"
+        >
+
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:text="Username"
-            android:padding="5dp"
-            android:layout_marginBottom="10dp"/>
+            android:textSize="25sp" />
 
         <EditText
             android:id="@+id/txt_username"
@@ -29,17 +53,18 @@
             android:layout_marginBottom="10dp"
             android:background="@color/white"
             android:inputType="textEmailAddress"
-            android:padding="10dp"
+            android:padding="15dp"
             android:singleLine="true"
             android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint" />
+            android:textColorHint="@color/input_login_hint"
+            android:textSize="15sp" />
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:text="Password"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"/>
+            android:textSize="25sp" />
 
         <EditText
             android:id="@+id/txt_password"
@@ -48,10 +73,11 @@
             android:layout_marginBottom="10dp"
             android:background="@color/white"
             android:inputType="textPassword"
-            android:padding="10dp"
+            android:padding="15dp"
             android:singleLine="true"
             android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint" />
+            android:textColorHint="@color/input_login_hint"
+            android:textSize="15sp" />
 
         <!-- Login Button -->
 
@@ -60,22 +86,23 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
-            android:background="@color/btn_login_bg"
-            android:text="@string/btn_login"
-            android:textColor="@color/btn_login" />
-
-        <!-- Link to Login Screen -->
+            android:textSize="15sp"
+            android:background="@color/colorPrimary"
+            android:elevation="5dp"
+            android:text="SIGN IN"
+            android:textColor="@color/white" />
 
         <Button
-            android:id="@+id/btnRegisterIntent"
+            android:id="@+id/btn_register"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dip"
             android:background="@null"
             android:text="@string/btn_link_to_register"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="15dp" />
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15sp" />
+
     </LinearLayout>
 
 </LinearLayout>

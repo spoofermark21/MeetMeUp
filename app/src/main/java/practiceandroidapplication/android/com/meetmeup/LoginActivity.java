@@ -5,11 +5,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,31 +33,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 
 public class LoginActivity extends AppCompatActivity {
 
-    TextView txtUsername;
-    TextView txtPassword;
+    // widgets for login
 
-    Button btnLogin;
+    private TextView txtUsername, txtPassword;
+    private Button btnLogin, btnRegister;
+
+    //private Toolbar toolbar;
 
     JSONParser jsonParser = new JSONParser();
-    private ProgressDialog pDialog;
+    //private ProgressDialog pDialog;
 
-    private static final String LOGIN_URL = "http://192.168.1.201/meetmeup/user_login.php";
+    private static final String LOGIN_URL = Network.forTestingIp + "user_login.php";
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
-
-    private User user;
-
-    private String username;
-    private String password;
-
 
     //flag
     private boolean isReadyToSave = false;
@@ -64,37 +63,75 @@ public class LoginActivity extends AppCompatActivity {
 
         txtUsername = (TextView) findViewById(R.id.txt_username);
         txtPassword = (TextView) findViewById(R.id.txt_password);
-        btnLogin = (Button) findViewById(R.id.btn_login);
 
+        btnRegister = (Button) findViewById(R.id.btn_register);
+        btnLogin = (Button) findViewById(R.id.btn_login);
 
         initBtnEvents();
     }
 
-    public void initBtnEvents(){
-        btnLogin.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                if (txtUsername.getText().toString().length() != 0 && txtPassword.getText().toString().length() != 0) {
-                    //User user = new User(txtUsername.getText().toString(),
-                                        //txtPassword.getText().toString());
-                    try{
-                        //user.setUsername(txtUsername.getText().toString());
-                        //user.setPassword(txtPassword.getText().toString());
-                        new User(txtUsername.getText().toString(),
-                                txtPassword.getText().toString());
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-                        //username = txtUsername.getText().toString();
-                        //password = txtPassword.getText().toString();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        //if (id == R.id.action_settings) {
+        //    return true;
+        //}
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void initBtnEvents() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!txtUsername.getText().toString().equals("") && !txtPassword.getText().toString().equals("")) {
+
+                    try {
+                        User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
+                        new LoginUser().execute(user.getUsername(), user.getPassword());
+
+                    } catch (NullPointerException ex) {
+                        Log.d("Null pointer exception", "In object user.");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    new LoginUser().execute();
 
                 } else {
-                    txtUsername.setError("Fill up this field.");
-                    txtPassword.setError("Fill up this field.");
+                    
+                    if (txtUsername.getText().toString().equals("")) {
+                        txtUsername.setError("Username is required");
+                    }
+                    if (txtPassword.getText().toString().equals("")) {
+                        txtPassword.setError("Password is required.");
+                    }
+
                 }
             }
         });
+
+        btnRegister.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
     }
 
     class LoginUser extends AsyncTask<String, String, String> {
@@ -118,8 +155,11 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("username", "naidy"));
-                params.add(new BasicNameValuePair("password", "naidy"));
+                params.add(new BasicNameValuePair("username", args[0]));
+                params.add(new BasicNameValuePair("password", args[1]));
+
+                //save user logs
+                params.add(new BasicNameValuePair("type_login", "in"));
 
                 Log.d("request!", "starting");
 
@@ -133,8 +173,20 @@ public class LoginActivity extends AppCompatActivity {
                 if (success == 1) {
                     Log.d("User found!", json.toString());
 
-                    //Intent intent = new Intent(this, NewsfeedActivity.class);
-                    Intent intent = new Intent("android.intent.action.NEWSFEED");
+                    Intent intent = new Intent(LoginActivity.this, NewsfeedActivity.class);
+
+                    ArrayList<String> userInfo = new ArrayList<>();
+
+                    JSONArray jUser = json.getJSONArray("user");
+                    Log.d("User info", jUser.toString());
+
+                    for (int i = 0; i < jUser.length(); i++) {
+                        userInfo.add(jUser.getString(i));
+                    }
+
+                    intent.putExtra("userId", userInfo.get(0));
+                    intent.putExtra("userFullName", userInfo.get(1));
+
                     startActivity(intent);
 
                     return json.getString(TAG_RESPONSE);
