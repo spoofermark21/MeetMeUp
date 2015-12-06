@@ -36,9 +36,10 @@ public class NewsfeedActivity extends AppCompatActivity {
         txtSample.setText(intent.getStringExtra("userId"));
     }
 
+    /*
     @Override
     public void onBackPressed() {
         // can't go back when loggin in
-    }
+    }*/
 
 }

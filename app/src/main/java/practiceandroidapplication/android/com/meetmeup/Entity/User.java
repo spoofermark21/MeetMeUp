@@ -1,5 +1,9 @@
 package practiceandroidapplication.android.com.meetmeup.Entity;
 
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -14,7 +18,8 @@ public class User {
     //bio
     private String firstName;
     private String lastName;
-    private Date birthDate;
+    private char gender;
+    private String birthDate; //from date to string : difficulty issue
     private int nationId;
     private String currentLocation;
 
@@ -43,13 +48,14 @@ public class User {
     }
 
     //registration
-    public User(String username, String password, String firstName,
-                Date birthDate, int nationId, String currentLocation,
+    public User(String username, String password, String firstName, char gender,
+                String birthDate, int natioId, String currentLocation,
                 String emailAddress, String contactNumber,
                 char privacyFlag, char activeFlag) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
+        this.gender = gender;
         this.birthDate = birthDate;
         this.currentLocation = currentLocation;
         this.emailAddress = emailAddress;
@@ -90,11 +96,19 @@ public class User {
         this.lastName = lastName;
     }
 
-    public Date getBirthDate() {
+    public void setGender(char gender) {
+        this.gender = gender;
+    }
+
+    public char getGender() {
+        return gender;
+    }
+
+    public String getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(String birthDate) {
         this.birthDate = birthDate;
     }
 

@@ -5,21 +5,10 @@
     android:background="@color/colorMainBackground"
     android:orientation="vertical">
 
-    <!--
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar">
-
-    </include>
-
-    No toolbar in login... only the logo of meetmeup
-    -->
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".30"
-        android:orientation="vertical">
+        android:layout_weight="0.20">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -28,56 +17,64 @@
 
     </LinearLayout>
 
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".70"
         android:layout_gravity="center"
+        android:layout_weight=".80"
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        >
-
+        android:paddingTop="20dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:text="Username"
             android:textSize="25sp" />
 
-        <EditText
-            android:id="@+id/txt_username"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:inputType="textEmailAddress"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint"
-            android:textSize="15sp" />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/txt_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:inputType="text"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:text="Password"
             android:textSize="25sp" />
 
-        <EditText
-            android:id="@+id/txt_password"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:inputType="textPassword"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint"
-            android:textSize="15sp" />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/txt_password"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@color/white"
+                android:inputType="textPassword"
+                android:padding="15dp"
+                android:singleLine="true"
+                android:textSize="15sp" />
+
+
+        </android.support.design.widget.TextInputLayout>
 
         <!-- Login Button -->
 
@@ -86,17 +83,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dip"
-            android:textSize="15sp"
             android:background="@color/colorPrimary"
             android:elevation="5dp"
             android:text="SIGN IN"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_register"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dip"
+            android:layout_marginTop="20dip"
             android:background="@null"
             android:text="@string/btn_link_to_register"
             android:textAllCaps="false"
