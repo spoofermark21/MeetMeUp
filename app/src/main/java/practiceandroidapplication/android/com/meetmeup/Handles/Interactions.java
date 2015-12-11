@@ -1,7 +1,10 @@
 package practiceandroidapplication.android.com.meetmeup.Handles;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
@@ -40,9 +43,12 @@ public class Interactions {
 
     }
 
-    public static void showErrorToast(String error, Activity activity) {
+    public static void showError(String error, boolean f) {
 
     }
 
+    public static void showErrorToast(String error, Activity activity) {
+
+    }
 
 }

@@ -20,7 +20,7 @@ public class User {
     private String lastName;
     private char gender;
     private String birthDate; //from date to string : difficulty issue
-    private int nationId;
+    private Nationality nationality;
     private String currentLocation;
 
     //contacts
@@ -49,7 +49,7 @@ public class User {
 
     //registration
     public User(String username, String password, String firstName, char gender,
-                String birthDate, int natioId, String currentLocation,
+                String birthDate, Nationality nationality, String currentLocation,
                 String emailAddress, String contactNumber,
                 char privacyFlag, char activeFlag) {
         this.username = username;
@@ -57,6 +57,7 @@ public class User {
         this.firstName = firstName;
         this.gender = gender;
         this.birthDate = birthDate;
+        this.nationality = nationality;
         this.currentLocation = currentLocation;
         this.emailAddress = emailAddress;
         this.contactNumber = contactNumber;
@@ -112,12 +113,12 @@ public class User {
         this.birthDate = birthDate;
     }
 
-    public int getNationId() {
-        return nationId;
+    public Nationality getNationality() {
+        return nationality;
     }
 
-    public void setNationId(int nationId) {
-        this.nationId = nationId;
+    public void setNationality(Nationality nationality) {
+        this.nationality = nationality;
     }
 
     public String getCurrentLocation() {
@@ -176,7 +177,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthDate=" + birthDate +
-                ", nationId=" + nationId +
+                ", nationality=" + nationality +
                 ", currentLocation='" + currentLocation + '\'' +
                 ", emailAddress='" + emailAddress + '\'' +
                 ", contactNumber='" + contactNumber + '\'' +

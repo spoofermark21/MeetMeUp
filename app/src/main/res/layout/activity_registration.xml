@@ -4,37 +4,36 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/colorMainBackground"
-    android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".10">
 
-        <android.support.design.widget.AppBarLayout
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/MyMaterialTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/MyMaterialTheme.AppBarOverlay">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="10dp"
+            app:popupTheme="@style/MyMaterialTheme.PopupOverlay">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:popupTheme="@style/MyMaterialTheme.PopupOverlay" />
+        </android.support.v7.widget.Toolbar>
 
-        </android.support.design.widget.AppBarLayout>
 
-    </LinearLayout>
+    </android.support.design.widget.AppBarLayout>
+
+
     <!-- end of toolbar -->
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_weight=".85"
-        android:paddingTop="10dp">
+        android:paddingTop="5dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -53,13 +52,13 @@
                 android:text="Personal Details"
                 android:textSize="20sp" />
 
+            <!-- add feature to edit
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/background"/>
-
             <Button
                 android:id="@+id/btn_upload"
                 android:layout_width="wrap_content"
@@ -68,7 +67,7 @@
                 android:textColor="@color/colorPrimary"
                 android:background="@color/transparent"
                 android:text="Upload profile picture"/>
-
+            -->
             <!-- first name -->
 
             <TextView
@@ -80,11 +79,12 @@
                 android:textSize="20sp" />
 
             <EditText
+
                 android:id="@+id/txt_firstname"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="text"
                 android:padding="15dp"
@@ -104,7 +104,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="text"
                 android:padding="15dp"
@@ -124,12 +124,31 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginBottom="10dip"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner">
 
             </DatePicker>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:padding="5dp"
+                android:text="Nationality"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/spn_natio"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:padding="8dp"
+                android:layout_marginBottom="10dip"
+                android:background="@drawable/edit_text" />
+
 
             <!-- <DatePicker
                 android:layout_width="fill_parent"
@@ -155,21 +174,23 @@
 
                 <RadioGroup
                     android:id="@+id/rd_gender"
-                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
                     <RadioButton
                         android:id="@+id/rd_male"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Female" />
+                        android:text="Female"
+                        android:textColor="#808080" />
 
                     <RadioButton
                         android:id="@+id/rd_female"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Male" />
+                        android:text="Male"
+                        android:textColor="#808080" />
 
                 </RadioGroup>
 
@@ -189,7 +210,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="textLongMessage"
                 android:padding="15dp"
@@ -209,7 +230,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="textEmailAddress"
                 android:padding="15dp"
@@ -229,7 +250,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="number"
                 android:padding="15dp"
@@ -261,7 +282,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="text"
                 android:padding="15dp"
@@ -281,7 +302,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="textPassword"
                 android:padding="15dp"
@@ -301,7 +322,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:background="@color/white"
+                android:background="@drawable/edit_text"
                 android:elevation="2dp"
                 android:inputType="textPassword"
                 android:padding="15dp"
@@ -310,69 +331,6 @@
 
             <!-- end of account details -->
 
-            <!-- different activity for preferences
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:padding="5dp"
-                    android:text="Preferred age"
-                    android:textSize="20sp" />
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight=".25"
-                        android:padding="5dp"
-                        android:text="Min"
-                        android:textSize="20sp" />
-
-                    <EditText
-
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight=".25"
-                        android:background="@color/white"
-                        android:inputType="textEmailAddress"
-                        android:padding="15dp"
-                        android:singleLine="true"
-                        android:textSize="15sp" />
-
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight=".25"
-                        android:padding="5dp"
-                        android:text="Max"
-                        android:textSize="20sp" />
-
-                    <EditText
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_weight=".25"
-                        android:background="@color/white"
-                        android:inputType="textEmailAddress"
-                        android:padding="15dp"
-                        android:singleLine="true"
-                        android:textSize="15sp" />
-
-                </LinearLayout>
-                -->
-
-
-            <!-- end of account_details -->
-
             <Button
                 android:id="@+id/btn_register"
                 android:layout_width="fill_parent"
@@ -380,7 +338,7 @@
                 android:layout_marginTop="20dp"
                 android:background="@color/colorPrimary"
                 android:elevation="5dp"
-                android:text="Next"
+                android:text="Register"
                 android:textColor="@color/white" />
 
         </LinearLayout>

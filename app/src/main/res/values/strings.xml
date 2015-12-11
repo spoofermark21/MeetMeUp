@@ -1,9 +1,9 @@
 <resources>
 
-    <string name="app_name">MeetMeUp</string>
+    <string name="app_name">#MeetMeUp</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_newfeed">NewfeedActivity</string>
-
+    <string name="title_activity_splash">SplashActivity</string>
 
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
@@ -15,6 +15,17 @@
     <string name="welcome">Welcome</string>
     <string name="btn_logout">LOGOUT</string>
     <string name="name">Fullname</string>
-    <string name="title_activity_splash">SplashActivity</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_refresh">Settings</string>
+    <string name="action_new">Settings</string>
+    <string name="logo_desc">#MeetMeUp</string>
+
+    <string-array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+    </string-array>
 
 </resources>

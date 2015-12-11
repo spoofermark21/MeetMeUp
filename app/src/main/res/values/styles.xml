@@ -4,22 +4,19 @@
 
     </style>
 
-    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorHint">@color/colorPrimary</item>
-
-
-
     </style>
     <style name="MyMaterialTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="MyMaterialTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <!-- for pdialog -->
-    <style name="progress" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="progress" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:alertDialogStyle">@style/progressDialog</item>
         <item name="android:windowBackground">@color/transparent</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
@@ -27,6 +24,8 @@
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">50sp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
         <item name="android:layout_height">fill_parent</item>
         <item name="android:layout_width">fill_parent</item>
     </style>
@@ -43,6 +42,7 @@
         <item name="android:topBright">@color/transparent</item>
         <item name="android:topDark">@color/transparent</item>
     </style>
+
 
 
 </resources>

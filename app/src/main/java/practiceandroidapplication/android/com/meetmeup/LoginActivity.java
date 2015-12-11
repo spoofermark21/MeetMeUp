@@ -31,6 +31,7 @@ import android.util.Log;
 import android.view.View.OnClickListener;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,17 +40,16 @@ public class LoginActivity extends AppCompatActivity {
     // widgets for login
     private EditText txtUsername, txtPassword;
     private Button btnLogin, btnRegister;
-    //Toolbar toolbar;
 
-    //private
     JSONParser jsonParser = new JSONParser();
 
     private ProgressDialog pDialog;
 
+    // web service
     private static final String LOGIN_URL = Network.forDeploymentIp + "user_login.php";
-
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +58,9 @@ public class LoginActivity extends AppCompatActivity {
 
         initUI();
         initBtnEvents();
+
+        LinearLayout focuslayout = (LinearLayout) findViewById(R.id.focus_layout);
+        focuslayout.requestFocus();
     }
 
     public void initUI() {
@@ -72,33 +75,16 @@ public class LoginActivity extends AppCompatActivity {
     public void initBtnEvents() {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                if (txtUsername.getText().toString().length() != 0 && txtPassword.getText().toString().length() != 0) {
+                if (!isFieldsEmpty()) {
                     try {
-                        User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
-                        new LoginUser().execute(user.getUsername(), user.getPassword());
+                        if(!txtUsername.getText().toString().contains(" ") &&
+                                !txtPassword.getText().toString().contains(" ") &&
+                                !isFieldsEmpty()) {
+                            User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
+                            new LoginUser().execute(user.getUsername(), user.getPassword());
+                        }
                     } catch (NullPointerException ex) {
                         Log.d("Null pointer exception", "In object user.");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                } else {
-                    try {
-                        if(txtUsername.getText().toString().equals("") ||
-                                txtPassword.getText().toString().equals("")) {
-                            Interactions.showError("Please fill up the fields correctly.", LoginActivity.this);
-                        }
-                        /*if (txtUsername.getText().toString().length() == 0) {
-                            txtUsername.setError("Username is required");
-                        } else {
-                            txtUsername.setError(null);
-                        }
-                        if (txtPassword.getText().toString().length() == 0) {
-                            txtPassword.setError("Password is required.");
-                        } else {
-                            txtPassword.setError(null);
-                        }*/
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -109,7 +95,6 @@ public class LoginActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 try {
                     startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
                 } catch (Exception ex) {
@@ -158,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (success == 1) {
                     Log.d("User found!", json.toString());
 
-                    Intent intent = new Intent(LoginActivity.this, NewsfeedActivity.class);
+                    /*Intent intent = new Intent(LoginActivity.this, NewsfeedActivity.class);
 
                     JSONArray jUser = json.getJSONArray("user");
 
@@ -168,6 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                     intent.putExtra("userFullName", jUser.getString(1));
 
                     startActivity(intent);
+                    finish();*/
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -189,6 +175,24 @@ public class LoginActivity extends AppCompatActivity {
 
     } // end of thread
 
+    public boolean isFieldsEmpty () {
+        if (txtUsername.getText().toString().length() == 0)
+            txtUsername.setError("Username is required");
+        else
+            txtUsername.setError(null);
 
+        if (txtPassword.getText().toString().length() == 0)
+            txtPassword.setError("Password is required.");
+        else
+            txtPassword.setError(null);
+
+        return txtUsername.getText().toString().equals("") ||
+                txtPassword.getText().toString().equals("");
+    }
+
+    public void onBackPressed() {
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+        finish();
+    }
 
 } // end of class
