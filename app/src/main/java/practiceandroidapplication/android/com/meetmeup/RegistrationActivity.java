@@ -243,9 +243,9 @@ public class RegistrationActivity extends AppCompatActivity {
         ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
         List<String> list = new ArrayList<>();
 
-        for (Nationality natio : listNationalities.nationalities) {
-            Log.d(natio.getId() + "", natio.getNationality());
-            list.add(natio.getNationality());
+        for (Nationality natiolity : listNationalities.nationalities) {
+            Log.d(natiolity.getId() + "", natiolity.getNationality());
+            list.add(natiolity.getNationality());
         }
 
         ArrayAdapter<String> adapter;
@@ -382,6 +382,20 @@ public class RegistrationActivity extends AppCompatActivity {
 
         return isReadyToSave;
     }
+
+    public boolean isValidEmail(String emailAddress) {
+        return false;
+    }
+
+    public boolean isValidUsername(String username) {
+        return username.length() > 6;
+    }
+
+    public boolean isValidPassword(String password) {
+        return password.length() > 6;
+    }
+
+
 
     public void onBackPressed() {
         startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));

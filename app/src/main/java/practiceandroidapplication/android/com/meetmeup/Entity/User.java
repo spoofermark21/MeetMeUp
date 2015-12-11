@@ -12,6 +12,7 @@ import java.util.Date;
 public class User {
 
     // account
+    private int id;
     private String username;
     private String password;
 
@@ -63,6 +64,14 @@ public class User {
         this.contactNumber = contactNumber;
         this.privacyFlag = privacyFlag;
         this.activeFlag = activeFlag;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public String getUsername() {

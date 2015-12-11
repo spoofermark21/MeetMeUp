@@ -16,6 +16,10 @@ public class Nationality {
 
     }
 
+    public Nationality(int id) {
+        this.id = id;
+    }
+
     public Nationality(int id, String nationality) {
         this.id = id;
         this.nationality = nationality;

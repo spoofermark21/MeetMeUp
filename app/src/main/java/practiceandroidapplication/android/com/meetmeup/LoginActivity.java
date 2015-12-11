@@ -55,12 +55,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         initUI();
         initBtnEvents();
 
-        LinearLayout focuslayout = (LinearLayout) findViewById(R.id.focus_layout);
-        focuslayout.requestFocus();
     }
 
     public void initUI() {
@@ -143,17 +140,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (success == 1) {
                     Log.d("User found!", json.toString());
 
-                    /*Intent intent = new Intent(LoginActivity.this, NewsfeedActivity.class);
+                    Intent intent = new Intent(LoginActivity.this, NewsfeedActivity.class);
 
                     JSONArray jUser = json.getJSONArray("user");
 
                     Log.d("User info", jUser.toString());
 
-                    intent.putExtra("userId", jUser.getString(0));
-                    intent.putExtra("userFullName", jUser.getString(1));
+                    intent.putExtra("USER_ID", jUser.getString(0));
+                    intent.putExtra("USER_FIRSTNAME", jUser.getString(1));
+                    intent.putExtra("USER_LASTNAME", jUser.getString(2));
+                    intent.putExtra("USER_NATIONALITY", jUser.getString(4));
 
                     startActivity(intent);
-                    finish();*/
+                    finish();
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -191,7 +190,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+        //for animation
+        //overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
         finish();
     }
 
