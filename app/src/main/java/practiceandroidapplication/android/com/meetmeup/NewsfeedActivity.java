@@ -1,5 +1,8 @@
 package practiceandroidapplication.android.com.meetmeup;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.Image;
@@ -53,6 +56,10 @@ public class NewsfeedActivity extends AppCompatActivity
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
+    Fragment userProfile = new UserProfileFragment();
+    FragmentManager fragmentManager = getFragmentManager();
+    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +76,7 @@ public class NewsfeedActivity extends AppCompatActivity
             }
         });
 
+        // navigation bar
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -78,6 +86,8 @@ public class NewsfeedActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
+        //set UI
         initUI();
         setUserProfile();
 
@@ -88,32 +98,6 @@ public class NewsfeedActivity extends AppCompatActivity
         txtUserFullName = (TextView) findViewById(R.id.user_fullname);
         txtUserNationality = (TextView) findViewById(R.id.user_nationality);
     }
-
-    public void setUserProfile() {
-        txtUserFullName.setText(user().getFirstName() + " " + user().getLastName());
-        txtUserNationality.setText(user().getNationality().getNationality());
-    }
-
-    public User user() {
-        Intent intent = getIntent();
-        User user = new User();
-        user.setId(Integer.parseInt(intent.getStringExtra("USER_ID")));
-        user.setFirstName(intent.getStringExtra("USER_FIRSTNAME"));
-        user.setLastName(intent.getStringExtra("USER_LASTNAME"));
-
-        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
-
-        int natioId = Integer.parseInt(intent.getStringExtra("USER_NATIONALITY"));
-
-        for(Nationality nationality : listNationalities.nationalities) {
-            if (natioId == nationality.getId()) {
-                user.setNationality(new Nationality(natioId, nationality.getNationality()));
-            }
-        }
-
-        return user;
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -151,13 +135,15 @@ public class NewsfeedActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_user_profile) {
+            navUserProfile();
         } else if (id == R.id.nav_groups) {
-
+            //navGroups();
+            startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class));
         } else if (id == R.id.nav_meetups) {
-
+            startActivity(new Intent(NewsfeedActivity.this, SampleActivity.class));
         } else if (id == R.id.nav_events) {
 
-        } else if(id == R.id.nav_notifations) {
+        } else if (id == R.id.nav_notifations) {
 
         } else if (id == R.id.nav_logout) {
             navLogOutEvent();
@@ -173,7 +159,7 @@ public class NewsfeedActivity extends AppCompatActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(NewsfeedActivity.this,R.style.progress);
+            pDialog = new ProgressDialog(NewsfeedActivity.this, R.style.progress);
             pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
@@ -232,5 +218,41 @@ public class NewsfeedActivity extends AppCompatActivity
         }
     }
 
+    public void navGroups() {
+        //fragmentTransaction.addToBackStack(null);
+        //fragmentTransaction.commit();
+    }
+
+    public void navUserProfile() {
+        Log.d("USER_ID (newsfeed)",user().getId() + "");
+        startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class).putExtra("USER_ID",user().getId() + ""));
+            /*fragmentTransaction.add(R.id.focus_layout, userProfile,"USER_PROFILE_FRAGMENT");
+            fragmentTransaction.commit();*/
+    }
+
+    public void setUserProfile() {
+        txtUserFullName.setText(user().getFirstName() + " " + user().getLastName());
+        txtUserNationality.setText(user().getNationality().getNationality());
+    }
+
+    public User user() {
+        Intent intent = getIntent();
+        User user = new User();
+        user.setId(Integer.parseInt(intent.getStringExtra("USER_ID")));
+        user.setFirstName(intent.getStringExtra("USER_FIRSTNAME"));
+        user.setLastName(intent.getStringExtra("USER_LASTNAME"));
+
+        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
+
+        int natioId = Integer.parseInt(intent.getStringExtra("USER_NATIONALITY"));
+
+        for (Nationality nationality : listNationalities.nationalities) {
+            if (natioId == nationality.getId()) {
+                user.setNationality(new Nationality(natioId, nationality.getNationality()));
+            }
+        }
+
+        return user;
+    }
 
 }

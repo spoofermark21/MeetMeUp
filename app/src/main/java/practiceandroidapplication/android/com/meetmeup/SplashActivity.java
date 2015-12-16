@@ -114,7 +114,7 @@ public class SplashActivity extends AppCompatActivity {
                     return json.getString(TAG_RESPONSE);
                 }
             } catch (Exception e) {
-                Interactions.showError(e.toString(), SplashActivity.this);
+                //Interactions.showError(e.toString(), SplashActivity.this);
                 e.printStackTrace();
             }
             return null;

@@ -76,9 +76,9 @@ public class RegistrationActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_back){
+        /*if(id == R.id.action_back){
             finish();
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -235,6 +235,13 @@ public class RegistrationActivity extends AppCompatActivity {
         //show some toolbar button
         toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
+        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         //toolBar.setLogoDescription(getResources().getString(R.string.logo_desc));
         //toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
     }

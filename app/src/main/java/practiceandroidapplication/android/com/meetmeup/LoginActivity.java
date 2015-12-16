@@ -1,5 +1,9 @@
 package practiceandroidapplication.android.com.meetmeup;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -35,7 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity  {
 
     // widgets for login
     private EditText txtUsername, txtPassword;
@@ -72,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
     public void initBtnEvents() {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
                 if (!isFieldsEmpty()) {
                     try {
                         if(!txtUsername.getText().toString().contains(" ") &&
@@ -146,10 +151,22 @@ public class LoginActivity extends AppCompatActivity {
 
                     Log.d("User info", jUser.toString());
 
+
+                    // retrieve user info
                     intent.putExtra("USER_ID", jUser.getString(0));
                     intent.putExtra("USER_FIRSTNAME", jUser.getString(1));
                     intent.putExtra("USER_LASTNAME", jUser.getString(2));
+                    intent.putExtra("USER_BIRTHDATE", jUser.getString(3));
                     intent.putExtra("USER_NATIONALITY", jUser.getString(4));
+                    intent.putExtra("USER_GENDER", jUser.getString(5));
+                    intent.putExtra("USER_CURRENT_LOCATION", jUser.getString(6));
+                    intent.putExtra("USER_PREF_AGE", jUser.getString(7));
+                    intent.putExtra("USER_PREF_ END_AGE", jUser.getString(8));
+                    intent.putExtra("USER_PREF_GENDER", jUser.getString(9));
+                    intent.putExtra("USER_PREF_LOCATION", jUser.getString(10));
+                    intent.putExtra("USER_ACTIVE_FLAG", jUser.getString(11));
+                    intent.putExtra("USER_IMAGE", jUser.getString(12));
+                    intent.putExtra("USER_DATE_REGISTERED", jUser.getString(13));
 
                     startActivity(intent);
                     finish();

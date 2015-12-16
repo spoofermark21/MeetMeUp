@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
+    <!--
     <item android:id="@+id/action_logout"
         android:title="@string/action_new"
         android:icon="@drawable/ic_arrow_back_black"
         android:orderInCategory="300"
         app:showAsAction="ifRoom" />
+    -->
 </menu>

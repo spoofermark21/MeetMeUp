@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+
+    <item android:id="@+id/action_preferrence"
+        android:title="Set Preference"
+        android:icon="@drawable/ic_favorite_black_24dp"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_edit"
+        android:title="Edit Profile"
+        android:icon="@drawable/ic_mode_edit_black_24dp"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom" />
+
+</menu>

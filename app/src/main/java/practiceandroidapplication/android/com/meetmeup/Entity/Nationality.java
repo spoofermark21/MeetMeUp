@@ -41,4 +41,15 @@ public class Nationality {
         return nationality;
     }
 
+    public String getNatioNalityName(){
+        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
+        for(Nationality nationality1 : listNationalities.nationalities ) {
+            if(nationality1.getId() == this.id) {
+                this.nationality = nationality1.getNationality();
+                break;
+            }
+        }
+        return this.nationality;
+    }
+
 }

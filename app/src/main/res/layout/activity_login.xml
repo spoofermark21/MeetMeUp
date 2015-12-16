@@ -6,13 +6,11 @@
     android:background="#FFF"
     android:orientation="vertical">
 
-
     <LinearLayout
-        android:id="@+id/focus_layout"
-        android:layout_marginRight="10dp"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.35">
+        android:layout_marginRight="10dp"
+        android:layout_weight="0.30">
 
         <ImageView
             android:layout_width="fill_parent"
@@ -27,19 +25,11 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_weight=".65"
+        android:layout_weight=".70"
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:paddingTop="20dp">
-
-        <!--
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Username"
-            android:textSize="25sp" />
-        -->
 
         <TextView
             android:layout_width="wrap_content"
@@ -84,7 +74,7 @@
                 android:background="@drawable/edit_text"
                 android:inputType="textPassword"
                 android:padding="15dp"
-                android:singleLine="true"/>
+                android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 

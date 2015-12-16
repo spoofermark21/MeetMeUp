@@ -9,15 +9,13 @@
         android:title="@string/action_settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
-    -->
+
 
     <item android:id="@+id/action_back"
         android:title="Back"
         android:icon="@drawable/ic_arrow_back_black"
         android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
 
-    <!--
     <item android:id="@+id/action_new"
         android:title="@string/action_new"
         android:icon="@drawable/ic_action_new"
