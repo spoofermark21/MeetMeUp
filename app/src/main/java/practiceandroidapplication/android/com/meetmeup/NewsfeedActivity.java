@@ -36,6 +36,7 @@ import java.util.List;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
@@ -43,6 +44,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class NewsfeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    Sessions sessions = Sessions.getSessionsInstance();
 
     JSONParser jsonParser = new JSONParser();
 
@@ -93,22 +95,6 @@ public class NewsfeedActivity extends AppCompatActivity
 
     }
 
-    public void initUI() {
-        imgUserProfile = (ImageView) findViewById(R.id.user_image);
-        txtUserFullName = (TextView) findViewById(R.id.user_fullname);
-        txtUserNationality = (TextView) findViewById(R.id.user_nationality);
-    }
-
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -128,6 +114,22 @@ public class NewsfeedActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void initUI() {
+        imgUserProfile = (ImageView) findViewById(R.id.user_image);
+        txtUserFullName = (TextView) findViewById(R.id.user_fullname);
+        txtUserNationality = (TextView) findViewById(R.id.user_nationality);
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -137,10 +139,9 @@ public class NewsfeedActivity extends AppCompatActivity
         if (id == R.id.nav_user_profile) {
             navUserProfile();
         } else if (id == R.id.nav_groups) {
-            //navGroups();
-            startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class));
+            //startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class));
         } else if (id == R.id.nav_meetups) {
-            startActivity(new Intent(NewsfeedActivity.this, SampleActivity.class));
+            //startActivity(new Intent(NewsfeedActivity.this, SampleActivity.class));
         } else if (id == R.id.nav_events) {
 
         } else if (id == R.id.nav_notifations) {
@@ -210,9 +211,8 @@ public class NewsfeedActivity extends AppCompatActivity
 
     public void navLogOutEvent() {
         try {
-            Log.d("Debugging", user().getId() + "");
-
-            new Logout().execute(user().getId() + "");
+            Log.d("Debugging", sessions.currentUser.getId() + "");
+            new Logout().execute(sessions.currentUser.getId() + "");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -224,15 +224,22 @@ public class NewsfeedActivity extends AppCompatActivity
     }
 
     public void navUserProfile() {
-        Log.d("USER_ID (newsfeed)",user().getId() + "");
-        startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class).putExtra("USER_ID",user().getId() + ""));
+        Log.d("USER_ID (newsfeed)", sessions.currentUser.getId() + "");
+        startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class));//.putExtra("USER_ID",user().getId() + ""));
             /*fragmentTransaction.add(R.id.focus_layout, userProfile,"USER_PROFILE_FRAGMENT");
             fragmentTransaction.commit();*/
     }
 
+    public void navUserPreference() {
+        Log.d("USER_ID (newsfeed)", sessions.currentUser.getId() + "");
+        startActivity(new Intent(NewsfeedActivity.this, SetPreferenceActivity.class));
+    }
+
     public void setUserProfile() {
-        txtUserFullName.setText(user().getFirstName() + " " + user().getLastName());
-        txtUserNationality.setText(user().getNationality().getNationality());
+        txtUserFullName.setText(sessions.currentUser.getFirstName() + " "
+                                   +  sessions.currentUser.getLastName());
+        txtUserNationality.setText(sessions.currentUser.getNationality()
+                                    .getNatioNalityName());
     }
 
     public User user() {

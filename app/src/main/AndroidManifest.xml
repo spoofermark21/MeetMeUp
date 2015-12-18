@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="practiceandroidapplication.android.com.meetmeup">
+    package="practiceandroidapplication.android.com.meetmeup" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -11,11 +11,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/MyMaterialTheme">
+        android:theme="@style/MyMaterialTheme" >
         <activity
             android:name=".SplashActivity"
             android:label="@string/app_name"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,16 +26,17 @@
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.LOGIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegistrationActivity"
+        <activity
+            android:name=".RegistrationActivity"
             android:label="@string/app_name"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.REGISTRATION" />
 
@@ -45,7 +46,7 @@
         <activity
             android:name=".NewsfeedActivity"
             android:label="@string/app_name"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -55,11 +56,21 @@
         <activity
             android:name=".UserProfileActivity"
             android:label="@string/app_name"
-            android:theme="@style/MyMaterialTheme"></activity>
+            android:theme="@style/MyMaterialTheme" />
         <activity
             android:name=".SampleActivity"
             android:label="Profile"
-            android:theme="@style/MyMaterialTheme"></activity>
+            android:theme="@style/MyMaterialTheme" />
+        <activity
+            android:name=".UserProfileUpdate"
+            android:label="@string/title_activity_user_profile_update"
+            android:theme="@style/MyMaterialTheme" >
+        </activity>
+        <activity
+            android:name=".SetPreferenceActivity"
+            android:label="@string/title_activity_set_preference"
+            android:theme="@style/MyMaterialTheme" >
+        </activity>
     </application>
 
 </manifest>

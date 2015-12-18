@@ -141,6 +141,7 @@ public class SplashActivity extends AppCompatActivity {
                             }
                         }
                     }.start();*/
+
                 } else {
                     pBar.setVisibility(View.GONE);
                     Interactions.showError("Something went wrong!", SplashActivity.this);

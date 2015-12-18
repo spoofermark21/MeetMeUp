@@ -64,23 +64,26 @@ public class RegistrationActivity extends AppCompatActivity {
         initUI();
         initBtnEvents();
         loadNationalities();
+
+        //show some toolbar button
+        toolBar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolBar);
+        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        toolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.registration_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        /*if(id == R.id.action_back){
-            finish();
-        }*/
-
-        return super.onOptionsItemSelected(item);
+    public void loadNationalities(){
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListNationalities.getInstanceListNationalities()
+                .loadNationalities());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnNationality.setAdapter(adapter);
     }
 
     public void initBtnEvents() {
@@ -99,6 +102,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         User user = new User();
                         user.setFirstName(txtFirstname.getText().toString());
                         user.setLastName(txtLastname.getText().toString());
+                        Log.d("Location (register)", txtCurrentLocation.getText().toString());
                         user.setCurrentLocation(txtCurrentLocation.getText().toString());
                         user.setEmailAddress(txtEmailAddress.getText().toString());
                         user.setContactNumber(txtContactNumber.getText().toString());
@@ -134,86 +138,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-
-    class RegisterUser extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(RegistrationActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
-            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... user) {
-            // TODO Auto-generated method stub
-
-            int success;
-
-            try {
-                // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-                //String gender = user[6] == "Female" ? "F" : "M";
-
-                params.add(new BasicNameValuePair("username", user[0]));
-                params.add(new BasicNameValuePair("password", user[1]));
-                params.add(new BasicNameValuePair("first_name", user[2]));
-                params.add(new BasicNameValuePair("last_name", user[3]));
-                params.add(new BasicNameValuePair("birth_date", user[4]));
-                params.add(new BasicNameValuePair("natio_id", user[5]));
-                params.add(new BasicNameValuePair("gender", user[6]));
-                params.add(new BasicNameValuePair("current_location", user[7]));
-                params.add(new BasicNameValuePair("email_address", user[8]));
-                params.add(new BasicNameValuePair("contact_number", user[9]));
-                params.add(new BasicNameValuePair("file_name", user[10]));
-
-                Log.d("Gender", user[6] + "" + user[6].length());
-
-                Log.d("request!", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        REGISTER_URL, "POST", params);
-
-                Log.d("Register...", json.toString());
-
-                success = json.getInt(TAG_STATUS);
-
-                if (success == 1) {
-                    Log.d("Success!", json.toString());
-                    return json.getString(TAG_RESPONSE);
-                } else {
-                    Log.d("Login failed!", json.getString(TAG_RESPONSE));
-                    return json.getString(TAG_RESPONSE);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-
-        protected void onPostExecute(String message) {
-            pDialog.dismiss();
-            try {
-                if (message.equals("Username or Password is incorrect.")) {
-                    Interactions.showError(message, RegistrationActivity.this);
-                } else if (message.equals("Successful")) {
-                    Interactions.showError(message, RegistrationActivity.this);
-                    finish();
-                    /*startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-                    RegistrationActivity.this.finish();*/
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-        }
-
-    } // end of thread create user
-
     public void initUI() {
         txtFirstname = (EditText) findViewById(R.id.txt_firstname);
         txtLastname = (EditText) findViewById(R.id.txt_lastname);
@@ -231,37 +155,8 @@ public class RegistrationActivity extends AppCompatActivity {
         rdFemale = (RadioButton) findViewById(R.id.rd_female);
         btnRegister = (Button) findViewById(R.id.btn_register);
         spnNationality = (Spinner) findViewById(R.id.spn_natio);
-
-        //show some toolbar button
-        toolBar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolBar);
-        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
-        toolBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        //toolBar.setLogoDescription(getResources().getString(R.string.logo_desc));
-        //toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
     }
 
-    public void loadNationalities() {
-        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
-        List<String> list = new ArrayList<>();
-
-        for (Nationality natiolity : listNationalities.nationalities) {
-            Log.d(natiolity.getId() + "", natiolity.getNationality());
-            list.add(natiolity.getNationality());
-        }
-
-        ArrayAdapter<String> adapter;
-
-        adapter = new ArrayAdapter<>(getApplicationContext(),
-                R.layout.spinner_layout, list);
-        adapter.setDropDownViewResource(R.layout.spinner_layout);
-        spnNationality.setAdapter(adapter);
-    }
 
     public boolean isFieldsEmpty() {
         return (txtFirstname.getText().toString().equals("") ||
@@ -327,7 +222,7 @@ public class RegistrationActivity extends AppCompatActivity {
         } else {
             txtUsername.setError(null);
 
-            if(username.length() <= 6) {
+            if(username.length() < 6) {
                 txtUsername.setError("Username must be 6 characters length."); //need to define grammar.
                 isReadyToSave = false;
             }
@@ -341,7 +236,7 @@ public class RegistrationActivity extends AppCompatActivity {
         } else {
             txtPassword.setError(null);
 
-            if (password.length() <= 6) {
+            if (password.length() < 6) {
                 txtPassword.setError("Password must be 6 characters length."); //need to define grammar.
                 isReadyToSave = false;
             }
@@ -355,7 +250,7 @@ public class RegistrationActivity extends AppCompatActivity {
         } else {
             txtRepeatPassword.setError(null);
 
-            if(repeatPassword.length() <= 6) {
+            if(repeatPassword.length() < 6) {
                 txtRepeatPassword.setError("Password must be 6 characters length."); //need to define grammar.
                 isReadyToSave = false;
             }
@@ -390,22 +285,87 @@ public class RegistrationActivity extends AppCompatActivity {
         return isReadyToSave;
     }
 
-    public boolean isValidEmail(String emailAddress) {
-        return false;
-    }
+    class RegisterUser extends AsyncTask<String, String, String> {
 
-    public boolean isValidUsername(String username) {
-        return username.length() > 6;
-    }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(RegistrationActivity.this, R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
 
-    public boolean isValidPassword(String password) {
-        return password.length() > 6;
-    }
+        @Override
+        protected String doInBackground(String... user) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+                //String gender = user[6] == "Female" ? "F" : "M";
+
+                params.add(new BasicNameValuePair("username", user[0]));
+                params.add(new BasicNameValuePair("password", user[1]));
+                params.add(new BasicNameValuePair("first_name", user[2]));
+                params.add(new BasicNameValuePair("last_name", user[3]));
+                params.add(new BasicNameValuePair("birth_date", user[4]));
+                params.add(new BasicNameValuePair("natio_id", user[5]));
+                params.add(new BasicNameValuePair("gender", user[6]));
+                params.add(new BasicNameValuePair("current_location", user[7]));
+                params.add(new BasicNameValuePair("email_address", user[8]));
+                params.add(new BasicNameValuePair("contact_number", user[9]));
+                params.add(new BasicNameValuePair("file_name", user[10]));
+
+                Log.d("Gender", user[6] + "" + user[6].length());
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        REGISTER_URL, "POST", params);
+
+                Log.d("Register...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Login failed!", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
 
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Interactions.showError(message, RegistrationActivity.this);
+                    finish();
+                    /*startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+                    RegistrationActivity.this.finish();*/
+                } else if(message.equals("Username is already taken. Please try again.")) {
+                    Interactions.showError(message, RegistrationActivity.this);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
+    } // end of thread create user
 
     public void onBackPressed() {
-        startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+        //startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
         finish();
     }
 

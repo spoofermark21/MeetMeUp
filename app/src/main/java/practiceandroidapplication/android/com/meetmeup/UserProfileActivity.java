@@ -32,6 +32,7 @@ import java.util.List;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
@@ -40,6 +41,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     Toolbar toolbar;
 
+    Sessions sessions = Sessions.getSessionsInstance();
     JSONParser jsonParser = new JSONParser();
 
     private TextView lblFullName,lblGender, lblNationality,
@@ -77,14 +79,15 @@ public class UserProfileActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.action_edit){
-            Interactions.showError("You clicked Edit", UserProfileActivity.this);
+            startActivity(new Intent(UserProfileActivity.this, UserProfileUpdate.class));
+            finish();
         } else if (id == R.id.action_preferrence ){
-            Interactions.showError("You clicked Set Preference", UserProfileActivity.this);
+            startActivity(new Intent(UserProfileActivity.this, SetPreferenceActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     public void initUI(){
@@ -132,9 +135,11 @@ public class UserProfileActivity extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
+                Sessions sessions = Sessions.getSessionsInstance();
+
                 params.add(new BasicNameValuePair("user_info", "current_user"));
-                Log.d("USER_ID (user)", getIntent().getStringExtra("USER_ID"));
-                params.add(new BasicNameValuePair("user_id", getIntent().getStringExtra("USER_ID")));
+                Log.d("USER_ID (userProfile)", sessions.currentUser.getId() + "");
+                params.add(new BasicNameValuePair("user_id", sessions.currentUser.getId() + ""));
 
                 Log.d("request!", "starting");
 
@@ -151,19 +156,20 @@ public class UserProfileActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("user");
                     JSONObject jUserObject = jUserArray.getJSONObject(0);
 
-                    user.setId(jUserObject.getInt("id"));
+                    //sessions.currentUser.setId(jUserObject.getInt("id"));
+
                     Log.d("Fullname (user)", jUserObject.getString("first_name")
                             + " " + jUserObject.getString("last_name"));
-                    user.setFirstName(jUserObject.getString("first_name"));
-                    user.setLastName(jUserObject.getString("last_name"));
-                    user.setBirthDate(jUserObject.getString("bdate"));
-                    user.setNationality(new Nationality(jUserObject
-                            .getInt("natio_id")));
-                    user.setGender(jUserObject.getString("gender").charAt(0));
-                    user.setCurrentLocation(jUserObject.getString("current_location"));
-                    user.setEmailAddress(jUserObject.getString("email_address"));
-                    user.setContactNumber(jUserObject.getString("contact_number"));
-                    user.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
+
+                    sessions.currentUser.setFirstName(jUserObject.getString("first_name"));
+                    sessions.currentUser.setLastName(jUserObject.getString("last_name"));
+                    sessions.currentUser.setBirthDate(jUserObject.getString("bdate"));
+                    sessions.currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
+                    sessions.currentUser.setGender(jUserObject.getString("gender").charAt(0));
+                    sessions.currentUser.setCurrentLocation(jUserObject.getString("current_location"));
+                    sessions.currentUser.setEmailAddress(jUserObject.getString("email_address"));
+                    sessions.currentUser.setContactNumber(jUserObject.getString("contact_number"));
+                    sessions.currentUser.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -181,13 +187,14 @@ public class UserProfileActivity extends AppCompatActivity {
             //pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
-                    lblFullName.setText(user.getFirstName() + " " + user.getLastName());
-                    lblBirthdate.setText(user.getBirthDate() + "");
-                    lblGender.setText(user.getGender() + "");
-                    lblLocation.setText(user.getCurrentLocation());
-                    lblNationality.setText(user.getNationality().getNatioNalityName());
-                    lblMobile.setText(user.getContactNumber());
-                    lblEmailAdd.setText(user.getEmailAddress());
+                    lblFullName.setText(sessions.currentUser.getFirstName() + " "
+                            + sessions.currentUser.getLastName());
+                    lblBirthdate.setText(sessions.currentUser.getBirthDate() + "");
+                    lblGender.setText(sessions.currentUser.getGender() + "");
+                    lblNationality.setText(sessions.currentUser.getNationality().getNatioNalityName());
+                    lblLocation.setText(sessions.currentUser.getCurrentLocation());
+                    lblMobile.setText(sessions.currentUser.getContactNumber());
+                    lblEmailAdd.setText(sessions.currentUser.getEmailAddress());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -15,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
@@ -44,6 +46,8 @@ public class LoginActivity extends AppCompatActivity  {
     // widgets for login
     private EditText txtUsername, txtPassword;
     private Button btnLogin, btnRegister;
+
+    Sessions sessions = Sessions.getSessionsInstance();
 
     JSONParser jsonParser = new JSONParser();
 
@@ -151,9 +155,17 @@ public class LoginActivity extends AppCompatActivity  {
 
                     Log.d("User info", jUser.toString());
 
-
                     // retrieve user info
-                    intent.putExtra("USER_ID", jUser.getString(0));
+
+                    Log.d("USER ID (Login)", jUser.getString(0) + "");
+
+                    sessions.currentUser.setId(Integer.parseInt(jUser.getString(0)));
+                    sessions.currentUser.setFirstName(jUser.getString(1));
+                    sessions.currentUser.setLastName(jUser.getString(2));
+                    sessions.currentUser.setNationality(
+                                            new Nationality(Integer.parseInt(jUser.getString(4))));
+
+                    /*intent.putExtra("USER_ID", jUser.getString(0) + "");
                     intent.putExtra("USER_FIRSTNAME", jUser.getString(1));
                     intent.putExtra("USER_LASTNAME", jUser.getString(2));
                     intent.putExtra("USER_BIRTHDATE", jUser.getString(3));
@@ -167,6 +179,7 @@ public class LoginActivity extends AppCompatActivity  {
                     intent.putExtra("USER_ACTIVE_FLAG", jUser.getString(11));
                     intent.putExtra("USER_IMAGE", jUser.getString(12));
                     intent.putExtra("USER_DATE_REGISTERED", jUser.getString(13));
+                    */
 
                     startActivity(intent);
                     finish();
@@ -192,12 +205,12 @@ public class LoginActivity extends AppCompatActivity  {
     } // end of thread
 
     public boolean isFieldsEmpty () {
-        if (txtUsername.getText().toString().length() == 0)
+        if (txtUsername.getText().toString().equals(""))
             txtUsername.setError("Username is required");
         else
             txtUsername.setError(null);
 
-        if (txtPassword.getText().toString().length() == 0)
+        if (txtPassword.getText().toString().equals(""))
             txtPassword.setError("Password is required.");
         else
             txtPassword.setError(null);

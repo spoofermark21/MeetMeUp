@@ -1,10 +1,23 @@
 package practiceandroidapplication.android.com.meetmeup.Entity;
 
+import android.app.Activity;
+import android.os.AsyncTask;
+import android.util.Log;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 /**
  * Created by sibimark on 16/11/2015.
@@ -30,7 +43,7 @@ public class User {
     private char privacyFlag;
 
     //optional preference
-    //private Preferred pref;
+    private Preference preference;
 
     //flags
     private char activeFlag;
@@ -195,4 +208,5 @@ public class User {
                 ", userImage='" + userImage + '\'' +
                 '}';
     }
+
 }

@@ -1,7 +1,12 @@
 package practiceandroidapplication.android.com.meetmeup.Entity;
 
+import android.util.Log;
+import android.widget.ArrayAdapter;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import practiceandroidapplication.android.com.meetmeup.R;
 
 /**
  * Created by sibimark on 08/12/2015.
@@ -23,6 +28,18 @@ public class ListNationalities {
         }
 
         return listNationalities;
+    }
+
+    public static List<String> loadNationalities() {
+        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
+        List<String> list = new ArrayList<>();
+
+        for (Nationality natiolity : listNationalities.nationalities) {
+            Log.d(natiolity.getId() + "", natiolity.getNationality());
+            list.add(natiolity.getNationality());
+        }
+
+        return list;
     }
 
 }
