@@ -22,6 +22,12 @@ public class Preference {
 
     }
 
+    public Preference(int startAge, int endAge, char gender) {
+        this.startAge = startAge;
+        this.endAge = endAge;
+        this.gender = gender;
+    }
+
     public Preference(int startAge, int endAge,
                       char gender, String location) {
 

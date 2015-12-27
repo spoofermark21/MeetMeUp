@@ -22,7 +22,7 @@ import practiceandroidapplication.android.com.meetmeup.R;
  */
 public class Interactions {
 
-    public static void showError(String error, Activity activity) {
+    public static void showError(String error, final Activity activity) {
 
         try {
             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
@@ -34,21 +34,12 @@ public class Interactions {
             dlgAlert.setPositiveButton("Ok",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            //dismiss the dialog
                         }
                     });
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-    }
-
-    public static void showError(String error, boolean f) {
-
-    }
-
-    public static void showErrorToast(String error, Activity activity) {
-
     }
 
 }

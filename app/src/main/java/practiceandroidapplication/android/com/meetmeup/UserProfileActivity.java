@@ -4,21 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
@@ -29,30 +20,26 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
-import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class UserProfileActivity extends AppCompatActivity {
-
-    Toolbar toolbar;
-
-    Sessions sessions = Sessions.getSessionsInstance();
-    JSONParser jsonParser = new JSONParser();
-
-    private TextView lblFullName,lblGender, lblNationality,
-            lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
-
-    private ProgressDialog pDialog;
 
     private static final String RETRIEVE_USER_URL = Network.forDeploymentIp + "user_retrieve.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
+    JSONParser jsonParser = new JSONParser();
+    ProgressDialog pDialog;
+
+    TextView lblFullName,lblGender, lblNationality,
+            lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
+
+
+    Sessions sessions = Sessions.getSessionsInstance();
     User user = new User();
 
     @Override
@@ -79,7 +66,7 @@ public class UserProfileActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.action_edit){
-            startActivity(new Intent(UserProfileActivity.this, UserProfileUpdate.class));
+            startActivity(new Intent(UserProfileActivity.this, UserProfileUpdateActivity.class));
             finish();
         } else if (id == R.id.action_preferrence ){
             startActivity(new Intent(UserProfileActivity.this, SetPreferenceActivity.class));
@@ -89,6 +76,9 @@ public class UserProfileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+        functions
+     */
 
     public void initUI(){
 
@@ -100,9 +90,9 @@ public class UserProfileActivity extends AppCompatActivity {
         lblMobile = (TextView) findViewById(R.id.lbl_mobile);
         lblEmailAdd = (TextView) findViewById(R.id.lbl_email);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 finish();
@@ -112,17 +102,19 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
 
-
+    /*
+        thread
+     */
 
     class RetrieveUser extends AsyncTask<String, String, String> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /*pDialog = new ProgressDialog(RegistrationActivity.this, R.style.progress);
+            pDialog = new ProgressDialog(UserProfileActivity.this, R.style.progress);
             pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.show();*/
+            pDialog.show();
         }
 
         @Override
@@ -184,7 +176,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
         protected void onPostExecute(String message) {
-            //pDialog.dismiss();
+            pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
                     lblFullName.setText(sessions.currentUser.getFirstName() + " "
@@ -201,7 +193,7 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         }
 
-    } // end of thread create user
+    } // end of retrieve create user
 
     public void onBackPressed() {
         finish();

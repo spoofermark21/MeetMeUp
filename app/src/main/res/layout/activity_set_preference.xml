@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/MyMaterialTheme.AppBarOverlay">
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -44,24 +45,30 @@
                 android:layout_marginBottom="10dp"
                 android:padding="5dp"
                 android:text="Preference"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Minimum Age"
+                android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <EditText
-
-                android:id="@+id/txtMinAge"
+                android:id="@+id/txt_min_age"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
                 android:elevation="2dp"
+                android:hint="Minimum age"
+                android:inputType="text"
+                android:padding="15dp"
+                android:singleLine="true"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/txt_max_age"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/edit_text"
+                android:elevation="2dp"
+                android:hint="Maximum age"
                 android:inputType="text"
                 android:padding="15dp"
                 android:singleLine="true"
@@ -70,84 +77,35 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Maximum Age"
-                android:textSize="20sp" />
-
-            <EditText
-
-                android:id="@+id/txtMaxAge"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:elevation="2dp"
-                android:inputType="text"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:padding="5dp"
                 android:text="Gender"
-                android:textSize="20sp" />
+                android:textColor="@color/black"
+                android:textSize="15sp" />
 
-            <RadioGroup
-                android:id="@+id/rd_gender"
-                android:layout_width="wrap_content"
+            <Spinner
+                android:id="@+id/spn_gender"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rd_male"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Female"
-                    android:textColor="#808080" />
-
-                <RadioButton
-                    android:id="@+id/rd_female"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Male"
-                    android:textColor="#808080" />
-
-                <RadioButton
-                    android:id="@+id/rd_both"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Both"
-                    android:textColor="#808080" />
-
-            </RadioGroup>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Location"
-                android:textSize="20sp" />
+                android:layout_gravity="left"
+                android:layout_marginBottom="10dip"
+                android:background="@drawable/edit_text"
+                android:padding="15dp" />
 
             <EditText
-
-                android:id="@+id/txtLocation"
+                android:id="@+id/txt_location"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
                 android:elevation="2dp"
+                android:hint="Location"
                 android:inputType="text"
                 android:padding="15dp"
                 android:singleLine="true"
                 android:textSize="15sp" />
 
             <Button
-                android:id="@+id/btn_register"
+                android:id="@+id/btn_pref"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

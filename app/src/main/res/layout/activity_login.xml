@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="20dp"
         android:layout_weight="0.30">
 
         <ImageView
@@ -27,46 +27,36 @@
         android:layout_gravity="center"
         android:layout_weight=".70"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
         android:paddingTop="20dp">
 
-        <android.support.design.widget.TextInputLayout
+
+        <EditText
+            android:id="@+id/txt_username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp">
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/edit_text"
+            android:hint="Username"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:text="john" />
 
-            <EditText
-                android:hint="Username"
-                android:text="john"
-                android:id="@+id/txt_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text"
-                android:inputType="text"
-                android:maxLines="1"
-                android:padding="15dp"
-                android:singleLine="true" />
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/txt_password"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp">
+            android:background="@drawable/edit_text"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:text="john" />
 
-            <EditText
-                android:hint="Password"
-                android:text="john"
-                android:id="@+id/txt_password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/edit_text"
-                android:inputType="textPassword"
-                android:padding="15dp"
-                android:singleLine="true" />
-
-        </android.support.design.widget.TextInputLayout>
 
         <!-- Login Button -->
 

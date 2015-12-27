@@ -40,10 +40,11 @@
             android:layout_height="0dp"
             android:layout_weight=".90"
             android:orientation="vertical"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp">
 
             <TextView
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -70,16 +71,7 @@
             -->
             <!-- first name -->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="First name"
-                android:textSize="20sp" />
-
             <EditText
-
                 android:id="@+id/txt_firstname"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -88,19 +80,13 @@
                 android:elevation="2dp"
                 android:inputType="text"
                 android:padding="15dp"
+                android:hint="First name"
                 android:singleLine="true"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Last name"
-                android:textSize="20sp" />
-
             <EditText
                 android:id="@+id/txt_lastname"
+                android:hint="Last name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -112,17 +98,18 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:padding="5dp"
                 android:text="Birthday"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <DatePicker
                 android:id="@+id/date_birth"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dip"
                 android:layout_marginLeft="10dip"
@@ -133,19 +120,20 @@
             </DatePicker>
 
             <TextView
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:padding="5dp"
                 android:text="Nationality"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <Spinner
                 android:id="@+id/spn_natio"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:padding="8dp"
+                android:padding="15dp"
                 android:layout_marginBottom="10dip"
                 android:background="@drawable/edit_text" />
 
@@ -158,12 +146,12 @@
                 android:id="@+id/datePicker" /> -->
 
             <TextView
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:padding="5dp"
                 android:text="Gender"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -182,30 +170,23 @@
                         android:id="@+id/rd_male"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Male"
-                        android:textColor="#808080" />
+                        android:text="Female"
+                        android:textColor="@color/black" />
 
                     <RadioButton
                         android:id="@+id/rd_female"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Female"
-                        android:textColor="#808080" />
+                        android:text="Male"
+                        android:textColor="@color/black" />
 
                 </RadioGroup>
 
             </LinearLayout>
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Current location"
-                android:textSize="20sp" />
-
             <EditText
+                android:hint="Current location"
                 android:id="@+id/txt_current_location"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -217,15 +198,8 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Email address"
-                android:textSize="20sp" />
-
             <EditText
+                android:hint="Email address"
                 android:id="@+id/txt_email_address"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -237,15 +211,9 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Contact number"
-                android:textSize="20sp" />
 
             <EditText
+                android:hint="Contact number"
                 android:id="@+id/txt_contact_number"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -261,6 +229,7 @@
             <!-- account details -->
 
             <TextView
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -269,15 +238,9 @@
                 android:text="Account Details"
                 android:textSize="20sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Username"
-                android:textSize="20sp" />
 
             <EditText
+                android:hint="Username"
                 android:id="@+id/txt_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -289,15 +252,8 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Old Password"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:textSize="20sp"/>
-
             <EditText
+                android:hint="Old password"
                 android:id="@+id/txt_old_password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -309,15 +265,8 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Password"
-                android:textSize="20sp" />
-
             <EditText
+                android:hint="Password"
                 android:id="@+id/txt_new_password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -329,15 +278,8 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Repeat password"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:textSize="20sp"/>
-
             <EditText
+                android:hint="Repeat password"
                 android:id="@+id/txt_repeat_password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

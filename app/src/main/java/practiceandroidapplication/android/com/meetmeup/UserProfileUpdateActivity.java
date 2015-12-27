@@ -32,15 +32,17 @@ import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
-public class UserProfileUpdate extends AppCompatActivity {
+public class UserProfileUpdateActivity extends AppCompatActivity {
 
-    JSONParser jsonParser = new JSONParser();
-    private ProgressDialog pDialog;
 
     private static final String RETRIEVE_USER_URL = Network.forDeploymentIp + "user_retrieve.php";
     private static final String UPDATE_USER_URL = Network.forDeploymentIp + "user_update.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
+
+    JSONParser jsonParser = new JSONParser();
+    ProgressDialog pDialog;
+
 
     EditText txtFirstname, txtLastname,
             txtCurrentLocation, txtEmailAddress, txtContactNumber,
@@ -57,7 +59,7 @@ public class UserProfileUpdate extends AppCompatActivity {
 
     User fetchUser = new User();
     User updateUser = new User();
-    Sessions session = Sessions.getSessionsInstance();
+    User currentUser = Sessions.getSessionsInstance().currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,6 @@ public class UserProfileUpdate extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initUI();
-        initBtnEvents();
         loadNationalities();
 
         try {
@@ -76,6 +77,10 @@ public class UserProfileUpdate extends AppCompatActivity {
             ex.printStackTrace();
         }
     }
+
+    /*
+        functions
+     */
 
     public void loadNationalities() {
         ArrayAdapter<String> adapter;
@@ -108,16 +113,15 @@ public class UserProfileUpdate extends AppCompatActivity {
         //show some toolbar button
         toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
-        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileActivity.class));
                 finish();
             }
         });
-    } // end of initUI
 
-    public void initBtnEvents() {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +168,8 @@ public class UserProfileUpdate extends AppCompatActivity {
             }
         }); // end of update onclick event
 
-    } // end of updateuser
+    } // end of initUI
+
 
     public boolean formValidation() {
 
@@ -217,9 +222,9 @@ public class UserProfileUpdate extends AppCompatActivity {
             isReadyToSave = false;
         } else {
             txtOldPassword.setError(null);
-            Log.d("Password (Update)",session.currentUser.getPassword());
+            Log.d("Password (Update)",currentUser.getPassword());
             if (!txtOldPassword.getText().toString()
-                    .equals(session.currentUser.getPassword())) {
+                    .equals(currentUser.getPassword())) {
                 txtOldPassword.setError("Password is incorrect."); //need to define grammar.
                 isReadyToSave = false;
             }
@@ -263,7 +268,7 @@ public class UserProfileUpdate extends AppCompatActivity {
 
         if (isReadyToSave) {
             if (!rdMale.isChecked() && !rdFemale.isChecked()) {
-                Interactions.showError("Please select gender.", UserProfileUpdate.this);
+                Interactions.showError("Please select gender.", UserProfileUpdateActivity.this);
                 isReadyToSave = false;
             } else {
                 isReadyToSave = true;
@@ -275,14 +280,18 @@ public class UserProfileUpdate extends AppCompatActivity {
         return isReadyToSave;
     }
 
+    /*
+        thread
+     */
+
     class RetrieveUser extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            /*pDialog = new ProgressDialog(RegistrationActivity.this, R.style.progress);
+            pDialog = new ProgressDialog(UserProfileUpdateActivity.this, R.style.progress);
             pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.show();*/
+            pDialog.show();
         }
 
         @Override
@@ -296,8 +305,8 @@ public class UserProfileUpdate extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
                 params.add(new BasicNameValuePair("user_info", "current_user"));
-                Log.d("USER_ID (user)", session.currentUser.getId() + "");
-                params.add(new BasicNameValuePair("user_id", session.currentUser.getId() + ""));
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
 
                 Log.d("request!", "starting");
 
@@ -315,17 +324,17 @@ public class UserProfileUpdate extends AppCompatActivity {
                     JSONObject jUserObject = jUserArray.getJSONObject(0);
 
                     //fetchUser.setId(jUserObject.getInt("id"));
-                    session.currentUser.setFirstName(jUserObject.getString("first_name"));
-                    session.currentUser.setLastName(jUserObject.getString("last_name"));
-                    session.currentUser.setBirthDate(jUserObject.getString("bdate"));
-                    session.currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
-                    session.currentUser.setGender(jUserObject.getString("gender").charAt(0));
-                    session.currentUser.setCurrentLocation(jUserObject.getString("current_location"));
-                    session.currentUser.setEmailAddress(jUserObject.getString("email_address"));
-                    session.currentUser.setContactNumber(jUserObject.getString("contact_number"));
+                    currentUser.setFirstName(jUserObject.getString("first_name"));
+                    currentUser.setLastName(jUserObject.getString("last_name"));
+                    currentUser.setBirthDate(jUserObject.getString("bdate"));
+                    currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
+                    currentUser.setGender(jUserObject.getString("gender").charAt(0));
+                    currentUser.setCurrentLocation(jUserObject.getString("current_location"));
+                    currentUser.setEmailAddress(jUserObject.getString("email_address"));
+                    currentUser.setContactNumber(jUserObject.getString("contact_number"));
 
-                    session.currentUser.setUsername(jUserObject.getString("username"));
-                    session.currentUser.setPassword(jUserObject.getString("password"));
+                    currentUser.setUsername(jUserObject.getString("username"));
+                    currentUser.setPassword(jUserObject.getString("password"));
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -340,26 +349,27 @@ public class UserProfileUpdate extends AppCompatActivity {
 
 
         protected void onPostExecute(String message) {
-            //pDialog.dismiss();
+            pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-                    txtFirstname.setText(session.currentUser.getFirstName());
-                    txtLastname.setText(session.currentUser.getLastName());
+                    txtFirstname.setText(currentUser.getFirstName());
+                    txtLastname.setText(currentUser.getLastName());
                     //dateBirth.init();
-                    spnNationality.setSelection(session.currentUser.getNationality().getId() - 1);
-                    char gender = session.currentUser.getGender();
+                    spnNationality.setSelection(currentUser.getNationality().getId() - 1);
+
+                    char gender = currentUser.getGender();
 
                     if (gender == 'M')
                         rdMale.setChecked(true);
                     else
                         rdFemale.setChecked(true);
 
-                    txtCurrentLocation.setText(session.currentUser.getCurrentLocation());
-                    txtEmailAddress.setText(session.currentUser.getEmailAddress());
-                    txtContactNumber.setText(session.currentUser.getContactNumber() + "");
+                    txtCurrentLocation.setText(currentUser.getCurrentLocation());
+                    txtEmailAddress.setText(currentUser.getEmailAddress());
+                    txtContactNumber.setText(currentUser.getContactNumber() + "");
 
                     //disable username
-                    txtUsername.setText(session.currentUser.getUsername());
+                    txtUsername.setText(currentUser.getUsername());
                     txtUsername.setEnabled(false);
                 }
             } catch (Exception ex) {
@@ -374,7 +384,7 @@ public class UserProfileUpdate extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(UserProfileUpdate.this, R.style.progress);
+            pDialog = new ProgressDialog(UserProfileUpdateActivity.this, R.style.progress);
             pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
@@ -390,7 +400,7 @@ public class UserProfileUpdate extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-                params.add(new BasicNameValuePair("id", session.currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("username", user[0]));
                 params.add(new BasicNameValuePair("password", user[1]));
                 params.add(new BasicNameValuePair("first_name", user[2]));
@@ -429,7 +439,7 @@ public class UserProfileUpdate extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-                    Interactions.showError(message, UserProfileUpdate.this);
+                    Interactions.showError(message, UserProfileUpdateActivity.this);
                     new RetrieveUser().execute();
                 }
             } catch (Exception ex) {
@@ -441,7 +451,7 @@ public class UserProfileUpdate extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        startActivity(new Intent(UserProfileUpdate.this, UserProfileActivity.class));
+        startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileActivity.class));
         finish();
     }
 

@@ -7,13 +7,13 @@
 
     <item android:id="@+id/action_preferrence"
         android:title="Set Preference"
-        android:icon="@drawable/ic_favorite_black_24dp"
+        android:icon="@drawable/ic_favorite_white_24dp"
         android:orderInCategory="300"
         app:showAsAction="ifRoom" />
 
     <item android:id="@+id/action_edit"
         android:title="Edit Profile"
-        android:icon="@drawable/ic_mode_edit_black_24dp"
+        android:icon="@drawable/ic_mode_edit_white_24dp"
         android:orderInCategory="300"
         app:showAsAction="ifRoom" />
 

@@ -41,32 +41,35 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LoginActivity extends AppCompatActivity  {
-
-    // widgets for login
-    private EditText txtUsername, txtPassword;
-    private Button btnLogin, btnRegister;
-
-    Sessions sessions = Sessions.getSessionsInstance();
-
-    JSONParser jsonParser = new JSONParser();
-
-    private ProgressDialog pDialog;
+public class LoginActivity extends AppCompatActivity {
 
     // web service
     private static final String LOGIN_URL = Network.forDeploymentIp + "user_login.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
+    private JSONParser jsonParser = new JSONParser();
+    private ProgressDialog pDialog;
+
+    // widgets for login
+    private EditText txtUsername, txtPassword;
+    private Button btnLogin, btnRegister;
+
+    private Sessions sessions = Sessions.getSessionsInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //initialize
         initUI();
-        initBtnEvents();
 
     }
+
+    /*
+        functions
+     */
 
     public void initUI() {
         txtUsername = (EditText) findViewById(R.id.txt_username);
@@ -74,16 +77,12 @@ public class LoginActivity extends AppCompatActivity  {
 
         btnRegister = (Button) findViewById(R.id.btn_register);
         btnLogin = (Button) findViewById(R.id.btn_login);
-    }
 
-
-    public void initBtnEvents() {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 if (!isFieldsEmpty()) {
                     try {
-                        if(!txtUsername.getText().toString().contains(" ") &&
+                        if (!txtUsername.getText().toString().contains(" ") &&
                                 !txtPassword.getText().toString().contains(" ") &&
                                 !isFieldsEmpty()) {
                             User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
@@ -108,17 +107,46 @@ public class LoginActivity extends AppCompatActivity  {
                 }
             }
         });
-
     }
+
+
+    public boolean isFieldsEmpty() {
+        if (txtUsername.getText().toString().equals(""))
+            txtUsername.setError("Username is required");
+        else
+            txtUsername.setError(null);
+
+        if (txtPassword.getText().toString().equals(""))
+            txtPassword.setError("Password is required.");
+        else
+            txtPassword.setError(null);
+
+        return txtUsername.getText().toString().equals("") ||
+                txtPassword.getText().toString().equals("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        //for animation
+        //overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+        finish();
+    }
+
+    /*
+        thread
+     */
 
     class LoginUser extends AsyncTask<String, String, String> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(LoginActivity.this,R.style.progress);
+            pDialog = new ProgressDialog(LoginActivity.this, R.style.progress);
             pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.setIndeterminate(false);
+            //pDialog.setMessage("Loading...");
+            //pDialog.getWindow().setGravity(Gravity.CENTER);
             pDialog.show();
         }
 
@@ -163,7 +191,7 @@ public class LoginActivity extends AppCompatActivity  {
                     sessions.currentUser.setFirstName(jUser.getString(1));
                     sessions.currentUser.setLastName(jUser.getString(2));
                     sessions.currentUser.setNationality(
-                                            new Nationality(Integer.parseInt(jUser.getString(4))));
+                            new Nationality(Integer.parseInt(jUser.getString(4))));
 
                     /*intent.putExtra("USER_ID", jUser.getString(0) + "");
                     intent.putExtra("USER_FIRSTNAME", jUser.getString(1));
@@ -203,26 +231,5 @@ public class LoginActivity extends AppCompatActivity  {
         }
 
     } // end of thread
-
-    public boolean isFieldsEmpty () {
-        if (txtUsername.getText().toString().equals(""))
-            txtUsername.setError("Username is required");
-        else
-            txtUsername.setError(null);
-
-        if (txtPassword.getText().toString().equals(""))
-            txtPassword.setError("Password is required.");
-        else
-            txtPassword.setError(null);
-
-        return txtUsername.getText().toString().equals("") ||
-                txtPassword.getText().toString().equals("");
-    }
-
-    public void onBackPressed() {
-        //for animation
-        //overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
-        finish();
-    }
 
 } // end of class

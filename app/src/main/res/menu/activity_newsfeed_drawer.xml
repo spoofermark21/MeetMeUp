@@ -37,6 +37,7 @@
             android:title="Logout" />
     </group>
 
+    <!--
     <item android:title="Communicate">
         <menu>
             <item
@@ -48,6 +49,6 @@
                 android:icon="@android:drawable/ic_menu_send"
                 android:title="Send" />
         </menu>
-    </item>
+    </item> -->
 
 </menu>

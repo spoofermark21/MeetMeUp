@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import org.apache.http.NameValuePair;
@@ -29,15 +30,17 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private static final String NATIONALITIES_URL = Network.forDeploymentIp + "nationality_retrieve.php";
+    private static final String TAG_STATUS = "status";
+    private static final String TAG_RESPONSE = "response";
+
     JSONParser jsonParser = new JSONParser();
 
     private ProgressDialog pDialog;
+
     private ProgressBar pBar;
 
-    private static final String NATIONALITIES_URL = Network.forDeploymentIp + "nationality_retrieve.php";
-
-    private static final String TAG_STATUS = "status";
-    private static final String TAG_RESPONSE = "response";
+    ImageView image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +56,18 @@ public class SplashActivity extends AppCompatActivity {
             Interactions.showError("Not connected to internet. Closing...", SplashActivity.this);
             finish();
         }*/
+
+        /*image = (ImageView) findViewById(R.id.image);
+        image.setImageResource(R.drawable.scratchers);
+        image.postDelayed(swapImage, 3000);*/
     }
+
+    Runnable swapImage = new Runnable() {
+        @Override
+        public void run() {
+            image.setImageResource(R.drawable.meetmeup);
+        }
+    };
 
     class ListOfNationalities extends AsyncTask<String, String, String> {
 
@@ -127,12 +141,13 @@ public class SplashActivity extends AppCompatActivity {
                     startActivity(new Intent(SplashActivity.this, LoginActivity.class));
                     overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
                     finish();
-
-                    /*new Thread() {
-                        public void run () {
+                    /*
+                    new Thread() {
+                        public void run() {
                             try {
-                                sleep(3000);
+                                sleep(5000);
                                 startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                                overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
                                 pBar.setVisibility(View.GONE);
                                 finish();
                             } catch (Exception ex) {
@@ -140,8 +155,8 @@ public class SplashActivity extends AppCompatActivity {
                                 finish();
                             }
                         }
-                    }.start();*/
-
+                    }.start();
+                    */
                 } else {
                     pBar.setVisibility(View.GONE);
                     Interactions.showError("Something went wrong!", SplashActivity.this);

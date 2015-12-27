@@ -97,5 +97,6 @@
     <string name="title_activity_sample">SampleActivity</string>
     <string name="title_activity_user_profile_update">UserProfileUpdate</string>
     <string name="title_activity_set_preference">SetPreferenceActivity</string>
+    <string name="title_activity_group">GroupActivity</string>
 
 </resources>

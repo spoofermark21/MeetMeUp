@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -35,13 +36,12 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-
-    JSONParser jsonParser = new JSONParser();
-    private ProgressDialog pDialog;
-
     private static final String REGISTER_URL = Network.forDeploymentIp + "user_save.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
+
+    JSONParser jsonParser = new JSONParser();
+    ProgressDialog pDialog;
 
     EditText txtFirstname, txtLastname,
             txtCurrentLocation, txtEmailAddress, txtContactNumber,
@@ -51,7 +51,6 @@ public class RegistrationActivity extends AppCompatActivity {
     RadioGroup rdGender;
     RadioButton rdMale, rdFemale;
 
-    Toolbar toolBar;
 
     Spinner spnNationality;
     Button btnRegister;
@@ -61,32 +60,44 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        initUI();
-        initBtnEvents();
-        loadNationalities();
-
         //show some toolbar button
-        toolBar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
-        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_black);
+        toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
+        initUI();
+        //load nationalities options
+        loadNationalities();
     }
 
-    public void loadNationalities(){
-        ArrayAdapter<String> adapter;
-        adapter = new ArrayAdapter<>(getApplicationContext(),
-                R.layout.spinner_layout, ListNationalities.getInstanceListNationalities()
-                .loadNationalities());
-        adapter.setDropDownViewResource(R.layout.spinner_layout);
-        spnNationality.setAdapter(adapter);
-    }
+    /*
+        functions
+     */
 
-    public void initBtnEvents() {
+    public void initUI() {
+        txtFirstname = (EditText) findViewById(R.id.txt_firstname);
+        txtLastname = (EditText) findViewById(R.id.txt_lastname);
+        txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
+        txtEmailAddress = (EditText) findViewById(R.id.txt_email_address);
+        txtContactNumber = (EditText) findViewById(R.id.txt_contact_number);
+        txtUsername = (EditText) findViewById(R.id.txt_username);
+        txtPassword = (EditText) findViewById(R.id.txt_password);
+        txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
+
+        dateBirth = (DatePicker) findViewById(R.id.date_birth);
+
+        rdGender = (RadioGroup) findViewById(R.id.rd_gender);
+        rdMale = (RadioButton) findViewById(R.id.rd_male);
+        rdFemale = (RadioButton) findViewById(R.id.rd_female);
+        btnRegister = (Button) findViewById(R.id.btn_register);
+        spnNationality = (Spinner) findViewById(R.id.spn_natio);
+
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,27 +146,18 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
             }
         }); // end of register onclick event
-
     }
 
-    public void initUI() {
-        txtFirstname = (EditText) findViewById(R.id.txt_firstname);
-        txtLastname = (EditText) findViewById(R.id.txt_lastname);
-        txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
-        txtEmailAddress = (EditText) findViewById(R.id.txt_email_address);
-        txtContactNumber = (EditText) findViewById(R.id.txt_contact_number);
-        txtUsername = (EditText) findViewById(R.id.txt_username);
-        txtPassword = (EditText) findViewById(R.id.txt_password);
-        txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
-
-        dateBirth = (DatePicker) findViewById(R.id.date_birth);
-
-        rdGender = (RadioGroup) findViewById(R.id.rd_gender);
-        rdMale = (RadioButton) findViewById(R.id.rd_male);
-        rdFemale = (RadioButton) findViewById(R.id.rd_female);
-        btnRegister = (Button) findViewById(R.id.btn_register);
-        spnNationality = (Spinner) findViewById(R.id.spn_natio);
+    public void loadNationalities(){
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListNationalities.getInstanceListNationalities()
+                .loadNationalities());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnNationality.setAdapter(adapter);
     }
+
+
 
 
     public boolean isFieldsEmpty() {
@@ -285,6 +287,16 @@ public class RegistrationActivity extends AppCompatActivity {
         return isReadyToSave;
     }
 
+    @Override
+    public void onBackPressed() {
+        //startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
+        finish();
+    }
+
+    /*
+        thread
+     */
+
     class RegisterUser extends AsyncTask<String, String, String> {
 
         @Override
@@ -349,8 +361,19 @@ public class RegistrationActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-                    Interactions.showError(message, RegistrationActivity.this);
-                    finish();
+                    Toast.makeText(RegistrationActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+
+                    new Thread(){
+                        public void run() {
+                            try {
+                                sleep(1000);
+                                finish();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }.start();
+                    //Interactions.showError(message + "!", RegistrationActivity.this);
                     /*startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
                     RegistrationActivity.this.finish();*/
                 } else if(message.equals("Username is already taken. Please try again.")) {
@@ -364,9 +387,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
     } // end of thread create user
 
-    public void onBackPressed() {
-        //startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
-        finish();
-    }
+
 
 } // end of class
