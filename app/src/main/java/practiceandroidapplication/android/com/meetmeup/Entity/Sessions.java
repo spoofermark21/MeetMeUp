@@ -67,11 +67,11 @@ public class Sessions {
 
     public static int getEventId (List<Events> currentEvents, int position){
         List<String> listEvents = new ArrayList<>();
-        int counter = 0;
 
+        int counter = 0;
         for(Events events : currentEvents){
             if(position == counter) {
-                position = counter;
+                position = events.getId();
             }
             counter += 1;
         }

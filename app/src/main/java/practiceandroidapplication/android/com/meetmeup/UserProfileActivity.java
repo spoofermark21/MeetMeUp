@@ -40,6 +40,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
     Sessions sessions = Sessions.getSessionsInstance();
+    User currentUser = Sessions.getSessionsInstance().currentUser;
     User user = new User();
 
     @Override
@@ -153,15 +154,15 @@ public class UserProfileActivity extends AppCompatActivity {
                     Log.d("Fullname (user)", jUserObject.getString("first_name")
                             + " " + jUserObject.getString("last_name"));
 
-                    sessions.currentUser.setFirstName(jUserObject.getString("first_name"));
-                    sessions.currentUser.setLastName(jUserObject.getString("last_name"));
-                    sessions.currentUser.setBirthDate(jUserObject.getString("bdate"));
-                    sessions.currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
-                    sessions.currentUser.setGender(jUserObject.getString("gender").charAt(0));
-                    sessions.currentUser.setCurrentLocation(jUserObject.getString("current_location"));
-                    sessions.currentUser.setEmailAddress(jUserObject.getString("email_address"));
-                    sessions.currentUser.setContactNumber(jUserObject.getString("contact_number"));
-                    sessions.currentUser.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
+                    currentUser.setFirstName(jUserObject.getString("first_name"));
+                    currentUser.setLastName(jUserObject.getString("last_name"));
+                    currentUser.setBirthDate(jUserObject.getString("bdate"));
+                    currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
+                    currentUser.setGender(jUserObject.getString("gender").charAt(0));
+                    currentUser.setCurrentLocation(jUserObject.getString("current_location"));
+                    currentUser.setEmailAddress(jUserObject.getString("email_address"));
+                    currentUser.setContactNumber(jUserObject.getString("contact_number"));
+                    currentUser.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -179,14 +180,14 @@ public class UserProfileActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
-                    lblFullName.setText(sessions.currentUser.getFirstName() + " "
-                            + sessions.currentUser.getLastName());
-                    lblBirthdate.setText(sessions.currentUser.getBirthDate() + "");
-                    lblGender.setText(sessions.currentUser.getGender() + "");
-                    lblNationality.setText(sessions.currentUser.getNationality().getNatioNalityName());
-                    lblLocation.setText(sessions.currentUser.getCurrentLocation());
-                    lblMobile.setText(sessions.currentUser.getContactNumber());
-                    lblEmailAdd.setText(sessions.currentUser.getEmailAddress());
+                    lblFullName.setText(currentUser.getFirstName() + " "
+                            + currentUser.getLastName());
+                    lblBirthdate.setText(currentUser.getBirthDate() + "");
+                    lblGender.setText(currentUser.getGender() + "");
+                    lblNationality.setText(currentUser.getNationality().getNatioNalityName());
+                    lblLocation.setText(currentUser.getCurrentLocation());
+                    lblMobile.setText(currentUser.getContactNumber());
+                    lblEmailAdd.setText(currentUser.getEmailAddress());
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

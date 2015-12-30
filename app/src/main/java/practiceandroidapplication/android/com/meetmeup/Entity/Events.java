@@ -31,13 +31,16 @@ public class Events {
 
     private char activeFlag;
 
+    private String[] eventTypeString = {"Traditional","Personal","Blah"};
+
     public Events(){}
 
-    public Events(int id, String eventName, String details, String location) {
+    public Events(int id, String eventName, String details, String location, String key) {
         this.id = id;
         this.eventName = eventName;
         this.details = details;
         this.location = location;
+        this.key = key;
     }
 
     public int getId() {

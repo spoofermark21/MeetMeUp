@@ -16,11 +16,14 @@ import android.widget.Toast;
 
 import practiceandroidapplication.android.com.meetmeup.LoginActivity;
 import practiceandroidapplication.android.com.meetmeup.R;
+import practiceandroidapplication.android.com.meetmeup.ViewEventsActivity;
 
 /**
  * Created by sibimark on 30/11/2015.
  */
 public class Interactions {
+
+    public static boolean isOk = false;
 
     public static void showError(String error, final Activity activity) {
 
@@ -40,6 +43,37 @@ public class Interactions {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static boolean showQuestion(String message, final Activity activity) {
+
+        try {
+            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
+            dlgAlert.setMessage("Are you sure to disable this event?");
+            dlgAlert.setTitle("Warning!");
+            dlgAlert.setCancelable(true);
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            isOk = true;
+                        }
+                    });
+
+            dlgAlert.setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //Toast.makeText(ViewEventsActivity.this, "False" + "!", Toast.LENGTH_SHORT).show();
+                            isOk = false;
+                        }
+                    });
+
+            dlgAlert.create().show();
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return isOk;
     }
 
 }

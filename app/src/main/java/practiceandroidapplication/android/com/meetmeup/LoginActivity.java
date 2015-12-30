@@ -65,6 +65,8 @@ public class LoginActivity extends AppCompatActivity {
         //initialize
         initUI();
 
+        Log.d("Class simple name", LoginActivity.class.getSimpleName());
+
     }
 
     /*

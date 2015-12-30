@@ -16,6 +16,10 @@ public class CustomAdapter extends BaseAdapter{
 
 
     String [] result;
+    // mark modified
+    String [] details;
+
+
     Context context;
     int[] imageId;
     private static LayoutInflater inflater=null;
