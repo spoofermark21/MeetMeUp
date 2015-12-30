@@ -35,7 +35,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
-public class CreateEventActivity extends AppCompatActivity {
+public class ViewEventsActivity extends AppCompatActivity {
 
     private static final String CREATE_EVENT_URL = Network.forDeploymentIp + "event_save.php";
     private static final String TAG_STATUS = "status";
@@ -61,7 +61,7 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_event);
+        setContentView(R.layout.activity_view_events);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,7 +72,7 @@ public class CreateEventActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+                startActivity(new Intent(ViewEventsActivity.this, EventsActivity.class));
                 finish();
             }
         });
@@ -153,7 +153,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+        startActivity(new Intent(ViewEventsActivity.this, EventsActivity.class));
         finish();
     }
 
@@ -165,7 +165,7 @@ public class CreateEventActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(CreateEventActivity.this, R.style.progress);
+            pDialog = new ProgressDialog(ViewEventsActivity.this, R.style.progress);
             pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
@@ -219,13 +219,91 @@ public class CreateEventActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-                    Toast.makeText(CreateEventActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewEventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
 
                     new Thread() {
                         public void run() {
                             try {
                                 sleep(1000);
-                                startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+                                startActivity(new Intent(ViewEventsActivity.this, EventsActivity.class));
+                                finish();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }.start();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    class RetrieveEvent extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewEventsActivity.this, R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... eventInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+
+                params.add(new BasicNameValuePair("user_id", currentUser.getId()+""));
+                params.add(new BasicNameValuePair("event_name", events.getEventName()));
+                params.add(new BasicNameValuePair("details", events.getDetails()));
+                params.add(new BasicNameValuePair("location", events.getLocation()));
+                params.add(new BasicNameValuePair("type", events.getEventType()+""));
+                params.add(new BasicNameValuePair("start_date", events.getStartDate()));
+                params.add(new BasicNameValuePair("end_date", events.getEndDate()));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        CREATE_EVENT_URL, "POST", params);
+
+                Log.d("Saving...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewEventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+
+                    new Thread() {
+                        public void run() {
+                            try {
+                                sleep(1000);
+                                startActivity(new Intent(ViewEventsActivity.this, EventsActivity.class));
                                 finish();
                             } catch (Exception ex) {
                                 ex.printStackTrace();

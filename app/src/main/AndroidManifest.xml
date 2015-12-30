@@ -64,10 +64,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SampleActivity"
-            android:label="Profile"
-            android:theme="@style/MyMaterialTheme" />
-        <activity
             android:name=".UserProfileUpdateActivity"
             android:label="Update Profile"
             android:theme="@style/MyMaterialTheme" >
@@ -127,7 +123,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".CreateEventActivity" >
+        <activity
+            android:name=".CreateEventActivity"
+            android:label="Create event"
+            android:theme="@style/MyMaterialTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEWSFEED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ViewEventsActivity" >
         </activity>
     </application>
 

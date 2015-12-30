@@ -65,6 +65,20 @@ public class Sessions {
         return listEvents;
     }
 
+    public static int getEventId (List<Events> currentEvents, int position){
+        List<String> listEvents = new ArrayList<>();
+        int counter = 0;
+
+        for(Events events : currentEvents){
+            if(position == counter) {
+                position = counter;
+            }
+            counter += 1;
+        }
+        return position;
+    }
+
+
     public static void removeGroups(){
         currentGroups = null;
     }

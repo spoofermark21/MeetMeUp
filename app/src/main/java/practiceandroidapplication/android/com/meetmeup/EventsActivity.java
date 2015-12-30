@@ -82,7 +82,7 @@ public class EventsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.action_create) {
-            startActivity(new Intent(EventsActivity.this, CreateGroupActivity.class));
+            startActivity(new Intent(EventsActivity.this, CreateEventActivity.class));
             finish();
         }
 
@@ -191,6 +191,11 @@ public class EventsActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),
                                     "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                                     .show();
+
+                            //start new intent
+                            Intent intent = new Intent(EventsActivity.this, ViewEventsActivity.class);
+                            intent.putExtra("EVENT_ID", itemPosition);
+
                         }
                     });
 
@@ -201,4 +206,6 @@ public class EventsActivity extends AppCompatActivity {
         }
 
     } // end of thread retrieve user
+
+
 }
