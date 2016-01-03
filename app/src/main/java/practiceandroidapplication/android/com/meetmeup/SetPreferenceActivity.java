@@ -36,7 +36,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class SetPreferenceActivity extends AppCompatActivity {
 
-    private static final String PREFERENCE_URL = Network.forDeploymentIp + "user_preference.php";
+    private static final String PREFERENCE_URL = Network.forDeploymentIp + "user_preference_update.php";
     private static final String RETRIEVE_PREFERENCE_URL = Network.forDeploymentIp + "user_preference_retrieve.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";

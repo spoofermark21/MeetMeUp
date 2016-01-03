@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -45,8 +47,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
 
     EditText txtFirstname, txtLastname,
-            txtCurrentLocation, txtEmailAddress, txtContactNumber,
-            txtUsername, txtOldPassword, txtNewPassword, txtRepeatPassword;
+            txtCurrentLocation, txtEmailAddress, txtContactNumber;
 
     DatePicker dateBirth;
     RadioGroup rdGender;
@@ -64,6 +65,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_user_profile_update);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,6 +79,24 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             ex.printStackTrace();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_profile_update_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.action_password) {
+            startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileUpdatePasswordActivity.class));
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     /*
         functions
@@ -97,10 +117,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
         txtEmailAddress = (EditText) findViewById(R.id.txt_email_address);
         txtContactNumber = (EditText) findViewById(R.id.txt_contact_number);
-        txtUsername = (EditText) findViewById(R.id.txt_username);
-        txtOldPassword = (EditText) findViewById(R.id.txt_old_password);
-        txtNewPassword = (EditText) findViewById(R.id.txt_new_password);
-        txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
 
         dateBirth = (DatePicker) findViewById(R.id.date_birth);
 
@@ -138,8 +154,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                         updateUser.setCurrentLocation(txtCurrentLocation.getText().toString());
                         updateUser.setEmailAddress(txtEmailAddress.getText().toString());
                         updateUser.setContactNumber(txtContactNumber.getText().toString());
-                        updateUser.setUsername(txtUsername.getText().toString());
-                        updateUser.setPassword(txtNewPassword.getText().toString());
                         updateUser.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
                                 spnNationality.getSelectedItem().toString()));
 
@@ -154,8 +168,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                         updateUser.setBirthDate(dateBirth.getYear() + "-" +
                                 dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
 
-                        new UpdateUser().execute(updateUser.getUsername(),
-                                updateUser.getPassword(), updateUser.getFirstName(),
+                        new UpdateUser().execute(updateUser.getFirstName(),
                                 updateUser.getLastName(), updateUser.getBirthDate(),
                                 updateUser.getNationality().getId() + "", updateUser.getGender() + "", updateUser.getCurrentLocation(),
                                 updateUser.getEmailAddress(), updateUser.getContactNumber(), "mark.png");
@@ -214,57 +227,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             isReadyToSave = false;
         } else
             txtContactNumber.setError(null);
-
-        String oldPassword = txtOldPassword.getText().toString();
-
-        if (oldPassword.equals("")) {
-            txtOldPassword.setError("Password is required.");
-            isReadyToSave = false;
-        } else {
-            txtOldPassword.setError(null);
-            Log.d("Password (Update)",currentUser.getPassword());
-            if (!txtOldPassword.getText().toString()
-                    .equals(currentUser.getPassword())) {
-                txtOldPassword.setError("Password is incorrect."); //need to define grammar.
-                isReadyToSave = false;
-            }
-        }
-
-        String password = txtNewPassword.getText().toString();
-
-        if (password.equals("")) {
-            txtNewPassword.setError("Password is required.");
-            isReadyToSave = false;
-        } else {
-            txtRepeatPassword.setError(null);
-
-            if (password.length() < 6) {
-                txtNewPassword.setError("Password must be 6 characters length."); //need to define grammar.
-                isReadyToSave = false;
-            }
-        }
-
-        String repeatPassword = txtRepeatPassword.getText().toString();
-
-        if (repeatPassword.equals("")) {
-            txtRepeatPassword.setError("Password is required.");
-            isReadyToSave = false;
-        } else {
-            txtRepeatPassword.setError(null);
-
-            if (repeatPassword.length() < 6) {
-                txtRepeatPassword.setError("Password must be 6 characters length."); //need to define grammar.
-                isReadyToSave = false;
-            }
-        }
-
-        if (!password.equals(repeatPassword)) {
-            txtRepeatPassword.setError("Password does not match.");
-            isReadyToSave = false;
-        } else
-            txtRepeatPassword.setError(null);
-
-        //final RadioButton selectedGender = (RadioButton) findViewById(rdGender.getCheckedRadioButtonId();
 
         if (isReadyToSave) {
             if (!rdMale.isChecked() && !rdFemale.isChecked()) {
@@ -366,11 +328,8 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
                     txtCurrentLocation.setText(currentUser.getCurrentLocation());
                     txtEmailAddress.setText(currentUser.getEmailAddress());
-                    txtContactNumber.setText(currentUser.getContactNumber() + "");
+                    txtContactNumber.setText(currentUser.getContactNumber());
 
-                    //disable username
-                    txtUsername.setText(currentUser.getUsername());
-                    txtUsername.setEnabled(false);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -401,16 +360,16 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
-                params.add(new BasicNameValuePair("username", user[0]));
-                params.add(new BasicNameValuePair("password", user[1]));
-                params.add(new BasicNameValuePair("first_name", user[2]));
-                params.add(new BasicNameValuePair("last_name", user[3]));
-                params.add(new BasicNameValuePair("birth_date", user[4]));
-                params.add(new BasicNameValuePair("natio_id", user[5]));
-                params.add(new BasicNameValuePair("gender", user[6]));
-                params.add(new BasicNameValuePair("current_location", user[7]));
-                params.add(new BasicNameValuePair("email_address", user[8]));
-                params.add(new BasicNameValuePair("contact_number", user[9]));
+                params.add(new BasicNameValuePair("first_name", user[0]));
+                params.add(new BasicNameValuePair("last_name", user[1]));
+                params.add(new BasicNameValuePair("birth_date", user[2]));
+                params.add(new BasicNameValuePair("natio_id", user[3]));
+                params.add(new BasicNameValuePair("gender", user[4]));
+                params.add(new BasicNameValuePair("current_location", user[5]));
+                params.add(new BasicNameValuePair("email_address", user[6]));
+                params.add(new BasicNameValuePair("contact_number", user[7]));
+
+                params.add(new BasicNameValuePair("update_type", "profile"));
 
                 Log.d("request!", "starting");
 
@@ -440,7 +399,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     Interactions.showError(message, UserProfileUpdateActivity.this);
-                    new RetrieveUser().execute();
+                    //new RetrieveUser().execute();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

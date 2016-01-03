@@ -1,18 +1,27 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -40,7 +49,8 @@ public class MeetupsActivity extends AppCompatActivity {
     ProgressDialog pDialog;
 
     Toolbar toolbar;
-    ListView listMeetups;
+    //ListView listMeetups;
+    LinearLayout listOfMeetups;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Meetups> currentMeetups = new ArrayList<>();
@@ -58,14 +68,15 @@ public class MeetupsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
+                //startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
 
-        listMeetups = (ListView) findViewById(R.id.list_meetups);
+        //listMeetups = (ListView) findViewById(R.id.list_meetups);
+        listOfMeetups = (LinearLayout) findViewById(R.id.linear_meetups);
 
-        new RetrieveGroups().execute();
+        new RetrieveMeetups().execute();
     }
 
     @Override
@@ -78,7 +89,7 @@ public class MeetupsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if(id == R.id.action_create) {
+        if (id == R.id.action_create) {
             startActivity(new Intent(MeetupsActivity.this, CreateGroupActivity.class));
             finish();
         }
@@ -91,11 +102,118 @@ public class MeetupsActivity extends AppCompatActivity {
         finish();
     }
 
+    public void displayMeetups() {
+        for (Meetups meetups : currentMeetups) {
+
+            LinearLayout recordOfMeetups = new LinearLayout(this);
+            recordOfMeetups.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            recordOfMeetups.setOrientation(LinearLayout.VERTICAL);
+            recordOfMeetups.setPadding(10, 10, 10, 10);
+
+            Log.d("Meetup", meetups.getDetails());
+            recordOfMeetups.setTag(meetups.getId());
+
+            final TextView meetupSubject = new TextView(this);
+            meetupSubject.setText(meetups.getSubject());
+            meetupSubject.setTextSize(20);
+            meetupSubject.setTextColor(Color.BLACK);
+
+            final TextView meetupDetails = new TextView(this);
+            meetupDetails.setText("Details: " + meetups.getDetails());
+            meetupDetails.setTextSize(15);
+            meetupDetails.setTextColor(Color.BLACK);
+
+            final TextView meetupLocation = new TextView(this);
+            meetupLocation.setText("Location: " + meetups.getLocation());
+            meetupLocation.setTextSize(15);
+            meetupLocation.setTextColor(Color.BLACK);
+
+            final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            params2.weight = 1.0f;
+            params2.gravity = Gravity.RIGHT;
+            params2.leftMargin = 50;
+
+            LinearLayout options = new LinearLayout(this);
+            options.setOrientation(LinearLayout.HORIZONTAL);
+            options.setPadding(10, 10, 10, 10);
+            options.setLayoutParams(params2);
+
+            final ImageButton edit = new ImageButton(this);
+            edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            edit.setPadding(10, 10, 0, 10);
+            edit.setBackgroundColor(Color.TRANSPARENT);
+
+            final ImageButton delete = new ImageButton(this);
+            delete.setImageResource(R.drawable.ic_delete_black_24dp);
+            delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            delete.setPadding(10, 10, 0, 10);
+            delete.setBackgroundColor(Color.TRANSPARENT);
+
+            edit.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    /*Intent event = new Intent(GroupActivity.this, ViewEventsActivity.class);
+                    event.putExtra("EVENT_KEY", key.getText().toString());
+                    startActivity(event);
+                    finish();
+
+                    Toast.makeText(GroupActivity.this, name.getText().toString() + "! "
+                            + key.getText().toString(), Toast.LENGTH_SHORT).show();
+                    */
+                }
+            });
+
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(MeetupsActivity.this);
+                    dlgAlert.setMessage("Are you sure to delete this event?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
+
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    Toast.makeText(MeetupsActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
+
+                                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+                                    //new DisableEvent().execute(removeKey);
+
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+
+                    dlgAlert.create().show();
+
+                }
+            });
+
+            options.addView(edit);
+            options.addView(delete);
+
+            recordOfMeetups.addView(meetupSubject);
+            recordOfMeetups.addView(meetupDetails);
+            recordOfMeetups.addView(meetupLocation);
+            recordOfMeetups.addView(options);
+
+            listOfMeetups.addView(recordOfMeetups);
+        }
+
+    }
     /*
         thread
      */
 
-    class RetrieveGroups extends AsyncTask<String, String, String> {
+    class RetrieveMeetups extends AsyncTask<String, String, String> {
 
         String[] groups = new String[9999];
         ArrayAdapter<String> meetupAdapter;
@@ -141,11 +259,12 @@ public class MeetupsActivity extends AppCompatActivity {
 
                     //sessions.removeGroups();
 
-                    for(int i=0; i < jUserArray.length();i++){
+                    for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-                        currentMeetups.add(new Meetups(jUserObject.getInt("id"),jUserObject.getString("details"),
-                                jUserObject.getString("location"), jUserObject.getString("posted_date")));
+                        currentMeetups.add(new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
+                                jUserObject.getString("details"), jUserObject.getString("location"),
+                                jUserObject.getString("posted_date")));
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }
@@ -167,8 +286,8 @@ public class MeetupsActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(MeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
-
-                    meetupAdapter = new ArrayAdapter<String>(MeetupsActivity.this,
+                    displayMeetups();
+                    /*meetupAdapter = new ArrayAdapter<String>(MeetupsActivity.this,
                             android.R.layout.simple_list_item_1, sessions.listOfMeetups(currentMeetups));
 
                     listMeetups.setAdapter(meetupAdapter);
@@ -190,7 +309,7 @@ public class MeetupsActivity extends AppCompatActivity {
                                     "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                                     .show();
                         }
-                    });
+                    });*/
 
                 }
             } catch (Exception ex) {
@@ -199,4 +318,5 @@ public class MeetupsActivity extends AppCompatActivity {
         }
 
     } // end of thread retrieve user
+
 }

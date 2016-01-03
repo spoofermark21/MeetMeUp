@@ -2,9 +2,11 @@ package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -44,7 +46,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class EventsActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_EVENTS_URL = Network.forDeploymentIp + "events_retrieve.php";
-    private static final String UPDATE_EVENT_URL = Network.forDeploymentIp + "event_save.php";
+    private static final String UPDATE_EVENT_URL = Network.forDeploymentIp + "event_update.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -62,6 +64,7 @@ public class EventsActivity extends AppCompatActivity {
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +77,7 @@ public class EventsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
+                //startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -120,6 +123,7 @@ public class EventsActivity extends AppCompatActivity {
             //recordOfEvents.setBackgroundResource(R.drawable.edit_text);
 
             Log.d("Event name", event.getEventName());
+            recordOfEvents.setTag(event.getId());
 
             final TextView eventName = new TextView(this);
             eventName.setText(event.getEventName());
@@ -127,14 +131,29 @@ public class EventsActivity extends AppCompatActivity {
             eventName.setTextColor(Color.BLACK);
 
             final TextView eventDetails = new TextView(this);
-            eventDetails.setText(event.getDetails());
-            eventDetails.setTextSize(10);
+            eventDetails.setText("Details: " + event.getDetails());
+            eventDetails.setTextSize(15);
             eventDetails.setTextColor(Color.BLACK);
 
             final TextView eventKey = new TextView(this);
-            eventKey.setText(event.getKey());
-            eventKey.setTextSize(10);
+            eventKey.setText("Key: " + event.getKey());
+            eventKey.setTextSize(15);
             eventKey.setTextColor(Color.BLACK);
+
+            final TextView eventLocation = new TextView(this);
+            eventLocation.setText("Location: " + event.getLocation());
+            eventLocation.setTextSize(15);
+            eventLocation.setTextColor(Color.BLACK);
+
+            final TextView startDate = new TextView(this);
+            startDate.setText("Start Date: " + event.getEndDate());
+            startDate.setTextSize(15);
+            startDate.setTextColor(Color.BLACK);
+
+            final TextView endDate = new TextView(this);
+            endDate.setText("End date: " + event.getEndDate());
+            endDate.setTextSize(15);
+            endDate.setTextColor(Color.BLACK);
 
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             params2.weight = 1.0f;
@@ -153,7 +172,7 @@ public class EventsActivity extends AppCompatActivity {
             edit.setBackgroundColor(Color.TRANSPARENT);
 
             final ImageButton delete = new ImageButton(this);
-            delete.setImageResource(R.drawable.ic_refresh_black_24dp);
+            delete.setImageResource(R.drawable.ic_delete_black_24dp);
             delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             delete.setPadding(10, 10, 0, 10);
             delete.setBackgroundColor(Color.TRANSPARENT);
@@ -163,12 +182,15 @@ public class EventsActivity extends AppCompatActivity {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
                     final TextView name = (TextView) parent.getChildAt(0);
-                    final TextView details = (TextView) parent.getChildAt(1);
+                    //final TextView details = (TextView) parent.getChildAt(1);
                     final TextView key = (TextView) parent.getChildAt(2);
 
+                    String eventId = parent.getTag() + "";
+
                     Intent event = new Intent(EventsActivity.this, ViewEventsActivity.class);
-                    event.putExtra("EVENT_KEY", key.getText().toString());
+                    event.putExtra("EVENT_ID", eventId);
                     startActivity(event);
+                    finish();
 
                     Toast.makeText(EventsActivity.this, name.getText().toString() + "! "
                             + key.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -178,21 +200,34 @@ public class EventsActivity extends AppCompatActivity {
 
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
 
-                    if (Interactions.showQuestion("Are you sure to disable this event?",
-                            EventsActivity.this)) {
-                        // update
-                        Toast.makeText(EventsActivity.this, "disable!", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(EventsActivity.this);
+                    dlgAlert.setMessage("Are you sure to delete this event?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
 
-                        final LinearLayout parent = (LinearLayout) v.getParent().getParent();
-                        final TextView key = (TextView) parent.getChildAt(2);
-                        String removeKey = key.getText().toString();
-                        listOfEvents.removeView(parent);
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
 
-                        new DisableEvent().execute(removeKey);
+                                    //Toast.makeText(EventsActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
 
-                    }
+                                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+                                    //final TextView key = (TextView) parent.getChildAt(2);
+                                    String removeId = parent.getTag() + "";
+                                    new DisableEvent().execute(removeId);
+                                    listOfEvents.removeView(parent);
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+
+                    dlgAlert.create().show();
 
                 }
             });
@@ -203,6 +238,9 @@ public class EventsActivity extends AppCompatActivity {
             recordOfEvents.addView(eventName);
             recordOfEvents.addView(eventDetails);
             recordOfEvents.addView(eventKey);
+            recordOfEvents.addView(eventLocation);
+            recordOfEvents.addView(startDate);
+            recordOfEvents.addView(endDate);
             recordOfEvents.addView(options);
 
             listOfEvents.addView(recordOfEvents);
@@ -263,7 +301,8 @@ public class EventsActivity extends AppCompatActivity {
                         jUserObject = jUserArray.getJSONObject(i);
 
                         currentEvents.add(new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
-                                jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key")));
+                                jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key"),
+                                jUserObject.getString("start_date"), jUserObject.getString("end_date")));
 
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
@@ -313,9 +352,10 @@ public class EventsActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
+                Log.d("KEY", eventInfo[0]);
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-                params.add(new BasicNameValuePair("key", eventInfo[0]));
+                params.add(new BasicNameValuePair("id", eventInfo[0]));
 
                 Log.d("request!", "starting");
 

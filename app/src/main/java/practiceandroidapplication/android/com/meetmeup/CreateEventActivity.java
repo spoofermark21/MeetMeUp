@@ -187,7 +187,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("event_name", events.getEventName()));
                 params.add(new BasicNameValuePair("details", events.getDetails()));
                 params.add(new BasicNameValuePair("location", events.getLocation()));
-                params.add(new BasicNameValuePair("type", events.getEventType()+""));
+                params.add(new BasicNameValuePair("event_type", events.getEventType()+""));
                 params.add(new BasicNameValuePair("start_date", events.getStartDate()));
                 params.add(new BasicNameValuePair("end_date", events.getEndDate()));
 

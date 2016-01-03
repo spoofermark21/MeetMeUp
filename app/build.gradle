@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "practiceandroidapplication.android.com.meetmeup"
-        minSdkVersion 11
+        minSdkVersion 12
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -26,4 +26,5 @@ dependencies {
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.mcxiaoke.volley:library-aar:1.0.0'
+    compile 'com.google.android.gms:play-services:7.5.0'
 }

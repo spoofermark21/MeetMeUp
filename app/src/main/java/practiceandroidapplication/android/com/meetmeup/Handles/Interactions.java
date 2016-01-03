@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import practiceandroidapplication.android.com.meetmeup.EventsActivity;
 import practiceandroidapplication.android.com.meetmeup.LoginActivity;
 import practiceandroidapplication.android.com.meetmeup.R;
 import practiceandroidapplication.android.com.meetmeup.ViewEventsActivity;
@@ -56,6 +57,7 @@ public class Interactions {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             isOk = true;
+                            Toast.makeText(activity, isOk + "!", Toast.LENGTH_SHORT).show();
                         }
                     });
 

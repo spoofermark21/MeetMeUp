@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -201,6 +202,8 @@ public class NewsfeedActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_logout) {
             navLogOutEvent();
+        } else if(id == R.id.nav_location) {
+            navLocation();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -257,6 +260,13 @@ public class NewsfeedActivity extends AppCompatActivity
         startActivity(new Intent(NewsfeedActivity.this, EventsActivity.class));
     }
 
+    public void navLocation(){
+        startActivity(new Intent(NewsfeedActivity.this, MapsActivity.class));
+        /*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
+        startActivity(intent);*/
+    }
+
     public void navLogOutEvent() {
         try {
             Log.d("Debugging", currentUser.getId() + "");
@@ -305,7 +315,9 @@ public class NewsfeedActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            //super.onBackPressed();
+            //minimize activity
+            moveTaskToBack(true);
         }
     }
 

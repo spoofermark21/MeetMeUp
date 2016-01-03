@@ -1,18 +1,27 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -23,6 +32,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.Events;
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
@@ -39,7 +49,8 @@ public class GroupActivity extends AppCompatActivity {
     ProgressDialog pDialog;
 
     Toolbar toolbar;
-    ListView listGroup;
+    //ListView listGroup;
+    LinearLayout listOfGroups;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Group> currentGroups = new ArrayList<>();
@@ -58,14 +69,15 @@ public class GroupActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
+                //startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
 
-        listGroup = (ListView) findViewById(R.id.list_group);
+        //listGroup = (ListView) findViewById(R.id.list_group);
+        listOfGroups = (LinearLayout) findViewById(R.id.linear_groups);
 
-        new RetrieveEvents().execute();
+        new RetrieveGroups().execute();
     }
 
     @Override
@@ -91,11 +103,134 @@ public class GroupActivity extends AppCompatActivity {
         finish();
     }
 
+    public void displayGroups() {
+
+        for (Group group : currentGroups) {
+
+            LinearLayout recordOfGroups = new LinearLayout(this);
+            recordOfGroups.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            recordOfGroups.setOrientation(LinearLayout.VERTICAL);
+            recordOfGroups.setPadding(10, 10, 10, 10);
+            //recordOfEvents.setBackgroundColor(getResources().getColor(R.color.colorMainBackground));
+            //recordOfEvents.setBackgroundResource(R.drawable.edit_text);
+
+            Log.d("Group name", group.getGroupName());
+            recordOfGroups.setTag(group.getId());
+
+            final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            //imageGroupParams.weight = 1.0f;
+            imageGroupParams.height = 100;
+            imageGroupParams.width = 100;
+            imageGroupParams.gravity = Gravity.LEFT;
+            //imageGroupParams.leftMargin = 50;
+
+            final ImageView groupImage = new ImageView(this);
+            groupImage.setImageResource(R.drawable.meetmeup);
+            groupImage.setLayoutParams(imageGroupParams);
+
+            final TextView groupName = new TextView(this);
+            groupName.setText(group.getGroupName());
+            groupName.setTextSize(20);
+            groupName.setTextColor(Color.BLACK);
+
+            final TextView groupDetails = new TextView(this);
+            groupDetails.setText(group.getDetails());
+            groupDetails.setTextSize(10);
+            groupDetails.setTextColor(Color.BLACK);
+
+            final TextView groupCountMembers = new TextView(this);
+            groupCountMembers.setText(group.getTotalMembers() + " members");
+            groupCountMembers.setTextSize(10);
+            groupCountMembers.setTextColor(Color.BLACK);
+
+            final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            params2.weight = 1.0f;
+            params2.gravity = Gravity.RIGHT;
+            params2.leftMargin = 50;
+
+            LinearLayout options = new LinearLayout(this);
+            options.setOrientation(LinearLayout.HORIZONTAL);
+            options.setPadding(10, 10, 10, 10);
+            options.setLayoutParams(params2);
+
+            final ImageButton edit = new ImageButton(this);
+            edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            edit.setPadding(10, 10, 0, 10);
+            edit.setBackgroundColor(Color.TRANSPARENT);
+
+            final ImageButton delete = new ImageButton(this);
+            delete.setImageResource(R.drawable.ic_delete_black_24dp);
+            delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            delete.setPadding(10, 10, 0, 10);
+            delete.setBackgroundColor(Color.TRANSPARENT);
+
+            edit.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    /*Intent event = new Intent(GroupActivity.this, ViewEventsActivity.class);
+                    event.putExtra("EVENT_KEY", key.getText().toString());
+                    startActivity(event);
+                    finish();
+
+                    Toast.makeText(GroupActivity.this, name.getText().toString() + "! "
+                            + key.getText().toString(), Toast.LENGTH_SHORT).show();
+                    */
+                }
+            });
+
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(GroupActivity.this);
+                    dlgAlert.setMessage("Are you sure to delete this event?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
+
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    Toast.makeText(GroupActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
+
+                                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+                                    //new DisableEvent().execute(removeKey);
+
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+
+                    dlgAlert.create().show();
+
+                }
+            });
+
+            options.addView(edit);
+            options.addView(delete);
+
+            recordOfGroups.addView(groupImage);
+            recordOfGroups.addView(groupName);
+            recordOfGroups.addView(groupDetails);
+            recordOfGroups.addView(groupCountMembers);
+            recordOfGroups.addView(options);
+
+            listOfGroups.addView(recordOfGroups);
+
+        }
+    }
+
     /*
         thread
      */
 
-    class RetrieveEvents extends AsyncTask<String, String, String> {
+    class RetrieveGroups extends AsyncTask<String, String, String> {
 
         String[] groups = new String[9999];
         ArrayAdapter<String> groupAdapter;
@@ -148,7 +283,8 @@ public class GroupActivity extends AppCompatActivity {
 
                         currentGroups.add(new Group(jUserObject.getInt("id"),
                                 jUserObject.getString("group_name"), jUserObject.getString("details"),
-                                jUserObject.getInt("created_by"), jUserObject.getString("created_date")));
+                                jUserObject.getInt("created_by"), jUserObject.getString("created_date"),
+                                jUserObject.getInt("count_members")));
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }
@@ -170,6 +306,8 @@ public class GroupActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(GroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+
+                    displayGroups();
                     /*
                     int[] groupImages = {R.drawable.meetmeup,R.drawable.meetmeup};
                     String[] prgmNameList={"Let Us C","c++"};
@@ -177,7 +315,7 @@ public class GroupActivity extends AppCompatActivity {
                     listGroup.setAdapter(new CustomAdapter(GroupActivity.this, prgmNameList, groupImages));
                     groupAdapter = new ArrayAdapter<String>(GroupActivity.this,
                             android.R.layout.simple_list_item_1, sessions.listOfGroups());
-                    */
+
                     groupAdapter = new ArrayAdapter<String>(GroupActivity.this,
                             android.R.layout.simple_list_item_1, sessions.listOfGroups(currentGroups));
 
@@ -201,7 +339,7 @@ public class GroupActivity extends AppCompatActivity {
                                     .show();
                         }
                     });
-
+                    */
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

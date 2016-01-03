@@ -31,16 +31,37 @@ public class Events {
 
     private char activeFlag;
 
+    public String[] getEventTypeString() {
+        return eventTypeString;
+    }
+
+    public void setEventTypeString(String[] eventTypeString) {
+        this.eventTypeString = eventTypeString;
+    }
+
+    public int getAttendees() {
+        return attendees;
+    }
+
+    public void setAttendees(int attendees) {
+        this.attendees = attendees;
+    }
+
+    private int attendees;
+
     private String[] eventTypeString = {"Traditional","Personal","Blah"};
 
     public Events(){}
 
-    public Events(int id, String eventName, String details, String location, String key) {
+    public Events(int id, String eventName, String details, String location,
+                  String key, String startDate, String endDate) {
         this.id = id;
         this.eventName = eventName;
         this.details = details;
         this.location = location;
         this.key = key;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public int getId() {

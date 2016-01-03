@@ -24,16 +24,19 @@ public class Group {
 
     private String groupImage;
 
+    private int totalMembers;
+
     private List<GroupMember> members = new ArrayList<>();
 
     public Group() {}
 
-    public Group(int id, String groupName, String details,int createdBy, String createdDate) {
+    public Group(int id, String groupName, String details,int createdBy, String createdDate, int totalMembers) {
         this.id = id;
         this.groupName = groupName;
         this.details = details;
         this.createdBy = createdBy;
         this.createdDate = createdDate;
+        this.totalMembers = totalMembers;
     }
 
     public Group(String groupName, String details, int createdBy) {
@@ -113,5 +116,13 @@ public class Group {
 
     public void setMembers(List<GroupMember> members) {
         this.members = members;
+    }
+
+    public void setTotalMembers(int totalMembers) {
+        this.totalMembers = totalMembers;
+    }
+
+    public int getTotalMembers() {
+        return totalMembers;
     }
 }

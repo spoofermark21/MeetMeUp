@@ -40,8 +40,8 @@
             android:layout_height="0dp"
             android:layout_weight=".90"
             android:orientation="vertical"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp">
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
 
             <TextView
                 android:textColor="@color/black"
@@ -226,72 +226,7 @@
                 android:textSize="15sp" />
 
             <!-- end of personal details -->
-            <!-- account details -->
 
-            <TextView
-                android:textColor="@color/black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"
-                android:padding="5dp"
-                android:text="Account Details"
-                android:textSize="20sp" />
-
-
-            <EditText
-                android:hint="Username"
-                android:id="@+id/txt_username"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:elevation="2dp"
-                android:inputType="text"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
-
-            <EditText
-                android:hint="Old password"
-                android:id="@+id/txt_old_password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:elevation="2dp"
-                android:inputType="textPassword"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
-
-            <EditText
-                android:hint="Password"
-                android:id="@+id/txt_new_password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:elevation="2dp"
-                android:inputType="textPassword"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
-
-            <EditText
-                android:hint="Repeat password"
-                android:id="@+id/txt_repeat_password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:elevation="2dp"
-                android:inputType="textPassword"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
-
-            <!-- end of account details -->
 
             <Button
                 android:id="@+id/btn_update"

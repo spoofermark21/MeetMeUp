@@ -67,7 +67,7 @@ public class ViewEventsActivity extends AppCompatActivity {
     Events events = new Events();
     String[] eventType = {"Traditional", "Personal", "Blah"};
 
-    String currentEventKey;
+    String currentEventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class ViewEventsActivity extends AppCompatActivity {
 
         //init
         Intent intent = getIntent();
-        currentEventKey = intent.getStringExtra("EVENT_KEY");
+        currentEventId = intent.getStringExtra("EVENT_ID");
 
         //fetch
         new RetrieveEvent().execute();
@@ -234,9 +234,9 @@ public class ViewEventsActivity extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-                Log.d("EVENT_KEY (event)", currentEventKey);
+                Log.d("EVENT_ID (event)", currentEventId);
 
-                params.add(new BasicNameValuePair("id", currentEventKey));
+                params.add(new BasicNameValuePair("id", currentEventId));
                 params.add(new BasicNameValuePair("filter", "individual"));
 
 

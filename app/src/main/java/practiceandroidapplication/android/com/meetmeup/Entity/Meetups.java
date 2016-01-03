@@ -9,6 +9,8 @@ public class Meetups {
 
     private String key;
 
+    private String subject;
+
     private String details;
 
     private int postedBy;
@@ -25,20 +27,30 @@ public class Meetups {
 
     public Meetups(){}
 
-    public Meetups(int id, String details, String location, String postedDate){
+    public Meetups(int id, String subject, String details, String location, String postedDate){
         this.id = id;
+        this.subject = subject;
         this.details = details;
         this.location = location;
         this.postedDate = postedDate;
     }
 
-    public Meetups(int id, String details, int postedBy, String location,
+    public Meetups(int id, String subject, String details, int postedBy, String location,
                    String postedDate, Preference preference) {
         this.id = id;
+        this.subject = subject;
         this.details = details;
         this.postedBy = postedBy;
         this.location = location;
         this.preference = preference;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 
     public int getId() {

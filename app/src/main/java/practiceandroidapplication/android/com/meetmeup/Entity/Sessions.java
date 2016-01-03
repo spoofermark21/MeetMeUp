@@ -17,6 +17,9 @@ public class Sessions {
     public static List<Group> currentGroups = new ArrayList<>();
     public static List<GroupMember> currentGroupMembers = new ArrayList<>();
 
+    public static double currentLocationLatitude;
+    public static double currentLocationLongtitude;
+
     private Sessions () {}
 
     public static Sessions getSessionsInstance() {
