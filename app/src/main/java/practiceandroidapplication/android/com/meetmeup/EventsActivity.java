@@ -165,16 +165,19 @@ public class EventsActivity extends AppCompatActivity {
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
-            final ImageButton edit = new ImageButton(this);
-            edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            final TextView edit = new TextView(this);
             edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             edit.setPadding(10, 10, 0, 10);
+            edit.setText("edit");
+            edit.setTextSize(15);
             edit.setBackgroundColor(Color.TRANSPARENT);
 
-            final ImageButton delete = new ImageButton(this);
-            delete.setImageResource(R.drawable.ic_delete_black_24dp);
+
+            final TextView delete = new TextView(this);
             delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             delete.setPadding(10, 10, 0, 10);
+            delete.setText("delete");
+            delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
 
             edit.setOnClickListener(new View.OnClickListener() {
@@ -210,9 +213,7 @@ public class EventsActivity extends AppCompatActivity {
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-
-                                    //Toast.makeText(EventsActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
-
+                                    //Toast.makeText(EvetsActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
                                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
                                     //final TextView key = (TextView) parent.getChildAt(2);
                                     String removeId = parent.getTag() + "";
@@ -356,6 +357,7 @@ public class EventsActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
                 params.add(new BasicNameValuePair("id", eventInfo[0]));
+                params.add(new BasicNameValuePair("query_type", "disable"));
 
                 Log.d("request!", "starting");
 

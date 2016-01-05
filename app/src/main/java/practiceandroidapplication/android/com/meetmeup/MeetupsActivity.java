@@ -42,6 +42,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class MeetupsActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_MEETUPS_URL = Network.forDeploymentIp + "meetups_retrieve.php";
+    private static final String UPDATE_MEETUPS_URL = Network.forDeploymentIp + "meetups_update.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -90,7 +91,7 @@ public class MeetupsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_create) {
-            startActivity(new Intent(MeetupsActivity.this, CreateGroupActivity.class));
+            startActivity(new Intent(MeetupsActivity.this, CreateMeetupActivity.class));
             finish();
         }
 
@@ -128,6 +129,12 @@ public class MeetupsActivity extends AppCompatActivity {
             meetupLocation.setTextSize(15);
             meetupLocation.setTextColor(Color.BLACK);
 
+            final TextView meetupKey = new TextView(this);
+            meetupKey.setText("Key: " + meetups.getKey());
+            meetupKey.setTextSize(15);
+            meetupKey.setTextColor(Color.BLACK);
+
+
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             params2.weight = 1.0f;
             params2.gravity = Gravity.RIGHT;
@@ -138,16 +145,19 @@ public class MeetupsActivity extends AppCompatActivity {
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
-            final ImageButton edit = new ImageButton(this);
-            edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            final TextView edit = new TextView(this);
             edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             edit.setPadding(10, 10, 0, 10);
+            edit.setText("edit");
+            edit.setTextSize(15);
             edit.setBackgroundColor(Color.TRANSPARENT);
 
-            final ImageButton delete = new ImageButton(this);
-            delete.setImageResource(R.drawable.ic_delete_black_24dp);
+
+            final TextView delete = new TextView(this);
             delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             delete.setPadding(10, 10, 0, 10);
+            delete.setText("delete");
+            delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
 
             edit.setOnClickListener(new View.OnClickListener() {
@@ -170,19 +180,20 @@ public class MeetupsActivity extends AppCompatActivity {
                 public void onClick(final View v) {
 
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(MeetupsActivity.this);
-                    dlgAlert.setMessage("Are you sure to delete this event?");
+                    dlgAlert.setMessage("Are you sure to delete this Meetup?");
                     dlgAlert.setTitle("Warning!");
                     dlgAlert.setCancelable(true);
 
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-
                                     Toast.makeText(MeetupsActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
-
                                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
-                                    //new DisableEvent().execute(removeKey);
 
+                                    String eventId = parent.getTag() + "";
+
+                                    new DisableMeetups().execute(eventId);
+                                    listOfMeetups.removeView(parent);
                                 }
                             });
 
@@ -203,6 +214,7 @@ public class MeetupsActivity extends AppCompatActivity {
             recordOfMeetups.addView(meetupSubject);
             recordOfMeetups.addView(meetupDetails);
             recordOfMeetups.addView(meetupLocation);
+            recordOfMeetups.addView(meetupKey);
             recordOfMeetups.addView(options);
 
             listOfMeetups.addView(recordOfMeetups);
@@ -264,7 +276,7 @@ public class MeetupsActivity extends AppCompatActivity {
 
                         currentMeetups.add(new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
                                 jUserObject.getString("details"), jUserObject.getString("location"),
-                                jUserObject.getString("posted_date")));
+                                jUserObject.getString("posted_date"), jUserObject.getString("key")));
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }
@@ -318,5 +330,65 @@ public class MeetupsActivity extends AppCompatActivity {
         }
 
     } // end of thread retrieve user
+
+    class DisableMeetups extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(MeetupsActivity.this, R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                Log.d("KEY", meetupInfo[0]);
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+                params.add(new BasicNameValuePair("id", meetupInfo[0]));
+                params.add(new BasicNameValuePair("query_type", "disable"));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        UPDATE_MEETUPS_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(MeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
 }

@@ -244,7 +244,7 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         }
 
-        String repeatPassword = txtPassword.getText().toString();
+        String repeatPassword = txtRepeatPassword.getText().toString();
 
         if(repeatPassword.equals("")) {
             txtRepeatPassword.setError("Password is required.");

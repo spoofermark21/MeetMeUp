@@ -133,7 +133,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:padding="15dp"
+                android:padding="5dp"
                 android:layout_marginBottom="10dip"
                 android:background="@drawable/edit_text" />
 
@@ -167,14 +167,14 @@
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/rd_male"
+                        android:id="@+id/rd_female"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Female"
                         android:textColor="@color/black" />
 
                     <RadioButton
-                        android:id="@+id/rd_female"
+                        android:id="@+id/rd_male"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Male"

@@ -100,9 +100,9 @@ public class CreateEventActivity extends AppCompatActivity {
                         events.setEventName(txtEventName.getText().toString());
                         events.setDetails(txtDetails.getText().toString());
                         events.setLocation(txtLocation.getText().toString());
-                        events.setStartDate(startDate.getMonth() + "-" + startDate.getMonth()
+                        events.setStartDate(startDate.getYear() + "-" + startDate.getMonth()
                                 + "-" + startDate.getDayOfMonth());
-                        events.setEndDate(endDate.getMonth() + "-" + endDate.getMonth()
+                        events.setEndDate(endDate.getYear() + "-" + endDate.getMonth()
                                 + "-" + endDate.getDayOfMonth());
 
                         events.setEventType(spnEventType.getSelectedItem().toString().charAt(0));

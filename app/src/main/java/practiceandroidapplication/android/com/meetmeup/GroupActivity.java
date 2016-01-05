@@ -119,8 +119,8 @@ public class GroupActivity extends AppCompatActivity {
 
             final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             //imageGroupParams.weight = 1.0f;
-            imageGroupParams.height = 100;
-            imageGroupParams.width = 100;
+            imageGroupParams.height = 150;
+            imageGroupParams.width = 150;
             imageGroupParams.gravity = Gravity.LEFT;
             //imageGroupParams.leftMargin = 50;
 
@@ -130,17 +130,17 @@ public class GroupActivity extends AppCompatActivity {
 
             final TextView groupName = new TextView(this);
             groupName.setText(group.getGroupName());
-            groupName.setTextSize(20);
+            groupName.setTextSize(25);
             groupName.setTextColor(Color.BLACK);
 
             final TextView groupDetails = new TextView(this);
             groupDetails.setText(group.getDetails());
-            groupDetails.setTextSize(10);
+            groupDetails.setTextSize(15);
             groupDetails.setTextColor(Color.BLACK);
 
             final TextView groupCountMembers = new TextView(this);
             groupCountMembers.setText(group.getTotalMembers() + " members");
-            groupCountMembers.setTextSize(10);
+            groupCountMembers.setTextSize(15);
             groupCountMembers.setTextColor(Color.BLACK);
 
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -153,30 +153,40 @@ public class GroupActivity extends AppCompatActivity {
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
-            final ImageButton edit = new ImageButton(this);
-            edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            //final ImageButton edit = new ImageButton(this);
+            //edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            final TextView edit = new TextView(this);
             edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             edit.setPadding(10, 10, 0, 10);
+            edit.setText("edit");
+            edit.setTextSize(15);
             edit.setBackgroundColor(Color.TRANSPARENT);
 
-            final ImageButton delete = new ImageButton(this);
+            /*final ImageButton delete = new ImageButton(this);
             delete.setImageResource(R.drawable.ic_delete_black_24dp);
             delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             delete.setPadding(10, 10, 0, 10);
+            delete.setBackgroundColor(Color.TRANSPARENT);*/
+
+            final TextView delete = new TextView(this);
+            delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            delete.setPadding(10, 10, 0, 10);
+            delete.setText("delete");
+            delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
 
             edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                    /*Intent event = new Intent(GroupActivity.this, ViewEventsActivity.class);
-                    event.putExtra("EVENT_KEY", key.getText().toString());
-                    startActivity(event);
+                    Intent group = new Intent(GroupActivity.this, ViewGroupActivity.class);
+                    group.putExtra("GROUP_ID", parent.getTag() + "");
+                    startActivity(group);
+
                     finish();
 
-                    Toast.makeText(GroupActivity.this, name.getText().toString() + "! "
-                            + key.getText().toString(), Toast.LENGTH_SHORT).show();
-                    */
+                    Toast.makeText(GroupActivity.this, parent.getTag()  + "!", Toast.LENGTH_SHORT).show();
+
                 }
             });
 
@@ -255,7 +265,8 @@ public class GroupActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
-                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("query_type", "all"));
 
                 Log.d("request!", "starting");
 
@@ -346,6 +357,6 @@ public class GroupActivity extends AppCompatActivity {
             }
         }
 
-    } // end of thread retrieve user
+    } // end of thread group activity
 
 }

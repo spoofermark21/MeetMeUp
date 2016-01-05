@@ -58,20 +58,22 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
 
         initUI();
 
+        txtUsername.setText("Username: " + currentUser.getUsername());
     }
 
     public void initUI(){
         txtUsername = (EditText) findViewById(R.id.txt_username);
+        txtUsername.setEnabled(false);
+
         txtOldPassword = (EditText) findViewById(R.id.txt_old_password);
         txtNewPassword = (EditText) findViewById(R.id.txt_new_password);
         txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
 
         btnUpdate = (Button) findViewById(R.id.btn_update);
-        btnUpdate.setOnClickListener(new View.OnClickListener(){
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(formValidation()) {
-                    new UpdateUser().execute(txtUsername.getText().toString(),
-                            txtNewPassword.getText().toString());
+                if (formValidation()) {
+                    new UpdateUser().execute(txtNewPassword.getText().toString());
                 }
             }
         });
@@ -81,24 +83,11 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
 
         boolean isReadyToSave = true;
 
-        String username = txtUsername.getText().toString();
-
-        if(username.equals("")) {
-            txtUsername.setError("Username is required.");
-            isReadyToSave = false;
-        } else {
-            txtUsername.setError(null);
-
-            if (username.length() < 6) {
-                txtUsername.setError("Username must be 6 characters length.");
-                isReadyToSave = false;
-            }
-        }
 
         String oldPassword = txtOldPassword.getText().toString();
 
         if (oldPassword.equals("")) {
-            txtOldPassword.setError("Password is required.");
+            txtOldPassword.setError("Old password is required.");
             isReadyToSave = false;
         } else {
             txtOldPassword.setError(null);
@@ -116,7 +105,7 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
             txtNewPassword.setError("Password is required.");
             isReadyToSave = false;
         } else {
-            txtRepeatPassword.setError(null);
+            txtNewPassword.setError(null);
 
             if (password.length() < 6) {
                 txtNewPassword.setError("Password must be 6 characters length."); //need to define grammar.
@@ -138,6 +127,8 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
             }
         }
 
+
+
         if (!password.equals(repeatPassword)) {
             txtRepeatPassword.setError("Password does not match.");
             isReadyToSave = false;
@@ -148,6 +139,11 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
 
 
         return isReadyToSave;
+    }
+
+    public void onBackPressed() {
+        startActivity(new Intent(UserProfileUpdatePasswordActivity.this, UserProfileUpdateActivity.class));
+        finish();
     }
 
     /*
@@ -176,9 +172,7 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
-                params.add(new BasicNameValuePair("username", user[0]));
-                params.add(new BasicNameValuePair("password", user[1]));
-
+                params.add(new BasicNameValuePair("password", user[0]));
                 params.add(new BasicNameValuePair("update_type", "password"));
 
                 Log.d("request!", "starting");

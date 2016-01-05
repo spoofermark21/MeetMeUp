@@ -18,4 +18,11 @@ public class Network {
 
     public static final String forDeploymentIp = deployment + "meetmeup/";
 
+    public static final String imageStoragePath = forDeploymentIp + "/meetmeup/image_upload.php";
+
+    public static final String FILE_UPLOAD_URL = "http://192.168.0.104/AndroidFileUpload/fileUpload.php";
+
+    // Directory name to store captured images and videos
+    public static final String IMAGE_DIRECTORY_NAME = "Android File Upload";
+
 }

@@ -27,12 +27,21 @@ public class Meetups {
 
     public Meetups(){}
 
-    public Meetups(int id, String subject, String details, String location, String postedDate){
+    public Meetups(String subject, String details, int postedBy, String location, Preference preference) {
+        this.subject = subject;
+        this.details = details;
+        this.postedBy = postedBy;
+        this.location = location;
+        this.preference = preference;
+    }
+
+    public Meetups(int id, String subject, String details, String location, String postedDate, String key){
         this.id = id;
         this.subject = subject;
         this.details = details;
         this.location = location;
         this.postedDate = postedDate;
+        this.key = key;
     }
 
     public Meetups(int id, String subject, String details, int postedBy, String location,

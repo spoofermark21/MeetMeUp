@@ -92,6 +92,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
         if(id == R.id.action_password) {
             startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileUpdatePasswordActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -329,6 +330,12 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     txtCurrentLocation.setText(currentUser.getCurrentLocation());
                     txtEmailAddress.setText(currentUser.getEmailAddress());
                     txtContactNumber.setText(currentUser.getContactNumber());
+
+                    String Str = new String(currentUser.getBirthDate());
+                    String date[] = Str.split("-", 3);
+
+                    dateBirth.updateDate(Integer.parseInt(date[0]),
+                            Integer.parseInt(date[1]), Integer.parseInt(date[2]));
 
                 }
             } catch (Exception ex) {

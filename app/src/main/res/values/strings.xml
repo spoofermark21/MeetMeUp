@@ -100,4 +100,11 @@
     <string name="title_activity_group">GroupActivity</string>
     <string name="title_activity_maps">Map</string>
 
+
+    <string name="btnTakePicture">Capture Image</string>
+    <string name="btnRecordVideo">Record Video</string>
+    <string name="or">(or)</string>
+    <string name="btnUploadToServer">Upload to Server</string>
+    <string name="title_activity_create_meetup">CreateMeetupActivity</string>
+
 </resources>

@@ -149,7 +149,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("user");
                     JSONObject jUserObject = jUserArray.getJSONObject(0);
 
-                    //sessions.currentUser.setId(jUserObject.getInt("id"));
+                    currentUser.setId(jUserObject.getInt("id"));
 
                     Log.d("Fullname (user)", jUserObject.getString("first_name")
                             + " " + jUserObject.getString("last_name"));
@@ -183,7 +183,10 @@ public class UserProfileActivity extends AppCompatActivity {
                     lblFullName.setText(currentUser.getFirstName() + " "
                             + currentUser.getLastName());
                     lblBirthdate.setText(currentUser.getBirthDate() + "");
-                    lblGender.setText(currentUser.getGender() + "");
+
+                    String gender = currentUser.getGender() == 'M' ? "Male" : "Female";
+
+                    lblGender.setText(gender);
                     lblNationality.setText(currentUser.getNationality().getNatioNalityName());
                     lblLocation.setText(currentUser.getCurrentLocation());
                     lblMobile.setText(currentUser.getContactNumber());

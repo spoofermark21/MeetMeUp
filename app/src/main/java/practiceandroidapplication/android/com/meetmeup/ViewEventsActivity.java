@@ -42,7 +42,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class ViewEventsActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_EVENT_URL = Network.forDeploymentIp + "events_retrieve.php";
-    private static final String UPDATE_EVENT_URL = Network.forDeploymentIp + "event_save.php";
+    private static final String UPDATE_EVENT_URL = Network.forDeploymentIp + "event_update.php";
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
@@ -56,7 +56,7 @@ public class ViewEventsActivity extends AppCompatActivity {
     Spinner spnEventType;
     DatePicker startDate, endDate;
 
-    Button btnCreate;//, btnDisable;
+    Button btnUpdate;//, btnDisable;
 
     Sessions sessions = Sessions.getSessionsInstance();
 
@@ -112,8 +112,8 @@ public class ViewEventsActivity extends AppCompatActivity {
         startDate = (DatePicker) findViewById(R.id.start_date);
         endDate = (DatePicker) findViewById(R.id.end_date);
 
-        btnCreate = (Button) findViewById(R.id.btn_create);
-        btnCreate.setOnClickListener(new View.OnClickListener() {
+        btnUpdate = (Button) findViewById(R.id.btn_create);
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (validateForm()) {
                     //events = new Events(txtEventName.getText().toString(), txtDetails.getText().toString(),
@@ -122,12 +122,17 @@ public class ViewEventsActivity extends AppCompatActivity {
                         events.setEventName(txtEventName.getText().toString());
                         events.setDetails(txtDetails.getText().toString());
                         events.setLocation(txtLocation.getText().toString());
-                        events.setStartDate(startDate.getMonth() + "-" + startDate.getMonth()
+                        events.setStartDate(startDate.getYear() + "-" + startDate.getMonth()
                                 + "-" + startDate.getDayOfMonth());
-                        events.setEndDate(endDate.getMonth() + "-" + endDate.getMonth()
+
+                        events.setEndDate(endDate.getYear() + "-" + endDate.getMonth() + 1
                                 + "-" + endDate.getDayOfMonth());
 
+                        Log.d("Date", events.getStartDate() + " " + events.getEndDate() + 1);
+
                         events.setEventType(spnEventType.getSelectedItem().toString().charAt(0));
+
+                        new UpdateEvent().execute();
 
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -262,6 +267,9 @@ public class ViewEventsActivity extends AppCompatActivity {
                     // set date
                     events.setStartDate(jUserObject.getString("start_date"));
                     events.setEndDate(jUserObject.getString("end_date"));
+
+
+
                     events.setEventType(jUserObject.getString("event_type").charAt(0));
                     events.setKey(jUserObject.getString("key"));
 
@@ -286,6 +294,18 @@ public class ViewEventsActivity extends AppCompatActivity {
                     txtLocation.setText(events.getLocation());
 
                     spnEventType.setSelection(selectEventType());
+
+                    String start = new String(events.getStartDate());
+                    String dateStart[] = start.split("-", 3);
+
+                    startDate.updateDate(Integer.parseInt(dateStart[0]),
+                            Integer.parseInt(dateStart[1]), Integer.parseInt(dateStart[2]));
+
+                    String end = new String(events.getEndDate());
+                    String dateEnd[] = end.split("-", 3);
+
+                    endDate.updateDate(Integer.parseInt(dateEnd[0]),
+                            Integer.parseInt(dateEnd[1]), Integer.parseInt(dateEnd[2]));
 
                     //String btnDisableText = events.getEventType() == 'A' ? "Disable" : "Enable";
                     //btnDisable.setText(btnDisableText);
@@ -317,9 +337,9 @@ public class ViewEventsActivity extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-                Log.d("USER_ID (user)", currentUser.getId() + "");
+                Log.d("EVENT ID", currentEventId);
 
-                params.add(new BasicNameValuePair("user_id", currentUser.getId()+""));
+                params.add(new BasicNameValuePair("id", currentEventId));
                 params.add(new BasicNameValuePair("event_name", events.getEventName()));
                 params.add(new BasicNameValuePair("details", events.getDetails()));
                 params.add(new BasicNameValuePair("location", events.getLocation()));
@@ -327,12 +347,14 @@ public class ViewEventsActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("start_date", events.getStartDate()));
                 params.add(new BasicNameValuePair("end_date", events.getEndDate()));
 
+                params.add(new BasicNameValuePair("query_type", "update"));
+
                 Log.d("request!", "starting");
 
                 JSONObject json = jsonParser.makeHttpRequest(
-                        RETRIEVE_EVENT_URL, "POST", params);
+                        UPDATE_EVENT_URL, "POST", params);
 
-                Log.d("Saving...", json.toString());
+                Log.d("Updating...", json.toString());
 
                 success = json.getInt(TAG_STATUS);
 
