@@ -52,6 +52,7 @@ public class MeetupsActivity extends AppCompatActivity {
     Toolbar toolbar;
     //ListView listMeetups;
     LinearLayout listOfMeetups;
+    TextView lblMessage;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Meetups> currentMeetups = new ArrayList<>();
@@ -74,8 +75,10 @@ public class MeetupsActivity extends AppCompatActivity {
             }
         });
 
-        //listMeetups = (ListView) findViewById(R.id.list_meetups);
         listOfMeetups = (LinearLayout) findViewById(R.id.linear_meetups);
+        listOfMeetups.setVisibility(View.INVISIBLE);
+        lblMessage = (TextView) findViewById(R.id.lbl_message);
+        lblMessage.setVisibility(View.INVISIBLE);
 
         new RetrieveMeetups().execute();
     }
@@ -164,14 +167,14 @@ public class MeetupsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                    /*Intent event = new Intent(GroupActivity.this, ViewEventsActivity.class);
-                    event.putExtra("EVENT_KEY", key.getText().toString());
-                    startActivity(event);
+                    Intent meetups = new Intent(MeetupsActivity.this, ViewMeetupActivity.class);
+                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+                    startActivity(meetups);
                     finish();
 
-                    Toast.makeText(GroupActivity.this, name.getText().toString() + "! "
-                            + key.getText().toString(), Toast.LENGTH_SHORT).show();
-                    */
+                    Toast.makeText(MeetupsActivity.this, parent.getTag() + "! "
+                            , Toast.LENGTH_SHORT).show();
+
                 }
             });
 
@@ -251,7 +254,7 @@ public class MeetupsActivity extends AppCompatActivity {
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
-                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("filter", "all"));
 
                 Log.d("request!", "starting");
@@ -296,33 +299,12 @@ public class MeetupsActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
+                listOfMeetups.setVisibility(View.VISIBLE);
                 if (message.equals("Successful")) {
                     Toast.makeText(MeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     displayMeetups();
-                    /*meetupAdapter = new ArrayAdapter<String>(MeetupsActivity.this,
-                            android.R.layout.simple_list_item_1, sessions.listOfMeetups(currentMeetups));
-
-                    listMeetups.setAdapter(meetupAdapter);
-
-                    listMeetups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view,
-                                                int position, long id) {
-
-                            // ListView Clicked item index
-                            int itemPosition = position;
-
-                            // ListView Clicked item value
-                            String itemValue = (String) listMeetups.getItemAtPosition(position);
-
-                            // Show Alert
-                            Toast.makeText(getApplicationContext(),
-                                    "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                                    .show();
-                        }
-                    });*/
-
+                } else if(message.equals("No meetups")) {
+                    lblMessage.setVisibility(View.VISIBLE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

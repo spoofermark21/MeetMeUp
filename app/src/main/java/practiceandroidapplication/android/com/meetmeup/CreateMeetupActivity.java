@@ -55,6 +55,8 @@ public class CreateMeetupActivity extends AppCompatActivity {
 
     Meetups meetups;
 
+    String meetupId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,8 @@ public class CreateMeetupActivity extends AppCompatActivity {
         });
 
         initUI();
+
+
     }
 
     public void initUI() {
@@ -241,7 +245,4 @@ public class CreateMeetupActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
 }

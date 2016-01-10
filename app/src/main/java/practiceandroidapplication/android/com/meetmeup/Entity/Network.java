@@ -14,7 +14,8 @@ public class Network {
 
 
     private static final String testing = "http://192.168.1.201/";
-    private static final String deployment = "http://192.168.254.116/";
+    private static final String deployment = "http://192.168.254.114/";
+    private static final String webhosting = "http://meetmeup.site11.com/";
 
     public static final String forDeploymentIp = deployment + "meetmeup/";
 

@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import org.apache.http.NameValuePair;
@@ -51,6 +52,8 @@ public class SetPreferenceActivity extends AppCompatActivity {
 
     EditText txtMinAge, txtMaxAge, txtLocation;
 
+    ScrollView scrollView;
+
     Preference preference = new Preference();
     User currentUser = Sessions.getSessionsInstance().currentUser;
     Preference currentPreference = Sessions.getSessionsInstance().currentPreference;
@@ -80,6 +83,10 @@ public class SetPreferenceActivity extends AppCompatActivity {
     }
 
     public void initUI() {
+
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView.setVisibility(View.INVISIBLE);
+
         txtMinAge = (EditText) findViewById(R.id.txt_min_age);
         txtMaxAge = (EditText) findViewById(R.id.txt_max_age);
         txtLocation = (EditText) findViewById(R.id.txt_location);
@@ -265,6 +272,9 @@ public class SetPreferenceActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
+
+                    scrollView.setVisibility(View.VISIBLE);
+
                     txtMinAge.setText(currentPreference.getStartAge()+"");
                     txtMaxAge.setText(currentPreference.getEndAge()+"");
 

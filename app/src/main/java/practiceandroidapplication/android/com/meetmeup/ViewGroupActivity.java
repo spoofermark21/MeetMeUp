@@ -12,10 +12,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -35,7 +37,9 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class ViewGroupActivity extends AppCompatActivity {
 
 
-    private static final String RETRIEVE_GROUP_URL = Network.forDeploymentIp + "group_save.php";
+    private static final String RETRIEVE_GROUP_URL = Network.forDeploymentIp + "group_retrieve.php";
+    private static final String RETRIEVE_GROUP_MEMBER_URL = Network.forDeploymentIp + "group_member_retrieve.php";
+
     private static final String UPDATE_GROUP_URL = Network.forDeploymentIp + "group_update.php";
 
     private static final String TAG_STATUS = "status";
@@ -48,6 +52,9 @@ public class ViewGroupActivity extends AppCompatActivity {
     EditText txtGroupName, txtDetails;
     Button btnImage, btnUpdate;
     ImageView imgGroup;
+
+    ListView listMembers;
+
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Group> currentGroups = Sessions.getSessionsInstance().currentGroups;
@@ -88,6 +95,8 @@ public class ViewGroupActivity extends AppCompatActivity {
     public void initUI() {
         txtGroupName = (EditText) findViewById(R.id.txt_group_name);
         txtDetails = (EditText) findViewById(R.id.txt_details);
+
+        listMembers = (ListView) findViewById(R.id.list_members);
 
         imgGroup = (ImageView) findViewById(R.id.img_group);
 
@@ -182,6 +191,9 @@ public class ViewGroupActivity extends AppCompatActivity {
 
     class RetrieveGroups extends AsyncTask<String, String, String> {
 
+        ArrayAdapter<String> groupAdapter;
+        List<String> memberName = new ArrayList<>();
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -231,6 +243,16 @@ public class ViewGroupActivity extends AppCompatActivity {
                             jUserObject.getInt("created_by"), jUserObject.getString("created_date"),
                             jUserObject.getInt("count_members"));
 
+                    JSONArray groupMembers = jUserObject.getJSONArray("members");
+                    JSONObject members;
+
+                    for(int i=0; i < groupMembers.length();i++){
+                        members = groupMembers.getJSONObject(i);
+                        Log.d("ID:", members.getInt("user_id") + "");
+                        memberName.add(members.getString("first_name") + " " + members.getString("last_name"));
+                    }
+
+
 
                     Log.d("ID:", jUserObject.getInt("id") + "");
 
@@ -254,6 +276,30 @@ public class ViewGroupActivity extends AppCompatActivity {
 
                     txtGroupName.setText(group.getGroupName());
                     txtDetails.setText(group.getDetails());
+
+                    groupAdapter = new ArrayAdapter<String>(ViewGroupActivity.this,
+                            android.R.layout.simple_list_item_1, memberName);
+
+                    listMembers.setAdapter(groupAdapter);
+
+                    listMembers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view,
+                                                int position, long id) {
+
+                            // ListView Clicked item index
+                            int itemPosition = position;
+
+                            // ListView Clicked item value
+                            String itemValue = (String) listMembers.getItemAtPosition(position);
+
+                            // Show Alert
+                            Toast.makeText(getApplicationContext(),
+                                    "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
 
                 }
             } catch (Exception ex) {

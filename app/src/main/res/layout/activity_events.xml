@@ -47,9 +47,13 @@
             android:elevation="5dp"
             android:orientation="vertical">
 
-            <!--<TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />-->
+            <TextView
+                android:id="@+id/lbl_message"
+                android:textSize="15sp"
+                android:text="No events"
+                android:gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

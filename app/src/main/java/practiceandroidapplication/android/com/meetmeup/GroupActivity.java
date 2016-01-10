@@ -50,6 +50,8 @@ public class GroupActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     //ListView listGroup;
+    TextView lblMessage;
+
     LinearLayout listOfGroups;
 
     Sessions sessions = Sessions.getSessionsInstance();
@@ -76,6 +78,9 @@ public class GroupActivity extends AppCompatActivity {
 
         //listGroup = (ListView) findViewById(R.id.list_group);
         listOfGroups = (LinearLayout) findViewById(R.id.linear_groups);
+        listOfGroups.setVisibility(View.INVISIBLE);
+        lblMessage = (TextView) findViewById(R.id.lbl_message);
+        lblMessage.setVisibility(View.INVISIBLE);
 
         new RetrieveGroups().execute();
     }
@@ -283,8 +288,6 @@ public class GroupActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("group");
                     JSONObject jUserObject;
 
-
-
                     //sessions.removeGroups();
 
                     for(int i=0; i < jUserArray.length();i++){
@@ -315,6 +318,7 @@ public class GroupActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
+                listOfGroups.setVisibility(View.VISIBLE);
                 if (message.equals("Successful")) {
                     Toast.makeText(GroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
 
@@ -351,6 +355,8 @@ public class GroupActivity extends AppCompatActivity {
                         }
                     });
                     */
+                } else if(message.equals("No group")) {
+                    lblMessage.setVisibility(View.VISIBLE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

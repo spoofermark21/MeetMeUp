@@ -30,5 +30,4 @@ tools:context="practiceandroidapplication.android.com.meetmeup.GroupActivity">
         android:layout_height="match_parent"/>
 
 
-
 </LinearLayout>

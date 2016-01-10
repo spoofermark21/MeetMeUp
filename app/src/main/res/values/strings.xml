@@ -5,6 +5,14 @@
     <string name="title_activity_newfeed">NewfeedActivity</string>
     <string name="title_activity_splash">SplashActivity</string>
 
+    <string name="title_activity_user_profile">UserProfileActivity</string>
+    <string name="title_activity_sample">SampleActivity</string>
+    <string name="title_activity_user_profile_update">UserProfileUpdate</string>
+    <string name="title_activity_set_preference">SetPreferenceActivity</string>
+    <string name="title_activity_group">GroupActivity</string>
+    <string name="title_activity_maps">Map</string>
+
+
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
@@ -93,12 +101,6 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
-    <string name="title_activity_user_profile">UserProfileActivity</string>
-    <string name="title_activity_sample">SampleActivity</string>
-    <string name="title_activity_user_profile_update">UserProfileUpdate</string>
-    <string name="title_activity_set_preference">SetPreferenceActivity</string>
-    <string name="title_activity_group">GroupActivity</string>
-    <string name="title_activity_maps">Map</string>
 
 
     <string name="btnTakePicture">Capture Image</string>
@@ -106,5 +108,7 @@
     <string name="or">(or)</string>
     <string name="btnUploadToServer">Upload to Server</string>
     <string name="title_activity_create_meetup">CreateMeetupActivity</string>
+    <string name="title_activity_maps2">Map</string>
+    <string name="title_activity_notification">NotificationActivity</string>
 
 </resources>

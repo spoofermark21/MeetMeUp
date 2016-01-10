@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -62,6 +63,7 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
     }
 
     public void initUI(){
+
         txtUsername = (EditText) findViewById(R.id.txt_username);
         txtUsername.setEnabled(false);
 

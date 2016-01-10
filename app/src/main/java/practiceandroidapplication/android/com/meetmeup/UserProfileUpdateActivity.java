@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import org.apache.http.NameValuePair;
@@ -52,6 +53,8 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     DatePicker dateBirth;
     RadioGroup rdGender;
     RadioButton rdMale, rdFemale;
+
+    ScrollView scrollView;
 
     Toolbar toolBar;
 
@@ -113,6 +116,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     } // end of LoadNationalities
 
     public void initUI() {
+
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView.setVisibility(View.INVISIBLE);
+
         txtFirstname = (EditText) findViewById(R.id.txt_firstname);
         txtLastname = (EditText) findViewById(R.id.txt_lastname);
         txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
@@ -315,6 +322,9 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
+
+                    scrollView.setVisibility(View.VISIBLE);
+
                     txtFirstname.setText(currentUser.getFirstName());
                     txtLastname.setText(currentUser.getLastName());
                     //dateBirth.init();

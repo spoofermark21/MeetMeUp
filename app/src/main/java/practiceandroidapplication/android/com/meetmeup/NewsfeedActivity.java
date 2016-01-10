@@ -46,6 +46,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.Cache.Entry;
@@ -75,6 +76,11 @@ public class NewsfeedActivity extends AppCompatActivity
 
     // web service
     private static final String LOGOUT_URL = Network.forDeploymentIp + "user_logout.php";
+    private static final String RETRIEVE_MEETUPS_URL = Network.forDeploymentIp + "user_logout.php";
+    private static final String RETRIEVE_GROUPS_URL = Network.forDeploymentIp + "user_logout.php";
+    private static final String RETRIEVE_EVENTS_URL = Network.forDeploymentIp + "user_logout.php";
+
+
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -89,20 +95,11 @@ public class NewsfeedActivity extends AppCompatActivity
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     /*
-        sample fragment
-     */
+    sample fragment
 
     Fragment userProfile = new UserProfileFragment();
     FragmentManager fragmentManager = getFragmentManager();
-    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-    /*
-    //volley
-    private static final String TAG = NewsfeedActivity.class.getSimpleName();
-    private ListView listView;
-    private FeedListAdapter listAdapter;
-    private List<FeedItem> feedItems;
-    private String URL_FEED = "http://localhost/meetmeup/feed.json";*/
+    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();*/
 
 
     @SuppressLint("NewApi")
@@ -111,59 +108,6 @@ public class NewsfeedActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_newsfeed);
 
-        /*listView = (ListView) findViewById(R.id.list_feed);
-
-        feedItems = new ArrayList<FeedItem>();
-
-        listAdapter = new FeedListAdapter(this, feedItems);
-        listView.setAdapter(listAdapter);
-
-        // These two lines not needed,
-        // just to get the look of facebook (changing background color & hiding the icon)
-        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#3b5998")));
-        getActionBar().setIcon(
-                new ColorDrawable(getResources().getColor(android.R.color.transparent)));
-
-        // We first check for cached request
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
-        Entry entry = cache.get(URL_FEED);
-        if (entry != null) {
-            // fetch the data from cache
-            try {
-                String data = new String(entry.data, "UTF-8");
-                try {
-                    parseJsonFeed(new JSONObject(data));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-        } else {
-            // making fresh volley request and getting json
-            JsonObjectRequest jsonReq = new JsonObjectRequest(Method.GET,
-                    URL_FEED, null, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-                    VolleyLog.d(TAG, "Response: " + response.toString());
-                    if (response != null) {
-                        parseJsonFeed(response);
-                    }
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d(TAG, "Error: " + error.getMessage());
-                }
-            });
-
-            // Adding request to volley request queue
-            AppController.getInstance().addToRequestQueue(jsonReq);
-        }
-        */
         //set toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -181,7 +125,7 @@ public class NewsfeedActivity extends AppCompatActivity
         //set UI
         initUI();
         //setUserProfile();
-
+        setUserProfile();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -193,7 +137,7 @@ public class NewsfeedActivity extends AppCompatActivity
         if (id == R.id.nav_user_profile) {
             navUserProfile();
         } else if (id == R.id.nav_groups) {
-           navGroups();
+            navGroups();
         } else if (id == R.id.nav_meetups) {
             navMeetups();
         } else if (id == R.id.nav_events) {
@@ -202,7 +146,7 @@ public class NewsfeedActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_logout) {
             navLogOutEvent();
-        } else if(id == R.id.nav_location) {
+        } else if (id == R.id.nav_location) {
             navLocation();
         }
 
@@ -224,6 +168,11 @@ public class NewsfeedActivity extends AppCompatActivity
 
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_search) {
+            startActivity(new Intent(NewsfeedActivity.this, SearchActivity.class));
+        } else if (id == R.id.action_refresh) {
+            Toast.makeText(NewsfeedActivity.this, "You clicked refresh."
+                    , Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -234,7 +183,7 @@ public class NewsfeedActivity extends AppCompatActivity
      */
 
     public void initUI() {
-        imgUserProfile = (ImageView) findViewById(R.id.user_image);
+        //imgUserProfile = (ImageView) findViewById(R.id.user_image);
         txtUserFullName = (TextView) findViewById(R.id.user_fullname);
         txtUserNationality = (TextView) findViewById(R.id.user_nationality);
     }
@@ -256,11 +205,11 @@ public class NewsfeedActivity extends AppCompatActivity
         startActivity(new Intent(NewsfeedActivity.this, MeetupsActivity.class));
     }
 
-    public void navEvents(){
+    public void navEvents() {
         startActivity(new Intent(NewsfeedActivity.this, EventsActivity.class));
     }
 
-    public void navLocation(){
+    public void navLocation() {
         startActivity(new Intent(NewsfeedActivity.this, MapsActivity.class));
         /*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                 Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
@@ -281,13 +230,12 @@ public class NewsfeedActivity extends AppCompatActivity
         startActivity(new Intent(NewsfeedActivity.this, SetPreferenceActivity.class));
     }
 
-    /*
     public void setUserProfile() {
         txtUserFullName.setText(currentUser.getFirstName() + " "
-                                   +  currentUser.getLastName());
+                + currentUser.getLastName());
         txtUserNationality.setText(currentUser.getNationality()
-                                    .getNatioNalityName());
-    }*/
+                .getNatioNalityName());
+    }
 
     public User user() {
         Intent intent = getIntent();
@@ -315,8 +263,6 @@ public class NewsfeedActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            //super.onBackPressed();
-            //minimize activity
             moveTaskToBack(true);
         }
     }
@@ -380,41 +326,68 @@ public class NewsfeedActivity extends AppCompatActivity
         }
     }
 
+}
 
-    /*private void parseJsonFeed(JSONObject response) {
-        try {
-            JSONArray feedArray = response.getJSONArray("feed");
 
-            for (int i = 0; i < feedArray.length(); i++) {
-                JSONObject feedObj = (JSONObject) feedArray.get(i);
+  /*
+    //volley
+    private static final String TAG = NewsfeedActivity.class.getSimpleName();
+    private ListView listView;
+    private FeedListAdapter listAdapter;
+    private List<FeedItem> feedItems;
+    private String URL_FEED = "http://localhost/meetmeup/feed.json";*/
 
-                FeedItem item = new FeedItem();
-                item.setId(feedObj.getInt("id"));
-                item.setName(feedObj.getString("name"));
 
-                // Image might be null sometimes
-                String image = feedObj.isNull("image") ? null : feedObj
-                        .getString("image");
-                item.setImge(image);
-                item.setStatus(feedObj.getString("status"));
-                item.setProfilePic(feedObj.getString("profilePic"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
+        /*listView = (ListView) findViewById(R.id.list_feed);
 
-                // url might be null sometimes
-                String feedUrl = feedObj.isNull("url") ? null : feedObj
-                        .getString("url");
-                item.setUrl(feedUrl);
+        feedItems = new ArrayList<FeedItem>();
 
-                feedItems.add(item);
+        listAdapter = new FeedListAdapter(this, feedItems);
+        listView.setAdapter(listAdapter);
+
+        // These two lines not needed,
+        // just to get the look of facebook (changing background color & hiding the icon)
+        getActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#3b5998")));
+        getActionBar().setIcon(
+                new ColorDrawable(getResources().getColor(android.R.color.transparent)));
+
+        // We first check for cached request
+        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+        Entry entry = cache.get(URL_FEED);
+        if (entry != null) {
+            // fetch the data from cache
+            try {
+                String data = new String(entry.data, "UTF-8");
+                try {
+                    parseJsonFeed(new JSONObject(data));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
 
-            // notify data changes to list adapater
-            listAdapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            // making fresh volley request and getting json
+            JsonObjectRequest jsonReq = new JsonObjectRequest(Method.GET,
+                    URL_FEED, null, new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    VolleyLog.d(TAG, "Response: " + response.toString());
+                    if (response != null) {
+                        parseJsonFeed(response);
+                    }
+                }
+            }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d(TAG, "Error: " + error.getMessage());
+                }
+            });
+
+            // Adding request to volley request queue
+            AppController.getInstance().addToRequestQueue(jsonReq);
         }
-    }*/
-
-
-
-}
+        */

@@ -8,8 +8,6 @@
     android:orientation="vertical"
     android:padding="3dp" >
 
-
-
     <ImageView
         android:scaleType="fitCenter"
         android:id="@+id/image"
@@ -40,6 +38,7 @@
             android:layout_centerVertical="true"
             android:indeterminateDrawable="@drawable/progress"
             android:visibility="gone"></ProgressBar>
+
     </LinearLayout>
 
 

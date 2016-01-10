@@ -56,7 +56,7 @@ public class EventsActivity extends AppCompatActivity {
     Toolbar toolbar;
     //ListView listEvents;
     LinearLayout listOfEvents;
-
+    TextView lblMessage;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Events> currentEvents = new ArrayList<>();
@@ -84,6 +84,9 @@ public class EventsActivity extends AppCompatActivity {
 
         //listEvents = (ListView) findViewById(R.id.list_events);
         listOfEvents = (LinearLayout) findViewById(R.id.linear_events);
+        listOfEvents.setVisibility(View.INVISIBLE);
+        lblMessage = (TextView) findViewById(R.id.lbl_message);
+        lblMessage.setVisibility(View.INVISIBLE);
 
         new RetrieveEvents().execute();
     }
@@ -324,9 +327,12 @@ public class EventsActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
+                listOfEvents.setVisibility(View.VISIBLE);
                 if (message.equals("Successful")) {
                     Toast.makeText(EventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     displayEvents();
+                } else if(message.equals("No events")) {
+                    lblMessage.setVisibility(View.VISIBLE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -24,17 +24,24 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:id="@+id/focus_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp">
 
-        <ListView
-            android:id="@+id/list_feed"
+        <LinearLayout
+            android:id="@+id/linear_feeds"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@color/colorMainBackground"
+            android:elevation="5dp"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-    </LinearLayout>
+        </LinearLayout>
+
+
+    </ScrollView>
 
 </LinearLayout>

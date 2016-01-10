@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
@@ -38,6 +39,7 @@ public class UserProfileActivity extends AppCompatActivity {
     TextView lblFullName,lblGender, lblNationality,
             lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
 
+    LinearLayout linearProfile;
 
     Sessions sessions = Sessions.getSessionsInstance();
     User currentUser = Sessions.getSessionsInstance().currentUser;
@@ -50,6 +52,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         initUI();
         try {
+            linearProfile.setVisibility(View.INVISIBLE);
             new RetrieveUser().execute();
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -90,6 +93,8 @@ public class UserProfileActivity extends AppCompatActivity {
         lblLocation = (TextView) findViewById(R.id.lbl_address);
         lblMobile = (TextView) findViewById(R.id.lbl_mobile);
         lblEmailAdd = (TextView) findViewById(R.id.lbl_email);
+
+        linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -180,6 +185,9 @@ public class UserProfileActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
+
+                    linearProfile.setVisibility(View.VISIBLE);
+
                     lblFullName.setText(currentUser.getFirstName() + " "
                             + currentUser.getLastName());
                     lblBirthdate.setText(currentUser.getBirthDate() + "");

@@ -135,6 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:padding="5dp"
+                android:elevation="2dp"
                 android:layout_marginBottom="10dip"
                 android:background="@drawable/edit_text" />
 
@@ -287,7 +288,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:background="@color/colorPrimary"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/button_background"
                 android:elevation="5dp"
                 android:text="Register"
                 android:textColor="@color/white" />
