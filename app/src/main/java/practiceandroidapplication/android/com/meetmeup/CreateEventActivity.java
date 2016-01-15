@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -49,6 +50,8 @@ public class CreateEventActivity extends AppCompatActivity {
     EditText txtEventName, txtLocation, txtDetails;
     Spinner spnEventType;
     DatePicker startDate, endDate;
+
+
 
     Button btnCreate;
 
@@ -100,6 +103,8 @@ public class CreateEventActivity extends AppCompatActivity {
                         events.setEventName(txtEventName.getText().toString());
                         events.setDetails(txtDetails.getText().toString());
                         events.setLocation(txtLocation.getText().toString());
+
+
                         events.setStartDate(startDate.getYear() + "-" + startDate.getMonth()
                                 + "-" + startDate.getDayOfMonth());
                         events.setEndDate(endDate.getYear() + "-" + endDate.getMonth()

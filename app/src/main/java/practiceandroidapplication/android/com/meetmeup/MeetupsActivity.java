@@ -303,8 +303,11 @@ public class MeetupsActivity extends AppCompatActivity {
                 if (message.equals("Successful")) {
                     Toast.makeText(MeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     displayMeetups();
-                } else if(message.equals("No meetups")) {
+                } else if (message.equals("No meetups")) {
                     lblMessage.setVisibility(View.VISIBLE);
+                } else {
+                    lblMessage.setVisibility(View.VISIBLE);
+                    lblMessage.setText("Please check your internet connection");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

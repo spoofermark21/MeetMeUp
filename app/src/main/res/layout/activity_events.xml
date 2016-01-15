@@ -42,18 +42,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="10dp"
-            android:padding="10dp"
             android:background="@color/colorMainBackground"
-            android:elevation="5dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/lbl_message"
-                android:textSize="15sp"
-                android:text="No events"
-                android:gravity="center"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="No events"
+                android:textSize="15sp" />
 
         </LinearLayout>
 

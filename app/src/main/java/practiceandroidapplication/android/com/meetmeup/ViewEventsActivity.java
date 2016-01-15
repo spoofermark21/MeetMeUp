@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -57,6 +58,8 @@ public class ViewEventsActivity extends AppCompatActivity {
     DatePicker startDate, endDate;
 
     Button btnUpdate;//, btnDisable;
+
+    ScrollView scrollView;
 
     Sessions sessions = Sessions.getSessionsInstance();
 
@@ -111,6 +114,9 @@ public class ViewEventsActivity extends AppCompatActivity {
         spnEventType = (Spinner) findViewById(R.id.spn_event_type);
         startDate = (DatePicker) findViewById(R.id.start_date);
         endDate = (DatePicker) findViewById(R.id.end_date);
+
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView.setVisibility(View.INVISIBLE);
 
         btnUpdate = (Button) findViewById(R.id.btn_create);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
@@ -289,6 +295,9 @@ public class ViewEventsActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
+
+                    scrollView.setVisibility(View.VISIBLE);
+
                     txtEventName.setText(events.getEventName());
                     txtDetails.setText(events.getDetails());
                     txtLocation.setText(events.getLocation());

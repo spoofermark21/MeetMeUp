@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ public class ViewMeetupActivity extends AppCompatActivity {
     Spinner spnGender;
 
     Button btnUpdate;
+
+    ScrollView scrollView;
 
     Sessions sessions = Sessions.getSessionsInstance();
     //List<Meetups> currentMeetups = new ArrayList<>();
@@ -84,6 +87,9 @@ public class ViewMeetupActivity extends AppCompatActivity {
         txtStartAge = (EditText) findViewById(R.id.txt_min_age);
         txtEndAge = (EditText) findViewById(R.id.txt_max_age);
         spnGender = (Spinner) findViewById(R.id.spn_gender);
+
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView.setVisibility(View.INVISIBLE);
 
         btnUpdate = (Button) findViewById(R.id.btn_update);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
@@ -246,6 +252,9 @@ public class ViewMeetupActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
+
+                    scrollView.setVisibility(View.VISIBLE);
+
                     Toast.makeText(ViewMeetupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     //displayMeetups();
                     txtSubjects.setText(meetups.getSubject());

@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
@@ -55,6 +56,7 @@ public class ViewGroupActivity extends AppCompatActivity {
 
     ListView listMembers;
 
+    ScrollView scrollView;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Group> currentGroups = Sessions.getSessionsInstance().currentGroups;
@@ -99,6 +101,9 @@ public class ViewGroupActivity extends AppCompatActivity {
         listMembers = (ListView) findViewById(R.id.list_members);
 
         imgGroup = (ImageView) findViewById(R.id.img_group);
+
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView.setVisibility(View.INVISIBLE);
 
         btnImage = (Button) findViewById(R.id.btn_image);
         btnImage.setOnClickListener(new View.OnClickListener() {
@@ -272,6 +277,9 @@ public class ViewGroupActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
+
+                    scrollView.setVisibility(View.VISIBLE);
+
                     Toast.makeText(ViewGroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
 
                     txtGroupName.setText(group.getGroupName());

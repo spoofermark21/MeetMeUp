@@ -79,6 +79,7 @@ public class GroupActivity extends AppCompatActivity {
         //listGroup = (ListView) findViewById(R.id.list_group);
         listOfGroups = (LinearLayout) findViewById(R.id.linear_groups);
         listOfGroups.setVisibility(View.INVISIBLE);
+
         lblMessage = (TextView) findViewById(R.id.lbl_message);
         lblMessage.setVisibility(View.INVISIBLE);
 
@@ -115,7 +116,7 @@ public class GroupActivity extends AppCompatActivity {
             LinearLayout recordOfGroups = new LinearLayout(this);
             recordOfGroups.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             recordOfGroups.setOrientation(LinearLayout.VERTICAL);
-            recordOfGroups.setPadding(10, 10, 10, 10);
+            //recordOfGroups.setPadding(10, 10, 10, 10);
             //recordOfEvents.setBackgroundColor(getResources().getColor(R.color.colorMainBackground));
             //recordOfEvents.setBackgroundResource(R.drawable.edit_text);
 
@@ -357,6 +358,9 @@ public class GroupActivity extends AppCompatActivity {
                     */
                 } else if(message.equals("No group")) {
                     lblMessage.setVisibility(View.VISIBLE);
+                } else {
+                    lblMessage.setVisibility(View.VISIBLE);
+                    lblMessage.setText("Please check your internet connection");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

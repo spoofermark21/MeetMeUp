@@ -75,6 +75,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         });
 
         initUI();
+
     }
 
     public void initUI() {
@@ -94,7 +95,6 @@ public class CreateGroupActivity extends AppCompatActivity {
         });
 
         btnSave = (Button) findViewById(R.id.btn_create);
-
         btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (validateForm()) {

@@ -1,16 +1,15 @@
 package practiceandroidapplication.android.com.meetmeup;
 
+import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,54 +21,31 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-import android.view.Menu;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.android.volley.Cache;
-import com.android.volley.Cache.Entry;
-import com.android.volley.Request.Method;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import practiceandroidapplication.android.com.meetmeup.Entity.Group;
+import practiceandroidapplication.android.com.meetmeup.Adapter.TabsPagerAdapter;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
-import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
+import practiceandroidapplication.android.com.meetmeup.Fragments.EventsFragment;
+import practiceandroidapplication.android.com.meetmeup.Fragments.MeetupsFragment;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
-import practiceandroidapplication.android.com.meetmeup.Newsfeed.adapter.FeedListAdapter;
-import practiceandroidapplication.android.com.meetmeup.Newsfeed.app.AppController;
-import practiceandroidapplication.android.com.meetmeup.Newsfeed.data.FeedItem;
+//import practiceandroidapplication.android.com.meetmeup.Newsfeed.adapter.FeedListAdapter;
+
 
 public class NewsfeedActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -90,17 +66,20 @@ public class NewsfeedActivity extends AppCompatActivity
     ImageView imgUserProfile;
     TextView txtUserFullName, txtUserNationality;
 
+    Button btnMeetups, btnEvents, btnGroups;
 
     Sessions sessions = Sessions.getSessionsInstance();
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
-    /*
-    sample fragment
+    LinearLayout listOfFeeds;
 
-    Fragment userProfile = new UserProfileFragment();
+    Fragment meetups = new MeetupsFragment();
+    Fragment events = new EventsFragment();
+    Fragment groups;
+
     FragmentManager fragmentManager = getFragmentManager();
-    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();*/
 
+    int btnCounter = 0;
 
     @SuppressLint("NewApi")
     @Override
@@ -186,7 +165,63 @@ public class NewsfeedActivity extends AppCompatActivity
         //imgUserProfile = (ImageView) findViewById(R.id.user_image);
         txtUserFullName = (TextView) findViewById(R.id.user_fullname);
         txtUserNationality = (TextView) findViewById(R.id.user_nationality);
+
+        listOfFeeds = (LinearLayout) findViewById(R.id.linear_feeds);
+        listOfFeeds.setVisibility(View.INVISIBLE);
+
+        btnMeetups = (Button) findViewById(R.id.btn_meetups);
+        btnEvents = (Button) findViewById(R.id.btn_events);
+        btnGroups = (Button) findViewById(R.id.btn_groups);
+
+
+        btnMeetups.setOnClickListener(new View.OnClickListener(){
+            public void onClick (View view) {
+                try {
+                    listOfFeeds.setVisibility(View.INVISIBLE);
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.linear_feeds, meetups, "MEETUPS_FRAGMENT");
+                    fragmentTransaction.commit();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                btnMeetups.setBackgroundResource(R.color.gray);
+                btnEvents.setBackgroundResource(R.color.transparent);
+                btnGroups.setBackgroundResource(R.color.transparent);
+            }
+        });
+
+        btnEvents.setOnClickListener(new View.OnClickListener(){
+            public void onClick (View view) {
+                try {
+                    listOfFeeds.setVisibility(View.INVISIBLE);
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.linear_feeds, events, "EVENTS_FRAGMENT");
+                    fragmentTransaction.commit();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                btnMeetups.setBackgroundResource(R.color.transparent);
+                btnEvents.setBackgroundResource(R.color.gray);
+                btnGroups.setBackgroundResource(R.color.transparent);
+            }
+        });
+
+        btnGroups.setOnClickListener(new View.OnClickListener(){
+            public void onClick (View view) {
+                //fragmentTransaction.add(R.id.linear_feeds, meetups,"GROUP_FRAGMENT");
+                //fragmentTransaction.commit();
+                btnMeetups.setBackgroundResource(R.color.transparent);
+                btnEvents.setBackgroundResource(R.color.transparent);
+                btnGroups.setBackgroundResource(R.color.gray);
+            }
+        });
+
+
+
     }
+
 
     public void navUserProfile() {
         Log.d("USER_ID (newsfeed)", currentUser.getId() + "");

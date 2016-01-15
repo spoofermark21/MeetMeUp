@@ -41,7 +41,6 @@
             android:hint="Username"
             android:inputType="text"
             android:maxLines="1"
-            android:elevation="3dp"
             android:padding="15dp"
             android:singleLine="true"
             android:text="john" />
@@ -54,7 +53,6 @@
             android:background="@drawable/edit_text"
             android:hint="Password"
             android:inputType="textPassword"
-            android:elevation="3dp"
             android:padding="15dp"
             android:maxLines="1"
             android:singleLine="true"

@@ -43,8 +43,9 @@
     </group>
 
     <!--
-    <item android:title="Communicate">
+    <item android:title="Personal">
         <menu>
+
             <item
                 android:id="@+id/nav_share"
                 android:icon="@android:drawable/ic_menu_share"
@@ -53,6 +54,7 @@
                 android:id="@+id/nav_send"
                 android:icon="@android:drawable/ic_menu_send"
                 android:title="Send" />
+
         </menu>
     </item> -->
 

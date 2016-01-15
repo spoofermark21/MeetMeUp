@@ -17,7 +17,7 @@ public class Network {
     private static final String deployment = "http://192.168.254.114/";
     private static final String webhosting = "http://meetmeup.site11.com/";
 
-    public static final String forDeploymentIp = deployment + "meetmeup/";
+    public static final String forDeploymentIp = webhosting + "meetmeup/";
 
     public static final String imageStoragePath = forDeploymentIp + "/meetmeup/image_upload.php";
 

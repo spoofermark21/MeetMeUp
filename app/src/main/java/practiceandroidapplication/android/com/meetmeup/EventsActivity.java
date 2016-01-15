@@ -64,7 +64,6 @@ public class EventsActivity extends AppCompatActivity {
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -331,8 +330,11 @@ public class EventsActivity extends AppCompatActivity {
                 if (message.equals("Successful")) {
                     Toast.makeText(EventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     displayEvents();
-                } else if(message.equals("No events")) {
+                } else if (message.equals("No events")) {
                     lblMessage.setVisibility(View.VISIBLE);
+                } else {
+                    lblMessage.setVisibility(View.VISIBLE);
+                    lblMessage.setText("Please check your internet connection");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
