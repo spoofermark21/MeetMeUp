@@ -15,6 +15,8 @@ public class Meetups {
 
     private int postedBy;
 
+    private String postedByName;
+
     private String location;
 
     private String postedDate;
@@ -132,5 +134,13 @@ public class Meetups {
 
     public void setActiveFlag(char activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public String getPostedByName() {
+        return postedByName;
+    }
+
+    public void setPostedByName(String postedByName) {
+        this.postedByName = postedByName;
     }
 }

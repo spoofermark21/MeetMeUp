@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="practiceandroidapplication.android.com.meetmeup">
+    package="practiceandroidapplication.android.com.meetmeup" >
 
     <permission
         android:name="practiceandroidapplication.android.com.meetmeup.googlemapsv2.permission.MAPS_RECEIVE"
@@ -33,11 +33,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/MyMaterialTheme">
+        android:theme="@style/MyMaterialTheme" >
         <activity
             android:name=".SplashActivity"
             android:label="@string/app_name"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -48,7 +48,7 @@
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.LOGIN" />
 
@@ -58,7 +58,7 @@
         <activity
             android:name=".RegistrationActivity"
             android:label="Register"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.REGISTRATION" />
 
@@ -68,7 +68,7 @@
         <activity
             android:name=".NewsfeedActivity"
             android:label="Newsfeed"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -78,7 +78,7 @@
         <activity
             android:name=".UserProfileActivity"
             android:label="Profile"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -88,7 +88,7 @@
         <activity
             android:name=".UserProfileUpdateActivity"
             android:label="Update profile"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -98,7 +98,7 @@
         <activity
             android:name=".SetPreferenceActivity"
             android:label="Preference"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -108,7 +108,7 @@
         <activity
             android:name=".GroupActivity"
             android:label="My groups"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -118,7 +118,7 @@
         <activity
             android:name=".CreateGroupActivity"
             android:label="Create groups"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -128,7 +128,7 @@
         <activity
             android:name=".MeetupsActivity"
             android:label="My meetups"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -138,7 +138,7 @@
         <activity
             android:name=".EventsActivity"
             android:label="My events"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -148,7 +148,7 @@
         <activity
             android:name=".CreateEventActivity"
             android:label="Create event"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -156,9 +156,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewEventsActivity"
+            android:name=".EditEventsActivity"
             android:label="View event"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -166,9 +166,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewGroupActivity"
+            android:name=".EditGroupActivity"
             android:label="View group"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -192,7 +192,7 @@
         <activity
             android:name=".UserProfileUpdatePasswordActivity"
             android:label="Change password"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -202,7 +202,7 @@
         <activity
             android:name=".CreateMeetupActivity"
             android:label="Create meetups"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
@@ -210,29 +210,56 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ViewMeetupActivity"
+            android:name=".EditMeetupActivity"
             android:label="Edit meetup"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SearchActivity"
+            android:label="Search"
+            android:theme="@style/MyMaterialTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEWSFEED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".NotificationActivity"
+            android:label="Notifications"
+            android:theme="@style/MyMaterialTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEWSFEED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ViewMeetupsActivity"
+            android:label="Meetups"
+            android:theme="@style/MyMaterialTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEWSFEED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".MapsActivity"
             android:label="Map"
-            android:theme="@style/MyMaterialTheme">
+            android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/google_maps_key" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -240,35 +267,11 @@
              Note that the API key is linked to the encryption key used to sign the APK.
              You need a different API key for each encryption key, including the release key that is used to
              sign the APK for publishing.
-             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".SearchActivity"
-            android:label="Search"
-            android:theme="@style/MyMaterialTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.NEWSFEED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-        </activity>
-
-        <activity
-            android:name=".NotificationActivity"
-            android:label="Notifications"
-            android:theme="@style/MyMaterialTheme">
-
-            <intent-filter>
-                <action android:name="android.intent.action.NEWSFEED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

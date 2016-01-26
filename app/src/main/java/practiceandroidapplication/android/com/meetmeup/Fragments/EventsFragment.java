@@ -1,15 +1,11 @@
 package practiceandroidapplication.android.com.meetmeup.Fragments;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,14 +27,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.EditGroupActivity;
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
-import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 import practiceandroidapplication.android.com.meetmeup.R;
-import practiceandroidapplication.android.com.meetmeup.ViewEventsActivity;
 
 
 public class EventsFragment extends Fragment {
@@ -56,6 +52,8 @@ public class EventsFragment extends Fragment {
     TextView lblMessage;
 
     LinearLayout listOfFeeds;
+
+    Button btnEvents;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Events> currentEvents = new ArrayList<>();
@@ -83,57 +81,60 @@ public class EventsFragment extends Fragment {
         lblMessage.setVisibility(View.INVISIBLE);
         listOfEvents.setVisibility(View.INVISIBLE);
 
+        /*btnEvents = (Button) getActivity().findViewById(R.id.btn_events);
+        btnEvents.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                new RetrieveEvents().execute();
+            }
+        });*/
+
         new RetrieveEvents().execute();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-
     }
 
+
+    /* thread
+
+     */
+
     public void displayEvents() {
+
+        listOfEvents.removeAllViews();
+        //removeEvents();
 
         for (Events event : currentEvents) {
 
             LinearLayout recordOfEvents = new LinearLayout(getActivity());
             recordOfEvents.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             recordOfEvents.setOrientation(LinearLayout.VERTICAL);
-            recordOfEvents.setPadding(10, 10, 10, 10);
+            recordOfEvents.setPadding(3, 3, 3, 3);
 
             Log.d("Event name", event.getEventName());
             recordOfEvents.setTag(event.getId());
 
-            final LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            params1.weight = 1.0f;
-            params1.gravity = Gravity.LEFT;
 
-            LinearLayout user = new LinearLayout(getActivity());
-            user.setOrientation(LinearLayout.HORIZONTAL);
-            user.setPadding(10, 10, 10, 10);
-            user.setLayoutParams(params1);
-
-            final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            /*final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             imageGroupParams.height = 50;
             imageGroupParams.width = 50;
             imageGroupParams.gravity = Gravity.LEFT;
 
             final ImageView eventPostedByImage = new ImageView(getActivity());
             eventPostedByImage.setImageResource(R.drawable.meetmeup);
-            eventPostedByImage.setLayoutParams(imageGroupParams);
+            eventPostedByImage.setLayoutParams(imageGroupParams);*/
 
             final TextView eventPostedBy = new TextView(getActivity());
-            eventPostedBy.setText("Mark Sibi");
-            eventPostedBy.setTextSize(20);
+            eventPostedBy.setText("Posted by: Mark Sibi");
+            eventPostedBy.setTextSize(15);
             eventPostedBy.setTextColor(Color.BLACK);
 
-            user.addView(eventPostedByImage);
-            user.addView(eventPostedBy);
 
             final TextView eventName = new TextView(getActivity());
             eventName.setText(event.getEventName());
-            eventName.setTextSize(15);
+            eventName.setTextSize(25);
             eventName.setTextColor(Color.BLACK);
 
             final TextView eventDetails = new TextView(getActivity());
@@ -178,10 +179,23 @@ public class EventsFragment extends Fragment {
             view.setTextSize(15);
             view.setBackgroundColor(Color.TRANSPARENT);
 
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Intent events = new Intent(getActivity(), EditGroupActivity.class);
+                    events.putExtra("Events ID", parent.getTag() + "");
+                    startActivity(events);
+
+                    Toast.makeText(getActivity(), parent.getTag() + "!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             options.addView(view);
 
-            recordOfEvents.addView(user);
+            //recordOfEvents.addView(eventPostedByImage);
             recordOfEvents.addView(eventName);
+            recordOfEvents.addView(eventPostedBy);
             recordOfEvents.addView(eventDetails);
             recordOfEvents.addView(eventKey);
             recordOfEvents.addView(eventLocation);
@@ -194,22 +208,17 @@ public class EventsFragment extends Fragment {
         }
     }
 
-    /* thread */
-
     /*
         thread
      */
 
     class RetrieveEvents extends AsyncTask<String, String, String> {
 
-        String[] groups = new String[9999];
-        ArrayAdapter<String> eventAdapter;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(getActivity(), R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -226,7 +235,7 @@ public class EventsFragment extends Fragment {
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
-                params.add(new BasicNameValuePair("filter", "all"));
+                params.add(new BasicNameValuePair("filter", "newsfeed"));
 
                 Log.d("request!", "starting");
 
@@ -244,6 +253,7 @@ public class EventsFragment extends Fragment {
                     JSONObject jUserObject;
 
                     //sessions.removeGroups();
+                    currentEvents.clear();
 
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);

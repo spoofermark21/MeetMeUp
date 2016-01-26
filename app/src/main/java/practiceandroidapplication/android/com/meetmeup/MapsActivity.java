@@ -29,10 +29,6 @@ public class MapsActivity extends AppCompatActivity {
 
     private GoogleMap googleMap;
 
-    private double currentLatitude = Sessions.getSessionsInstance().currentLocationLatitude;
-
-    private double currentLongtitude = Sessions.getSessionsInstance().currentLocationLongtitude;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,14 +41,14 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
+                //startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
 
         try {
             // Loading map
-            initilizeMap(10.342887, 123.960722);
+            initilizeMap();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,25 +56,16 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
-
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
     /**
      * function to load map. If map is not created it will create it for you
-     */
-    private void initilizeMap(double latitude, double longitude) {
+     * */
+    private void initilizeMap() {
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(
                     R.id.map)).getMap();
 
-
-            // latitude and longitude
-           /* double latitude = 10.342887;
-            double longitude = 123.960722;*/
-
+            double latitude = 10.342887;
+            double longitude = 123.960722;
 
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
                     new LatLng(latitude, longitude)).zoom(12).build();
@@ -99,11 +86,10 @@ public class MapsActivity extends AppCompatActivity {
             googleMap.getUiSettings().setMyLocationButtonEnabled(true);
             googleMap.getUiSettings().setRotateGesturesEnabled(true);
 
-
             // check if map is created successfully or not
             if (googleMap == null) {
                 Toast.makeText(getApplicationContext(),
-                        "Sorry! unable to create maps. Please check your internet connection.", Toast.LENGTH_SHORT)
+                        "Sorry! unable to create maps", Toast.LENGTH_SHORT)
                         .show();
             }
         }
@@ -112,13 +98,8 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            initilizeMap(10.342887, 123.960722);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-
+        initilizeMap();
     }
+
 
 }

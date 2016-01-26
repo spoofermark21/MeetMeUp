@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -37,11 +38,13 @@ import android.widget.Toast;
 
 import practiceandroidapplication.android.com.meetmeup.Adapter.TabsPagerAdapter;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Fragments.EventsFragment;
+import practiceandroidapplication.android.com.meetmeup.Fragments.GroupsFragment;
 import practiceandroidapplication.android.com.meetmeup.Fragments.MeetupsFragment;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 //import practiceandroidapplication.android.com.meetmeup.Newsfeed.adapter.FeedListAdapter;
@@ -52,9 +55,6 @@ public class NewsfeedActivity extends AppCompatActivity
 
     // web service
     private static final String LOGOUT_URL = Network.forDeploymentIp + "user_logout.php";
-    private static final String RETRIEVE_MEETUPS_URL = Network.forDeploymentIp + "user_logout.php";
-    private static final String RETRIEVE_GROUPS_URL = Network.forDeploymentIp + "user_logout.php";
-    private static final String RETRIEVE_EVENTS_URL = Network.forDeploymentIp + "user_logout.php";
 
 
     private static final String TAG_STATUS = "status";
@@ -75,11 +75,11 @@ public class NewsfeedActivity extends AppCompatActivity
 
     Fragment meetups = new MeetupsFragment();
     Fragment events = new EventsFragment();
-    Fragment groups;
+    Fragment groups = new GroupsFragment();
 
     FragmentManager fragmentManager = getFragmentManager();
 
-    int btnCounter = 0;
+    private char currentFragmentSelected = 'A';
 
     @SuppressLint("NewApi")
     @Override
@@ -105,6 +105,21 @@ public class NewsfeedActivity extends AppCompatActivity
         initUI();
         //setUserProfile();
         setUserProfile();
+
+        //meetups as default newsfeed
+        try {
+            listOfFeeds.setVisibility(View.INVISIBLE);
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.linear_feeds, meetups, "MEETUPS_FRAGMENT");
+            fragmentTransaction.commit();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
+        btnMeetups.setBackgroundResource(R.color.gray);
+        btnEvents.setBackgroundResource(R.color.transparent);
+        btnGroups.setBackgroundResource(R.color.transparent);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -136,7 +151,6 @@ public class NewsfeedActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.newsfeed, menu);
         return true;
     }
@@ -147,12 +161,44 @@ public class NewsfeedActivity extends AppCompatActivity
 
         if (id == R.id.action_settings) {
             return true;
-        } else if (id == R.id.action_search) {
-            startActivity(new Intent(NewsfeedActivity.this, SearchActivity.class));
-        } else if (id == R.id.action_refresh) {
-            Toast.makeText(NewsfeedActivity.this, "You clicked refresh."
-                    , Toast.LENGTH_SHORT).show();
-        }
+        } /*else if (id == R.id.action_refresh) {
+            try {
+
+                switch(currentFragmentSelected) {
+                    case 'M':
+                    case 'A':
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.detach(meetups);
+                        fragmentTransaction.attach(meetups);
+
+                        MeetupsFragment meetupsFragment = new MeetupsFragment();
+                        meetupsFragment.refresh();
+
+                        currentFragmentSelected = 'M';
+                        // for debugging
+                        Toast.makeText(NewsfeedActivity.this, "You clicked refresh meetup."
+                                , Toast.LENGTH_SHORT).show();
+                    case 'E':
+                        fragmentTransaction.detach(events);
+                        fragmentTransaction.attach(events);
+                        currentFragmentSelected = 'E';
+                        // for debugging
+                        Toast.makeText(NewsfeedActivity.this, "You clicked refresh events."
+                                , Toast.LENGTH_SHORT).show();
+                        break;
+                    case 'G':
+                        // for debugging
+                        Toast.makeText(NewsfeedActivity.this, "You clicked refresh groups."
+                                , Toast.LENGTH_SHORT).show();
+                        fragmentTransaction.detach(groups);
+                        fragmentTransaction.attach(groups);
+                        currentFragmentSelected = 'G';
+                        break;
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
@@ -174,13 +220,19 @@ public class NewsfeedActivity extends AppCompatActivity
         btnGroups = (Button) findViewById(R.id.btn_groups);
 
 
-        btnMeetups.setOnClickListener(new View.OnClickListener(){
-            public void onClick (View view) {
+        btnMeetups.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 try {
-                    listOfFeeds.setVisibility(View.INVISIBLE);
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.linear_feeds, meetups, "MEETUPS_FRAGMENT");
-                    fragmentTransaction.commit();
+                    if (currentFragmentSelected != 'M' && currentFragmentSelected != 'A') {
+                        listOfFeeds.setVisibility(View.INVISIBLE);
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.linear_feeds, meetups, "MEETUPS_FRAGMENT");
+                        fragmentTransaction.commit();
+                        currentFragmentSelected = 'M';
+                        Log.d("Fragment", currentFragmentSelected + "");
+                    } else {
+                        Log.d("Fragment", "else");
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -191,13 +243,17 @@ public class NewsfeedActivity extends AppCompatActivity
             }
         });
 
-        btnEvents.setOnClickListener(new View.OnClickListener(){
-            public void onClick (View view) {
+        btnEvents.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 try {
-                    listOfFeeds.setVisibility(View.INVISIBLE);
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.linear_feeds, events, "EVENTS_FRAGMENT");
-                    fragmentTransaction.commit();
+                    if (currentFragmentSelected != 'E') {
+                        listOfFeeds.setVisibility(View.INVISIBLE);
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.linear_feeds, events, "EVENTS_FRAGMENT");
+                        fragmentTransaction.commit();
+                        currentFragmentSelected = 'E';
+                        Log.d("Fragment", currentFragmentSelected + "");
+                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -208,16 +264,25 @@ public class NewsfeedActivity extends AppCompatActivity
             }
         });
 
-        btnGroups.setOnClickListener(new View.OnClickListener(){
-            public void onClick (View view) {
-                //fragmentTransaction.add(R.id.linear_feeds, meetups,"GROUP_FRAGMENT");
-                //fragmentTransaction.commit();
+        btnGroups.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                try {
+                    if (currentFragmentSelected != 'G') {
+                        listOfFeeds.setVisibility(View.INVISIBLE);
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.linear_feeds, groups, "GROUPS_FRAGMENT");
+                        fragmentTransaction.commit();
+                        currentFragmentSelected = 'G';
+                        Log.d("Fragment", currentFragmentSelected + "");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 btnMeetups.setBackgroundResource(R.color.transparent);
                 btnEvents.setBackgroundResource(R.color.transparent);
                 btnGroups.setBackgroundResource(R.color.gray);
             }
         });
-
 
 
     }
@@ -313,7 +378,7 @@ public class NewsfeedActivity extends AppCompatActivity
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(NewsfeedActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }

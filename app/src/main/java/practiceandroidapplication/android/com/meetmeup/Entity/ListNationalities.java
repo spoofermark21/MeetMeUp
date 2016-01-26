@@ -26,7 +26,6 @@ public class ListNationalities {
         if (listNationalities == null) {
             listNationalities = new ListNationalities();
         }
-
         return listNationalities;
     }
 

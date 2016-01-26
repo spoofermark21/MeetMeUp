@@ -287,6 +287,10 @@ public class RegistrationActivity extends AppCompatActivity {
         return isReadyToSave;
     }
 
+    public boolean isLegalAge () {
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
         //startActivity(new Intent(RegistrationActivity.this, LoginActivity.class));
@@ -303,7 +307,7 @@ public class RegistrationActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(RegistrationActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }

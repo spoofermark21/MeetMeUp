@@ -36,7 +36,6 @@
             android:background="@color/colorMainBackground"
             android:orientation="vertical"
             android:padding="10dp">
-
             <TextView
                 android:id="@+id/lbl_message"
                 android:textSize="15sp"

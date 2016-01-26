@@ -15,12 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +29,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import practiceandroidapplication.android.com.meetmeup.Entity.Events;
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
@@ -49,7 +45,7 @@ public class GroupActivity extends AppCompatActivity {
     ProgressDialog pDialog;
 
     Toolbar toolbar;
-    //ListView listGroup;
+
     TextView lblMessage;
 
     LinearLayout listOfGroups;
@@ -123,7 +119,7 @@ public class GroupActivity extends AppCompatActivity {
             Log.d("Group name", group.getGroupName());
             recordOfGroups.setTag(group.getId());
 
-            final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            /*final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             //imageGroupParams.weight = 1.0f;
             imageGroupParams.height = 150;
             imageGroupParams.width = 150;
@@ -132,7 +128,7 @@ public class GroupActivity extends AppCompatActivity {
 
             final ImageView groupImage = new ImageView(this);
             groupImage.setImageResource(R.drawable.meetmeup);
-            groupImage.setLayoutParams(imageGroupParams);
+            groupImage.setLayoutParams(imageGroupParams);*/
 
             final TextView groupName = new TextView(this);
             groupName.setText(group.getGroupName());
@@ -185,7 +181,7 @@ public class GroupActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                    Intent group = new Intent(GroupActivity.this, ViewGroupActivity.class);
+                    Intent group = new Intent(GroupActivity.this, EditGroupActivity.class);
                     group.putExtra("GROUP_ID", parent.getTag() + "");
                     startActivity(group);
 
@@ -231,7 +227,7 @@ public class GroupActivity extends AppCompatActivity {
             options.addView(edit);
             options.addView(delete);
 
-            recordOfGroups.addView(groupImage);
+            //recordOfGroups.addView(groupImage);
             recordOfGroups.addView(groupName);
             recordOfGroups.addView(groupDetails);
             recordOfGroups.addView(groupCountMembers);
@@ -248,14 +244,11 @@ public class GroupActivity extends AppCompatActivity {
 
     class RetrieveGroups extends AsyncTask<String, String, String> {
 
-        String[] groups = new String[9999];
-        ArrayAdapter<String> groupAdapter;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(GroupActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -289,12 +282,10 @@ public class GroupActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("group");
                     JSONObject jUserObject;
 
-                    //sessions.removeGroups();
+                    currentGroups.clear();
 
                     for(int i=0; i < jUserArray.length();i++){
                         jUserObject = jUserArray.getJSONObject(i);
-
-                        groups[i] = jUserObject.getString("group_name");
 
                         currentGroups.add(new Group(jUserObject.getInt("id"),
                                 jUserObject.getString("group_name"), jUserObject.getString("details"),

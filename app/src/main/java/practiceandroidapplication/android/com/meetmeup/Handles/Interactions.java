@@ -1,23 +1,11 @@
 package practiceandroidapplication.android.com.meetmeup.Handles;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import practiceandroidapplication.android.com.meetmeup.EventsActivity;
-import practiceandroidapplication.android.com.meetmeup.LoginActivity;
-import practiceandroidapplication.android.com.meetmeup.R;
-import practiceandroidapplication.android.com.meetmeup.ViewEventsActivity;
+import java.util.Random;
 
 /**
  * Created by sibimark on 30/11/2015.
@@ -32,14 +20,15 @@ public class Interactions {
             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
             dlgAlert.setMessage(error);
             dlgAlert.setTitle(null);
-            dlgAlert.setPositiveButton("OK", null);
             dlgAlert.setCancelable(true);
-            dlgAlert.create().show();
             dlgAlert.setPositiveButton("Ok",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
+                            isOk = true;
                         }
                     });
+
+            dlgAlert.create().show();
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -64,7 +53,7 @@ public class Interactions {
             dlgAlert.setNegativeButton("Cancel",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            //Toast.makeText(ViewEventsActivity.this, "False" + "!", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(EditEventsActivity.this, "False" + "!", Toast.LENGTH_SHORT).show();
                             isOk = false;
                         }
                     });
@@ -77,5 +66,15 @@ public class Interactions {
         }
         return isOk;
     }
+
+    public static String generateString(Random rng, String characters, int length) {
+        char[] text = new char[length];
+        for (int i = 0; i < length; i++)
+        {
+            text[i] = characters.charAt(rng.nextInt(characters.length()));
+        }
+        return new String(text);
+    }
+
 
 }

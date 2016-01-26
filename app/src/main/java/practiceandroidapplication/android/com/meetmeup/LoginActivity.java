@@ -56,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin, btnRegister;
 
     private Sessions sessions = Sessions.getSessionsInstance();
+    private User currentUser = sessions.currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
 
         //initialize
         initUI();
-
         Log.d("Class simple name", LoginActivity.class.getSimpleName());
 
     }
@@ -87,8 +87,10 @@ public class LoginActivity extends AppCompatActivity {
                         if (!txtUsername.getText().toString().contains(" ") &&
                                 !txtPassword.getText().toString().contains(" ") &&
                                 !isFieldsEmpty()) {
-                            User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
+                                User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
                             new LoginUser().execute(user.getUsername(), user.getPassword());
+                        } else {
+                            Interactions.showError("Username and password must not contain spaces", LoginActivity.this);
                         }
                     } catch (NullPointerException ex) {
                         Log.d("Null pointer exception", "In object user.");
@@ -144,11 +146,9 @@ public class LoginActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(LoginActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.setIndeterminate(false);
-            //pDialog.setMessage("Loading...");
-            //pDialog.getWindow().setGravity(Gravity.CENTER);
             pDialog.show();
         }
 
@@ -160,7 +160,8 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
+
                 params.add(new BasicNameValuePair("username", user[0]));
                 params.add(new BasicNameValuePair("password", user[1]));
 
@@ -189,27 +190,11 @@ public class LoginActivity extends AppCompatActivity {
 
                     Log.d("USER ID (Login)", jUser.getString(0) + "");
 
-                    sessions.currentUser.setId(Integer.parseInt(jUser.getString(0)));
-                    sessions.currentUser.setFirstName(jUser.getString(1));
-                    sessions.currentUser.setLastName(jUser.getString(2));
-                    sessions.currentUser.setNationality(
+                    currentUser.setId(Integer.parseInt(jUser.getString(0)));
+                    currentUser.setFirstName(jUser.getString(1));
+                    currentUser.setLastName(jUser.getString(2));
+                    currentUser.setNationality(
                             new Nationality(Integer.parseInt(jUser.getString(4))));
-
-                    /*intent.putExtra("USER_ID", jUser.getString(0) + "");
-                    intent.putExtra("USER_FIRSTNAME", jUser.getString(1));
-                    intent.putExtra("USER_LASTNAME", jUser.getString(2));
-                    intent.putExtra("USER_BIRTHDATE", jUser.getString(3));
-                    intent.putExtra("USER_NATIONALITY", jUser.getString(4));
-                    intent.putExtra("USER_GENDER", jUser.getString(5));
-                    intent.putExtra("USER_CURRENT_LOCATION", jUser.getString(6));
-                    intent.putExtra("USER_PREF_AGE", jUser.getString(7));
-                    intent.putExtra("USER_PREF_ END_AGE", jUser.getString(8));
-                    intent.putExtra("USER_PREF_GENDER", jUser.getString(9));
-                    intent.putExtra("USER_PREF_LOCATION", jUser.getString(10));
-                    intent.putExtra("USER_ACTIVE_FLAG", jUser.getString(11));
-                    intent.putExtra("USER_IMAGE", jUser.getString(12));
-                    intent.putExtra("USER_DATE_REGISTERED", jUser.getString(13));
-                    */
 
                     startActivity(intent);
                     finish();

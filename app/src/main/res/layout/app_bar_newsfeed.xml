@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#FFF"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context="practiceandroidapplication.android.com.meetmeup.NewsfeedActivity">
@@ -24,68 +23,85 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/txt_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/edit_text"
+            android:drawableStart="@drawable/ic_search_black_24dp"
+            android:gravity="left"
+            android:hint="Search"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:textAlignment="inherit" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="5dp"
+        android:gravity="center"
+        android:background="@color/colorMainBackground"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/btn_meetups"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:background="@color/transparent"
+            android:text="Meetups"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <Button
+            android:id="@+id/btn_events"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:background="@color/transparent"
+            android:text="Events"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <Button
+            android:id="@+id/btn_groups"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".30"
+            android:background="@color/transparent"
+            android:text="Groups"
+            android:textColor="@color/colorPrimaryDark" />
+
+    </LinearLayout>
+
     <ScrollView
+        android:background="@color/colorMainBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="10dp">
+        android:layout_margin="10dp">
 
         <LinearLayout
+            android:id="@+id/linear_feeds"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <Button
-                    android:textColor="@color/colorPrimaryDark"
-                    android:id="@+id/btn_meetups"
-                    android:layout_width="0dp"
-                    android:layout_weight=".30"
-                    android:layout_height="wrap_content"
-                    android:background="@color/transparent"
-                    android:text="Meetups" />
-
-                <Button
-                    android:textColor="@color/colorPrimaryDark"
-                    android:id="@+id/btn_events"
-                    android:layout_width="0dp"
-                    android:layout_weight=".30"
-                    android:layout_height="wrap_content"
-                    android:background="@color/transparent"
-                    android:text="Events" />
-
-                <Button
-                    android:textColor="@color/colorPrimaryDark"
-                    android:id="@+id/btn_groups"
-                    android:layout_width="0dp"
-                    android:layout_weight=".30"
-                    android:layout_height="wrap_content"
-                    android:background="@color/transparent"
-                    android:text="Groups" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:id="@+id/linear_feeds"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:background="@color/colorMainBackground"
-                android:elevation="5dp"
-                android:orientation="vertical"
-                android:padding="10dp">
-
-            </LinearLayout>
-
+            android:orientation="vertical"
+            android:padding="5dp">
 
         </LinearLayout>
-
 
     </ScrollView>
 

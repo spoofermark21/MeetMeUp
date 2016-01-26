@@ -1,6 +1,5 @@
 package practiceandroidapplication.android.com.meetmeup;
 
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,13 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,12 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
-import practiceandroidapplication.android.com.meetmeup.Entity.Group;
-import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
-import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class EventsActivity extends AppCompatActivity {
@@ -54,7 +45,6 @@ public class EventsActivity extends AppCompatActivity {
     ProgressDialog pDialog;
 
     Toolbar toolbar;
-    //ListView listEvents;
     LinearLayout listOfEvents;
     TextView lblMessage;
 
@@ -192,7 +182,7 @@ public class EventsActivity extends AppCompatActivity {
 
                     String eventId = parent.getTag() + "";
 
-                    Intent event = new Intent(EventsActivity.this, ViewEventsActivity.class);
+                    Intent event = new Intent(EventsActivity.this, EditEventsActivity.class);
                     event.putExtra("EVENT_ID", eventId);
                     startActivity(event);
                     finish();
@@ -257,14 +247,11 @@ public class EventsActivity extends AppCompatActivity {
 
     class RetrieveEvents extends AsyncTask<String, String, String> {
 
-        String[] groups = new String[9999];
-        ArrayAdapter<String> eventAdapter;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(EventsActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -298,7 +285,8 @@ public class EventsActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("events");
                     JSONObject jUserObject;
 
-                    //sessions.removeGroups();
+
+                    currentEvents.clear();
 
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
@@ -348,7 +336,7 @@ public class EventsActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(EventsActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -431,8 +419,7 @@ public class EventsActivity extends AppCompatActivity {
                             //start new intent
                             Log.d("EVENT_ID", currentEvents.get(itemPosition).getId() + "");
 
-                            Intent event = new Intent(EventsActivity.this, ViewEventsActivity.class);
-                            event.putExtra("EVENT_ID", currentEvents.get(itemPosition).getId() + "");
+
 
                             startActivity(event);
 

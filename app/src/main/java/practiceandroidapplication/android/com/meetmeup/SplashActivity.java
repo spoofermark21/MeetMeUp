@@ -14,7 +14,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,8 +40,6 @@ public class SplashActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
 
-    private ProgressDialog pDialog;
-
     private ProgressBar pBar;
 
     ImageView image;
@@ -49,13 +51,13 @@ public class SplashActivity extends AppCompatActivity {
 
         pBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        new ListOfNationalities().execute();
-        /*if (isConnectedToInternet()) {
+        if(isConnectedToInternet()) {
             new ListOfNationalities().execute();
         } else {
-            Interactions.showError("Not connected to internet. Closing...", SplashActivity.this);
+            Log.d("Status", "Not connected");
+            Interactions.showError("Please check your internet connection.", SplashActivity.this);
             finish();
-        }*/
+        }
 
         /*image = (ImageView) findViewById(R.id.image);
         image.setImageResource(R.drawable.scratchers);
@@ -74,18 +76,96 @@ public class SplashActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
             pBar.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected String doInBackground(String... user) {
+        protected String doInBackground(String... info) {
             // TODO Auto-generated method stub
 
             int success;
 
             try {
                 // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        NATIONALITIES_URL, "POST", params);
+
+                Log.d("Fetching...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Successful!", json.toString());
+
+                    JSONArray nationalities = json.getJSONArray("nationality");
+
+                    Log.d("nationalities", nationalities.toString());
+
+                    //save to singleton object ListNationality
+                    for (int i = 0; i < nationalities.length(); i++) {
+                        JSONObject jsonObject = nationalities.getJSONObject(i);
+                        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
+                        listNationalities.nationalities.add(
+                                new Nationality(jsonObject.getInt("id"),
+                                        jsonObject.getString("nationality")));
+
+                        Log.d(jsonObject.getInt("id") + "",
+                                jsonObject.getString("nationality"));
+                    }
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed!", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String message) {
+
+            try {
+                pBar.setVisibility(View.GONE);
+                if (message.equals("Successful")) {
+                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                    overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+                    finish();
+                } else {
+                    if(isConnectedToInternet()) {
+                        Interactions.showError("Please check your internet connection.", SplashActivity.this);
+                    } else {
+                        Interactions.showError("Something went wrong. Sorry.", SplashActivity.this);
+                    }
+                    finish();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
+    } // end of ListNationalities Thread
+
+    //check internet connection
+    public boolean isConnectedToInternet() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+
+    }
+
+}
+
+/*
+// Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 Log.d("request!", "starting");
 
@@ -116,67 +196,41 @@ public class SplashActivity extends AppCompatActivity {
                                 jsonObject.getString("nationality"));
                     }
 
-                    /*//for debugging
-                    ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
-                    for(Nationality list : listNationalities.nationalities) {
-                        Log.d(list.getId() + "", list.getNationality());
-                    }*/
-
-                    return json.getString(TAG_RESPONSE);
-                } else {
-                    Log.d("Fetching failed!", json.getString(TAG_RESPONSE));
-                    return json.getString(TAG_RESPONSE);
-                }
-            } catch (Exception e) {
-                //Interactions.showError(e.toString(), SplashActivity.this);
-                e.printStackTrace();
-            }
-            return null;
+                    /*for debugging
+        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
+        for(Nationality list : listNationalities.nationalities) {
+        Log.d(list.getId() + "", list.getNationality());
         }
 
-        protected void onPostExecute(String message) {
+        return json.getString(TAG_RESPONSE);
+        } else {
+        Log.d("Fetching failed!", json.getString(TAG_RESPONSE));
+        return json.getString(TAG_RESPONSE);
+        }
+
+
+         String type = "select";
+            String query = "SELECT%20*%20FROM%20nationalities";
+
+            HttpClient client = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(Network.forFinalDeployment + "?type=" + type + "&get_query=" + query);
 
             try {
-                if (message.equals("Successful")) {
-                    startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                    overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
-                    finish();
-                    /*
-                    new Thread() {
-                        public void run() {
-                            try {
-                                sleep(5000);
-                                startActivity(new Intent(SplashActivity.this, LoginActivity.class));
-                                overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
-                                pBar.setVisibility(View.GONE);
-                                finish();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                                finish();
-                            }
-                        }
-                    }.start();
-                    */
-                } else {
-                    pBar.setVisibility(View.GONE);
-                    Interactions.showError("Something went wrong!", SplashActivity.this);
-                    finish();
-                }
+                HttpResponse response = client.execute(httpGet);
+                //response.
+                Log.d("Response", response.toString());
+
+                //JSONObject json = jsonParser.getJSONFromUrl(Network.forFinalDeployment + "?type=" + type + "&query=" + query);
+                //Log.d("Json", json.toString());
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            List<NameValuePair> params = new ArrayList<>();
+                params.add(new BasicNameValuePair("type", "select"));
+                params.add(new BasicNameValuePair("get_query", "SELECT * FROM nationalities"));
 
-        }
+                JSONObject json = jsonParser.makeHttpRequest(
+                        Network.forDeploymentIp + "/transactions.php", "POST", params);
 
-    } // end of ListNationalities Thread
-
-    public boolean isConnectedToInternet() {
-
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
-                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
-
-    }
-
-}
+*/

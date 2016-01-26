@@ -6,7 +6,8 @@
     <color name="colorPrimary">#48CFAD</color>
     <color name="colorPrimaryDark">#37BC9B</color>
     <color name="colorAccent">#A5D6A7</color>
-    <color name="colorMainBackground">#F5F7FA</color>
+    <!--<color name="colorMainBackground">#F5F7FA</color>-->
+    <color name="colorMainBackground">#ffffff</color>
 
     <!-- #F5F7FA -->
     <color name="transparent">#00000000</color>

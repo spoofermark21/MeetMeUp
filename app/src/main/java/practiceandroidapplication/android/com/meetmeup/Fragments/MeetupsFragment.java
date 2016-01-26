@@ -1,15 +1,11 @@
 package practiceandroidapplication.android.com.meetmeup.Fragments;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,15 +27,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.EditGroupActivity;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
-import practiceandroidapplication.android.com.meetmeup.MeetupsActivity;
-import practiceandroidapplication.android.com.meetmeup.NewsfeedActivity;
 import practiceandroidapplication.android.com.meetmeup.R;
-import practiceandroidapplication.android.com.meetmeup.ViewMeetupActivity;
+import practiceandroidapplication.android.com.meetmeup.ViewMeetupsActivity;
 
 
 public class MeetupsFragment extends Fragment {
@@ -51,21 +47,20 @@ public class MeetupsFragment extends Fragment {
     ProgressDialog pDialog;
 
     Toolbar toolbar;
-    //ListView listMeetups;
+
     LinearLayout listOfMeetups;
     TextView lblMessage;
 
     LinearLayout listOfFeeds;
 
-    Sessions sessions = Sessions.getSessionsInstance();
+    Button btnMeetups;
+
     List<Meetups> currentMeetups = new ArrayList<>();
     User currentUser = Sessions.getSessionsInstance().currentUser;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.fragment_meetups, container, false);
         return rootView;
     }
@@ -82,56 +77,56 @@ public class MeetupsFragment extends Fragment {
         listOfMeetups.setVisibility(View.INVISIBLE);
         lblMessage.setVisibility(View.INVISIBLE);
 
+          /*btnMeetups = (Button) getActivity().findViewById(R.id.btn_meetups);
+        btnMeetups.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                new RetrieveMeetups().execute();
+            }
+        });*/
+
         new RetrieveMeetups().execute();
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onResume() {
+        super.onResume();
 
-
+        //new RetrieveMeetups().execute();
     }
 
     public void displayMeetups() {
+
+        listOfMeetups.removeAllViews();
+
+
         for (Meetups meetups : currentMeetups) {
 
             LinearLayout recordOfMeetups = new LinearLayout(getActivity());
             recordOfMeetups.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             recordOfMeetups.setOrientation(LinearLayout.VERTICAL);
-            recordOfMeetups.setPadding(10, 10, 10, 10);
+            recordOfMeetups.setPadding(3, 3, 3, 3);
 
             Log.d("Meetup", meetups.getDetails());
             recordOfMeetups.setTag(meetups.getId());
 
-            final LinearLayout.LayoutParams params1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            params1.weight = 1.0f;
-            params1.gravity = Gravity.LEFT;
-
-            LinearLayout user = new LinearLayout(getActivity());
-            user.setOrientation(LinearLayout.HORIZONTAL);
-            user.setPadding(10, 10, 10, 10);
-            user.setLayoutParams(params1);
-
-            final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            /*final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             imageGroupParams.height = 50;
             imageGroupParams.width = 50;
             imageGroupParams.gravity = Gravity.LEFT;
 
             final ImageView meetupPostedByImage = new ImageView(getActivity());
             meetupPostedByImage.setImageResource(R.drawable.meetmeup);
-            meetupPostedByImage.setLayoutParams(imageGroupParams);
+            meetupPostedByImage.setLayoutParams(imageGroupParams);*/
 
             final TextView meetupPostedBy = new TextView(getActivity());
-            meetupPostedBy.setText("Mark Sibi");
-            meetupPostedBy.setTextSize(20);
+            meetupPostedBy.setText("Posted by: Mark Sibi");
+            meetupPostedBy.setTextSize(15);
             meetupPostedBy.setTextColor(Color.BLACK);
 
-            user.addView(meetupPostedByImage);
-            user.addView(meetupPostedBy);
 
             final TextView meetupSubject = new TextView(getActivity());
             meetupSubject.setText(meetups.getSubject());
-            meetupSubject.setTextSize(15);
+            meetupSubject.setTextSize(25);
             meetupSubject.setTextColor(Color.BLACK);
 
             final TextView meetupDetails = new TextView(getActivity());
@@ -165,14 +160,25 @@ public class MeetupsFragment extends Fragment {
             final TextView view = new TextView(getActivity());
             view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             view.setPadding(10, 10, 0, 10);
-            view.setText("View");
+            view.setText("view");
             view.setTextSize(15);
             view.setBackgroundColor(Color.TRANSPARENT);
 
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Intent meetups = new Intent(getActivity(), ViewMeetupsActivity.class);
+                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+                    startActivity(meetups);
+                }
+            });
+
             options.addView(view);
 
-            recordOfMeetups.addView(user);
+            //recordOfMeetups.addView(meetupPostedByImage);
             recordOfMeetups.addView(meetupSubject);
+            recordOfMeetups.addView(meetupPostedBy);
             recordOfMeetups.addView(meetupDetails);
             recordOfMeetups.addView(meetupLocation);
             recordOfMeetups.addView(meetupKey);
@@ -183,18 +189,16 @@ public class MeetupsFragment extends Fragment {
 
     }
 
+
     /* thread */
 
     class RetrieveMeetups extends AsyncTask<String, String, String> {
-
-        String[] groups = new String[9999];
-        ArrayAdapter<String> meetupAdapter;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(getActivity(), R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -212,7 +216,7 @@ public class MeetupsFragment extends Fragment {
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
-                params.add(new BasicNameValuePair("filter", "all"));
+                params.add(new BasicNameValuePair("filter", "newsfeed"));
 
                 Log.d("request!", "starting");
 
@@ -229,7 +233,7 @@ public class MeetupsFragment extends Fragment {
                     JSONArray jUserArray = json.getJSONArray("meetups");
                     JSONObject jUserObject;
 
-                    //sessions.removeGroups();
+                    currentMeetups.clear();
 
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
@@ -239,6 +243,7 @@ public class MeetupsFragment extends Fragment {
                                 jUserObject.getString("posted_date"), jUserObject.getString("key")));
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
+                        Log.d("Meetups size", currentMeetups.size() + "");
                     }
 
                     return json.getString(TAG_RESPONSE);
@@ -256,8 +261,10 @@ public class MeetupsFragment extends Fragment {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
+
                 listOfFeeds.setVisibility(View.VISIBLE);
                 listOfMeetups.setVisibility(View.VISIBLE);
+
                 if (message.equals("Successful")) {
                     Toast.makeText(getActivity(), message + "!", Toast.LENGTH_SHORT).show();
                     displayMeetups();

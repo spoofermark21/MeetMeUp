@@ -54,23 +54,23 @@
                 android:text="Personal Details"
                 android:textSize="20sp" />
 
-            <!-- add feature to edit
             <ImageView
+                android:layout_gravity="center"
+                android:background="@drawable/edit_text"
+                android:scaleType="fitCenter"
+                android:id="@+id/img_user"
                 android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:src="@drawable/background"/>
+                android:layout_height="100dp" />
+
             <Button
-                android:id="@+id/btn_upload"
+                android:id="@+id/btn_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="5dp"
                 android:background="@color/transparent"
-                android:text="Upload profile picture"/>
-            -->
-            <!-- first name -->
+                android:elevation="5dp"
+                android:text="Select group image"
+                android:textColor="@color/colorPrimaryDark" />
 
             <EditText
                 android:id="@+id/txt_firstname"

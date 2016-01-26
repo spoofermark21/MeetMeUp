@@ -31,6 +31,7 @@
 
 
         <LinearLayout
+            android:background="@color/colorMainBackground"
             android:id="@+id/linear_profile"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
@@ -46,13 +47,13 @@
                 android:padding="10dp">
 
                 <ImageView
+                    android:id="@+id/img_user"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="start"
                     android:layout_marginRight="10dp"
                     android:background="@drawable/img"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/mark" />
+                    android:scaleType="fitXY"/>
 
                 <LinearLayout
                     android:layout_width="fill_parent"

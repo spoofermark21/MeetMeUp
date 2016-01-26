@@ -51,12 +51,8 @@ public class CreateEventActivity extends AppCompatActivity {
     Spinner spnEventType;
     DatePicker startDate, endDate;
 
-
-
     Button btnCreate;
 
-    Sessions sessions = Sessions.getSessionsInstance();
-    List<Group> currentGroups = Sessions.getSessionsInstance().currentGroups;
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     Events events = new Events();
@@ -171,7 +167,7 @@ public class CreateEventActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(CreateEventActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }

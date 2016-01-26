@@ -2,6 +2,8 @@ package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,14 +12,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +49,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
     LinearLayout linearProfile;
 
+    ImageView imgUser;
+
     Sessions sessions = Sessions.getSessionsInstance();
     User currentUser = Sessions.getSessionsInstance().currentUser;
     User user = new User();
@@ -54,6 +64,7 @@ public class UserProfileActivity extends AppCompatActivity {
         try {
             linearProfile.setVisibility(View.INVISIBLE);
             new RetrieveUser().execute();
+
         } catch(Exception ex) {
             ex.printStackTrace();
         }
@@ -96,6 +107,8 @@ public class UserProfileActivity extends AppCompatActivity {
 
         linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
+        imgUser = (ImageView) findViewById(R.id.img_user);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
@@ -118,7 +131,7 @@ public class UserProfileActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(UserProfileActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -168,6 +181,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     currentUser.setEmailAddress(jUserObject.getString("email_address"));
                     currentUser.setContactNumber(jUserObject.getString("contact_number"));
                     currentUser.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
+                    currentUser.setUserImage(jUserObject.getString("user_image"));
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -185,6 +199,9 @@ public class UserProfileActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
+
+                    // download user image based on the file name query
+                    new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
 
                     linearProfile.setVisibility(View.VISIBLE);
 
@@ -205,7 +222,60 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         }
 
-    } // end of retrieve create user
+    }
+    private class DownloadUserImage extends AsyncTask<Void, Void, Bitmap> {
+
+        String filename;
+
+        public DownloadUserImage(String filename) {
+            this.filename = filename;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(UserProfileActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            //pDialog.setMessage("Downloading image...");
+            pDialog.show();
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            try {
+                final String USER_IMAGE_URL = Network.forDeploymentIp + "meetmeup/uploads/users/" + this.filename;
+
+                Log.d("Image", USER_IMAGE_URL);
+
+                URLConnection connection = new URL(USER_IMAGE_URL).openConnection();
+                connection.setConnectTimeout(1000 * 30);
+
+                return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+                //Toast.makeText(UserProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
+                return null;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }
+
+
+        protected void onPostExecute(Bitmap bitmap) {
+            pDialog.dismiss();
+            try {
+                if(bitmap!=null) {
+                    imgUser.setImageBitmap(bitmap);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
     public void onBackPressed() {
         finish();

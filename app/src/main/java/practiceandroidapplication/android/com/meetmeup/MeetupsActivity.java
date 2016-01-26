@@ -15,12 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +28,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
@@ -167,7 +162,7 @@ public class MeetupsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                    Intent meetups = new Intent(MeetupsActivity.this, ViewMeetupActivity.class);
+                    Intent meetups = new Intent(MeetupsActivity.this, EditMeetupActivity.class);
                     meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
                     startActivity(meetups);
                     finish();
@@ -230,14 +225,11 @@ public class MeetupsActivity extends AppCompatActivity {
 
     class RetrieveMeetups extends AsyncTask<String, String, String> {
 
-        String[] groups = new String[9999];
-        ArrayAdapter<String> meetupAdapter;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(MeetupsActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -272,7 +264,7 @@ public class MeetupsActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("meetups");
                     JSONObject jUserObject;
 
-                    //sessions.removeGroups();
+                    currentMeetups.clear();
 
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
@@ -321,7 +313,7 @@ public class MeetupsActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(MeetupsActivity.this, R.style.progress);
-            pDialog.setCancelable(false);
+            pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
