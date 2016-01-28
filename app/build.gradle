@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "practiceandroidapplication.android.com.meetmeup"
-        minSdkVersion 13
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"

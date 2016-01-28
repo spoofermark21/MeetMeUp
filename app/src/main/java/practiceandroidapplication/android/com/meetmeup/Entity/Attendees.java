@@ -19,6 +19,20 @@ public class Attendees {
 
     private String acceptedDate;
 
+    public Attendees() {
+
+    }
+
+    public Attendees(int postId, char postType, int userId,
+                     char collaborationStatus, String requestDate) {
+        this.postId = postId;
+        this.postType = postType;
+        this.userId = userId;
+        this.collaborationStatus = collaborationStatus;
+        this.requestDate = requestDate;
+    }
+
+
     public Attendees(int id, int postId, char postType, int userId,
                      char collaborationStatus, String requestDate, String acceptedDate) {
         this.id = id;

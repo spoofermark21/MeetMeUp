@@ -21,9 +21,11 @@ public class Network {
     // aize 192.168.254.109
 
     private static final String testing = "http://192.168.186.1/";
-    private static final String deployment = "http://192.168.2541k.114/";
+    private static final String deployment = "http://192.168.254.106/";
+    private static final String teradyne = "http://172.17.154.233/";
+
     private static final String webhosting = "http://meetmeup.site11.com/";
-    public static final String forDeploymentIp = testing + "meetmeup/";
+    public static final String forDeploymentIp = teradyne + "meetmeup/";
     public static final String forFinalDeployment = testing + "meetmeup/transactions.php";
 
 }

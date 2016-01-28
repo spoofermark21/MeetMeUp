@@ -119,10 +119,14 @@ public class MeetupsFragment extends Fragment {
             meetupPostedByImage.setLayoutParams(imageGroupParams);*/
 
             final TextView meetupPostedBy = new TextView(getActivity());
-            meetupPostedBy.setText("Posted by: Mark Sibi");
+            meetupPostedBy.setText(meetups.getPostedByName());
             meetupPostedBy.setTextSize(15);
             meetupPostedBy.setTextColor(Color.BLACK);
 
+            final TextView meetupPostedDate = new TextView(getActivity());
+            meetupPostedDate.setText(meetups.getPostedDate());
+            meetupPostedDate.setTextSize(15);
+            meetupPostedDate.setTextColor(Color.BLACK);
 
             final TextView meetupSubject = new TextView(getActivity());
             meetupSubject.setText(meetups.getSubject());
@@ -139,10 +143,10 @@ public class MeetupsFragment extends Fragment {
             meetupLocation.setTextSize(15);
             meetupLocation.setTextColor(Color.BLACK);
 
-            final TextView meetupKey = new TextView(getActivity());
+            /*final TextView meetupKey = new TextView(getActivity());
             meetupKey.setText("Key: " + meetups.getKey());
             meetupKey.setTextSize(15);
-            meetupKey.setTextColor(Color.BLACK);
+            meetupKey.setTextColor(Color.BLACK);*/
 
 
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
@@ -171,6 +175,7 @@ public class MeetupsFragment extends Fragment {
                     Intent meetups = new Intent(getActivity(), ViewMeetupsActivity.class);
                     meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
                     startActivity(meetups);
+                    getActivity().finish();
                 }
             });
 
@@ -178,10 +183,11 @@ public class MeetupsFragment extends Fragment {
 
             //recordOfMeetups.addView(meetupPostedByImage);
             recordOfMeetups.addView(meetupSubject);
-            recordOfMeetups.addView(meetupPostedBy);
             recordOfMeetups.addView(meetupDetails);
+            recordOfMeetups.addView(meetupPostedBy);
+            recordOfMeetups.addView(meetupPostedDate);
             recordOfMeetups.addView(meetupLocation);
-            recordOfMeetups.addView(meetupKey);
+            //recordOfMeetups.addView(meetupKey);
             recordOfMeetups.addView(options);
 
             listOfMeetups.addView(recordOfMeetups);
@@ -211,12 +217,13 @@ public class MeetupsFragment extends Fragment {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("filter", "newsfeed"));
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
 
                 Log.d("request!", "starting");
 
@@ -238,9 +245,14 @@ public class MeetupsFragment extends Fragment {
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-                        currentMeetups.add(new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
+                        Meetups meetup = new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
                                 jUserObject.getString("details"), jUserObject.getString("location"),
-                                jUserObject.getString("posted_date"), jUserObject.getString("key")));
+                                jUserObject.getString("posted_date"), jUserObject.getString("key"));
+
+                        meetup.setPostedDate(jUserObject.getString("posted_date"));
+                        meetup.setPostedByName(jUserObject.getString("posted_by_user"));
+
+                        currentMeetups.add(meetup);
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                         Log.d("Meetups size", currentMeetups.size() + "");
