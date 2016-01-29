@@ -86,6 +86,8 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMG = 1;
     String encodedImage, fileName, imgDecodableString;
 
+    boolean isNewImage = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -307,6 +309,9 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 imgUser.setImageBitmap(BitmapFactory
                         .decodeFile(imgDecodableString));
 
+                // set flag to true is new image
+                isNewImage = true;
+
             } else {
                 Toast.makeText(this, "You haven't picked Image",
                         Toast.LENGTH_LONG).show();
@@ -504,8 +509,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     //new RetrieveUser().execute();
 
                     //set image then upload to server
-                    Bitmap image = ((BitmapDrawable) imgUser.getDrawable()).getBitmap();
-                    new UploadUserImage(image, fileName,"users").execute();
+                    if(isNewImage) {
+                        Bitmap image = ((BitmapDrawable) imgUser.getDrawable()).getBitmap();
+                        new UploadUserImage(image, fileName,"users").execute();
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

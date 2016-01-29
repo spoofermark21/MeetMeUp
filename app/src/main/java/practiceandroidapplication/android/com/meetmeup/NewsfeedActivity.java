@@ -4,12 +4,17 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +33,7 @@ import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -46,6 +52,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Fragments.EventsFragment;
 import practiceandroidapplication.android.com.meetmeup.Fragments.GroupsFragment;
 import practiceandroidapplication.android.com.meetmeup.Fragments.MeetupsFragment;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 //import practiceandroidapplication.android.com.meetmeup.Newsfeed.adapter.FeedListAdapter;
 
@@ -55,7 +62,7 @@ public class NewsfeedActivity extends AppCompatActivity
 
     // web service
     private static final String LOGOUT_URL = Network.forDeploymentIp + "user_logout.php";
-
+    private static final String NOTIFICATIONS_URL = Network.forDeploymentIp + "notification_retrieve.php";
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
@@ -106,6 +113,9 @@ public class NewsfeedActivity extends AppCompatActivity
         //setUserProfile();
         setUserProfile();
 
+        //check new notifications
+        new RetrieveNotications().execute();
+
         //meetups as default newsfeed
         try {
             listOfFeeds.setVisibility(View.INVISIBLE);
@@ -117,9 +127,10 @@ public class NewsfeedActivity extends AppCompatActivity
         }
 
 
-        btnMeetups.setBackgroundResource(R.color.gray);
+        btnMeetups.setTextColor(Color.DKGRAY);
+        /*btnMeetups.setBackgroundResource(R.color.gray);
         btnEvents.setBackgroundResource(R.color.transparent);
-        btnGroups.setBackgroundResource(R.color.transparent);
+        btnGroups.setBackgroundResource(R.color.transparent);*/
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -237,9 +248,13 @@ public class NewsfeedActivity extends AppCompatActivity
                     ex.printStackTrace();
                 }
 
-                btnMeetups.setBackgroundResource(R.color.gray);
+                btnMeetups.setTextColor(Color.DKGRAY);
+                btnEvents.setTextColor(Color.GRAY);
+                btnGroups.setTextColor(Color.GRAY);
+
+                /*btnMeetups.setBackgroundResource(R.color.gray);
                 btnEvents.setBackgroundResource(R.color.transparent);
-                btnGroups.setBackgroundResource(R.color.transparent);
+                btnGroups.setBackgroundResource(R.color.transparent);*/
             }
         });
 
@@ -258,9 +273,9 @@ public class NewsfeedActivity extends AppCompatActivity
                     ex.printStackTrace();
                 }
 
-                btnMeetups.setBackgroundResource(R.color.transparent);
-                btnEvents.setBackgroundResource(R.color.gray);
-                btnGroups.setBackgroundResource(R.color.transparent);
+                btnMeetups.setTextColor(Color.GRAY);
+                btnEvents.setTextColor(Color.DKGRAY);
+                btnGroups.setTextColor(Color.GRAY);
             }
         });
 
@@ -278,9 +293,9 @@ public class NewsfeedActivity extends AppCompatActivity
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                btnMeetups.setBackgroundResource(R.color.transparent);
-                btnEvents.setBackgroundResource(R.color.transparent);
-                btnGroups.setBackgroundResource(R.color.gray);
+                btnMeetups.setTextColor(Color.GRAY);
+                btnEvents.setTextColor(Color.GRAY);
+                btnGroups.setTextColor(Color.DKGRAY);
             }
         });
 
@@ -371,6 +386,92 @@ public class NewsfeedActivity extends AppCompatActivity
     /*
         thread
      */
+
+    class RetrieveNotications extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... info) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+                Log.d("request!", "starting");
+
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        NOTIFICATIONS_URL, "POST", params);
+
+                Log.d("Fetching...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Successful!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed!", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(String message) {
+            try {
+
+                if(message.equals("New notifications.")) {
+                    NotificationCompat.Builder mBuilder =
+                            new NotificationCompat.Builder(NewsfeedActivity.this)
+                                    .setSmallIcon(R.drawable.ic_arrow_back_black)
+                                    .setContentTitle("Notifications")
+                                    .setContentText("You have new notifications");
+                    mBuilder.build();
+
+// Creates an explicit intent for an Activity in your app
+                    Intent resultIntent = new Intent(NewsfeedActivity.this, NotificationActivity.class);
+
+// The stack builder object will contain an artificial back stack for the
+// started Activity.
+// This ensures that navigating backward from the Activity leads out of
+// your application to the Home screen.
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(NewsfeedActivity.this);
+// Adds the back stack for the Intent (but not the Intent itself)
+                    stackBuilder.addParentStack(LoginActivity.class);
+// Adds the Intent that starts the Activity to the top of the stack
+                    stackBuilder.addNextIntent(resultIntent);
+                    PendingIntent resultPendingIntent =
+                            stackBuilder.getPendingIntent(
+                                    0,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
+                            );
+                    mBuilder.setContentIntent(resultPendingIntent);
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+// mId allows you to update the notification later on.
+                    mNotificationManager.notify(1,mBuilder.build());
+
+
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+
+    }
 
     class Logout extends AsyncTask<String, String, String> {
 

@@ -15,6 +15,7 @@
     <color name="white">#ffffff</color>
     <color name="black">#000</color>
     <color name="gray">#E6E9ED</color>
+    <color name="dgray">#FF888888</color>
 
     <!-- newsfeed -->
     <color name="feed_bg">#d3d6db</color>

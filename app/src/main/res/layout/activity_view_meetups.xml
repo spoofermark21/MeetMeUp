@@ -36,7 +36,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight=".90"
-            android:background="@color/colorMainBackground"
+            android:background="@drawable/main_background"
             android:orientation="vertical"
             android:padding="10dp">
 
@@ -239,56 +239,53 @@
                 <ListView
                     android:id="@+id/list_comments"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"></ListView>
+                    android:layout_height="350dp"></ListView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linear_comments"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/txt_comment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_weight=".70"
+                    android:background="@drawable/edit_text"
+                    android:hint="Add a comment"
+                    android:inputType="text"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+                <Button
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_search_black_24dp"
+                    android:id="@+id/btn_comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"
+                    android:background="@color/transparent"
+                    android:text="Comment"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="15sp" />
 
             </LinearLayout>
 
         </LinearLayout>
 
 
+
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/linear_comments"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_margin="5dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_weight=".10"
-        android:background="@color/colorMainBackground"
-        android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
 
-        <EditText
-            android:id="@+id/txt_comment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_weight=".70"
-            android:background="@drawable/edit_text"
-            android:hint="Add a comment"
-            android:inputType="text"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:textSize="15sp" />
-
-        <ImageButton
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/ic_add_white_24dp"
-            android:id="@+id/btn_comment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:text="Comment"
-            android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="15sp" />
-
-    </LinearLayout>
 
 
 </LinearLayout>

@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:elevation="10dp"
             app:popupTheme="@style/MyMaterialTheme.PopupOverlay">
 
         </android.support.v7.widget.Toolbar>
@@ -25,19 +24,16 @@
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight=".85"
-        android:paddingTop="5dp">
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@drawable/main_background">
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".90"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
+            android:paddingLeft="10dp"
+            android:paddingRight="15dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -144,9 +140,9 @@
                 android:id="@+id/btn_create"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
                 android:background="@color/colorPrimary"
-                android:elevation="5dp"
                 android:text="Update"
                 android:textColor="@color/white" />
 
@@ -157,7 +153,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@color/colorPrimary"
-                android:elevation="5dp"
                 android:text="Disable"
                 android:textColor="@color/white" /> -->
 

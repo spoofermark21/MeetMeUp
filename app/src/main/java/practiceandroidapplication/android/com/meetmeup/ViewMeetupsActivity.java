@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -26,24 +28,30 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Attendees;
+import practiceandroidapplication.android.com.meetmeup.Entity.Comments;
+import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Notification;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class ViewMeetupsActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_MEETUPS_URL = Network.forDeploymentIp + "meetups_retrieve.php";
     private static final String RETRIEVE_ATTENDEES_URL = Network.forDeploymentIp + "is_attendee.php";
+    private static final String RETRIEVE_COMMENTS_URL = Network.forDeploymentIp + "comments_retrieve.php";
 
+    private static final String INSERT_COMMENT_URL = Network.forDeploymentIp + "comments_save.php";
     private static final String INSERT_NOTIFICATIONS_URL = Network.forDeploymentIp + "notication_save.php";
     private static final String INSERT_ATTENDEES_URL = Network.forDeploymentIp + "attendees_save.php";
 
@@ -64,7 +72,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     EditText txtComment;
 
-    Button btnInsert, btnJoin;
+    Button btnJoin, btnComment;
 
     ScrollView scrollView;
 
@@ -75,7 +83,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     String meetupId;
-    Boolean isJoined = false;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,23 +107,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
         new RetrieveMeetups().execute();
 
-        /*if(!isJoined) {
-            linearComments.setVisibility(View.GONE);
-            listComments.setVisibility(View.GONE);
-
-            btnJoin.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View v) {
-                    new InsertAttendees(new Attendees(meetups.getId(), 'M', currentUser.getId(),
-                            'N', "NOW()")).execute();
-                }
-            });
-        } else {
-            btnJoin.setVisibility(View.GONE);
-        }*/
 
     }
 
-    public void initUI () {
+    public void initUI() {
 
         imgUser = (ImageView) findViewById(R.id.img_user);
 
@@ -142,12 +137,24 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
         txtComment = (EditText) findViewById(R.id.txt_comment);
 
-        btnInsert = (Button) findViewById(R.id.btn_comment);
-        btnInsert.setOnClickListener(new View.OnClickListener() {
+        btnComment = (Button) findViewById(R.id.btn_comment);
+        btnComment.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                // insert comment
+                if(isReadyToComment()) {
+                    new InsertComment(new Comments(Integer.parseInt(meetupId), 'M',
+                            currentUser.getId(), txtComment.getText().toString())).execute();
+                    btnComment.setText("");
+                    btnComment.setError(null);
+                } else {
+                    btnComment.setError("This is a required field.");
+                }
+
             }
         });
+    }
+
+    private boolean isReadyToComment() {
+        return !btnComment.getText().toString().trim().equals("");
     }
 
     @Override
@@ -156,9 +163,39 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         finish();
     }
 
+    private void loadComments() {
+
+        adapter = new ArrayAdapter<String>(ViewMeetupsActivity.this,
+                android.R.layout.simple_list_item_1, meetups.listOfComments());
+
+        listComments.setAdapter(adapter);
+
+        listComments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition = position;
+
+                // ListView Clicked item value
+                String itemValue = (String) listComments.getItemAtPosition(position);
+
+                // Show Alert
+                Toast.makeText(getApplicationContext(),
+                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+
+    }
+
     /*
         thread
      */
+
+
 
     class RetrieveMeetups extends AsyncTask<String, String, String> {
 
@@ -206,7 +243,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     jUserObject = jUserArray.getJSONObject(0);
 
                     meetups = new Meetups(jUserObject.getString("subject"),
-                            jUserObject.getString("details"),jUserObject.getInt("posted_by"), jUserObject.getString("location"),
+                            jUserObject.getString("details"), jUserObject.getInt("posted_by"), jUserObject.getString("location"),
                             new Preference(Integer.parseInt(jUserObject.getString("pref_start_age")),
                                     Integer.parseInt(jUserObject.getString("pref_end_age")),
                                     jUserObject.getString("pref_gender").charAt(0)));
@@ -265,6 +302,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<>();
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("post_id", meetupId + ""));
+                params.add(new BasicNameValuePair("type", "M"));
+
+                Log.d("Params", currentUser.getId() + " " + meetupId);
 
                 Log.d("request!", "starting");
 
@@ -314,10 +355,9 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
                     Log.d("Current user", currentUser.getId() + "");
 
-                } else if (message.equals("Successful")){
-                    lblComments.setVisibility(View.VISIBLE);
-                    linearComments.setVisibility(View.VISIBLE);
-                    listComments.setVisibility(View.VISIBLE);
+                } else if (message.equals("Successful")) {
+                    //check if there is comments
+                    new RetrieveComments().execute();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -326,11 +366,170 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     }
 
+    class RetrieveComments extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewMeetupsActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... userInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("post_id", meetupId + ""));
+                params.add(new BasicNameValuePair("type", "M"));
+
+                Log.d("Params", currentUser.getId() + " " + meetupId);
+
+                Log.d("request!", "starting");
+
+                JSONObject jsonObject = jsonParser.makeHttpRequest(
+                        RETRIEVE_COMMENTS_URL, "POST", params);
+
+                Log.d("JSON: ", jsonObject.toString());
+
+                success = jsonObject.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", jsonObject.toString());
+
+                    JSONArray jsonArray = jsonObject.getJSONArray("comments");
+
+                    List<Comments> comments = new ArrayList<>();
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+
+                        comments.add(new Comments(jsonObject1.getInt("id"), jsonObject1.getInt("post_id"),
+                                jsonObject1.getString("post_type").charAt(0), jsonObject1.getInt("user_id"),
+                                jsonObject1.getString("comment"), jsonObject1.getString("comment_date"),
+                                jsonObject1.getString("user")));
+
+                        Log.d("ID:", jsonObject1.getInt("id") + "");
+                    }
+
+                    meetups.setComments(comments);
+
+                    return jsonObject.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", jsonObject.getString(TAG_RESPONSE));
+                    return jsonObject.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+
+                    lblComments.setText("Comments");
+
+                    lblComments.setVisibility(View.VISIBLE);
+                    linearComments.setVisibility(View.VISIBLE);
+                    listComments.setVisibility(View.VISIBLE);
+
+                    loadComments();
+
+                } else if (message.equals("No comments")) {
+                    lblComments.setText("No Comments");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
+    class InsertComment extends AsyncTask<String, String, String> {
+
+        Comments comments;
+
+        public InsertComment(Comments comments) {
+            this.comments = comments;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewMeetupsActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("post_id", comments.getPostId() + ""));
+                params.add(new BasicNameValuePair("post_type", comments.getPostType() + ""));
+                params.add(new BasicNameValuePair("user_id", comments.getUserId() + ""));
+                params.add(new BasicNameValuePair("comment", comments.getComment()));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        INSERT_COMMENT_URL, "POST", params);
+
+                Log.d("Saving...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewMeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                    new RetrieveComments().execute();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     class InsertNotications extends AsyncTask<String, String, String> {
 
         Notification notification;
 
-        public InsertNotications (Notification notification) {
+        public InsertNotications(Notification notification) {
             this.notification = notification;
         }
 
@@ -398,7 +597,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
         Attendees attendees;
 
-        public InsertAttendees (Attendees attendees) {
+        public InsertAttendees(Attendees attendees) {
             this.attendees = attendees;
         }
 
@@ -458,11 +657,11 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     String details = currentUser.getFirstName() + " " + currentUser.getLastName()
-                            + " wants to join the your meetups (" + meetups.getSubject() +  ") ";
+                            + " wants to join the your meetups (" + meetups.getSubject() + ") ";
 
                     //need to insert the meetup
-                    new InsertNotications(new Notification(meetups.getId(), currentUser.getId(), meetups
-                            .getPostedBy(),  currentUser.getId(), 'M', details)).execute();
+                    new InsertNotications(new Notification(meetups.getId(), meetups
+                            .getPostedBy(), currentUser.getId(), Integer.parseInt(meetupId), 'M', details)).execute();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

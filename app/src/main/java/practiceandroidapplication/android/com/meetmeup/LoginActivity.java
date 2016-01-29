@@ -3,8 +3,13 @@ package practiceandroidapplication.android.com.meetmeup;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +22,7 @@ import android.widget.EditText;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
@@ -183,6 +189,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, NewsfeedActivity.class);
 
                     JSONArray jUser = json.getJSONArray("user");
+                    //JSONObject jUserObject = jUser.getJSONObject(0);
 
                     Log.d("User info", jUser.toString());
 
@@ -195,6 +202,8 @@ public class LoginActivity extends AppCompatActivity {
                     currentUser.setLastName(jUser.getString(2));
                     currentUser.setNationality(
                             new Nationality(Integer.parseInt(jUser.getString(4))));
+                    currentUser.setPreference(new Preference(jUser.getInt(10),
+                            jUser.getInt(11), jUser.getString(12).charAt(0)));
 
                     startActivity(intent);
                     finish();
@@ -218,5 +227,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     } // end of thread
+
+
 
 } // end of class

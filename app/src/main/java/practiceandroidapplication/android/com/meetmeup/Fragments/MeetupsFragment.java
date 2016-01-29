@@ -119,12 +119,12 @@ public class MeetupsFragment extends Fragment {
             meetupPostedByImage.setLayoutParams(imageGroupParams);*/
 
             final TextView meetupPostedBy = new TextView(getActivity());
-            meetupPostedBy.setText(meetups.getPostedByName());
+            meetupPostedBy.setText("Posted by: " + meetups.getPostedByName());
             meetupPostedBy.setTextSize(15);
             meetupPostedBy.setTextColor(Color.BLACK);
 
             final TextView meetupPostedDate = new TextView(getActivity());
-            meetupPostedDate.setText(meetups.getPostedDate());
+            meetupPostedDate.setText("Date posted: " + meetups.getPostedDate());
             meetupPostedDate.setTextSize(15);
             meetupPostedDate.setTextColor(Color.BLACK);
 
@@ -142,6 +142,10 @@ public class MeetupsFragment extends Fragment {
             meetupLocation.setText("Location: " + meetups.getLocation());
             meetupLocation.setTextSize(15);
             meetupLocation.setTextColor(Color.BLACK);
+
+            final TextView border = new TextView(getActivity());
+            border.setText("_____________________________");
+            border.setTextColor(Color.BLACK);
 
             /*final TextView meetupKey = new TextView(getActivity());
             meetupKey.setText("Key: " + meetups.getKey());

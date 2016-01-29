@@ -1,5 +1,8 @@
 package practiceandroidapplication.android.com.meetmeup.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by sibimark on 26/12/2015.
  */
@@ -26,6 +29,9 @@ public class Meetups {
     private char availStatus;
 
     private char activeFlag;
+
+    private static List<Comments> comments;
+
 
     public Meetups(){}
 
@@ -55,6 +61,27 @@ public class Meetups {
         this.location = location;
         this.preference = preference;
     }
+
+    public static List<Comments> getComments() {
+        return comments;
+    }
+
+    public static void setComments(List<Comments> comments) {
+        Meetups.comments = comments;
+    }
+
+    public List<String> listOfComments() {
+
+        List<String> listOfComments = new ArrayList<>();
+
+        for(Comments comments : getComments()) {
+            listOfComments.add(comments.getComment() + " -" + comments.getUserName());
+        }
+
+        return listOfComments;
+    }
+
+
 
     public String getSubject() {
         return subject;

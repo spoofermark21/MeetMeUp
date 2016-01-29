@@ -16,28 +16,24 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:elevation="10dp"
             app:popupTheme="@style/MyMaterialTheme.PopupOverlay">
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
     <ScrollView
+        android:background="@drawable/main_background"
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight=".85"
-        android:paddingTop="5dp">
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".90"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
+            android:paddingLeft="10dp"
+            android:paddingRight="15dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -55,7 +51,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:hint="Subject"
                 android:inputType="text"
                 android:padding="15dp"
@@ -68,7 +63,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:gravity="top|left"
                 android:hint="Details"
                 android:inputType="textMultiLine"
@@ -85,7 +79,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:hint="Location"
                 android:inputType="text"
                 android:padding="15dp"
@@ -108,7 +101,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:hint="Minimum age"
                 android:inputType="number"
                 android:padding="15dp"
@@ -121,7 +113,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:hint="Maximum age"
                 android:inputType="number"
                 android:padding="15dp"
@@ -149,9 +140,9 @@
                 android:id="@+id/btn_update"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
                 android:background="@color/colorPrimary"
-                android:elevation="5dp"
                 android:text="Update"
                 android:textColor="@color/white" />
 

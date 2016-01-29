@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -39,7 +40,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class SplashActivity extends AppCompatActivity {
 
     private static final String NATIONALITIES_URL = Network.forDeploymentIp + "nationality_retrieve.php";
-    private static final String NOTIFICATIONS_URL = Network.forDeploymentIp + "notification_retrieve.php";
+
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
@@ -58,7 +59,8 @@ public class SplashActivity extends AppCompatActivity {
         pBar = (ProgressBar) findViewById(R.id.progressBar);
 
         if(isConnectedToInternet()) {
-            new RetrieveNotications().execute();
+            new ListOfNationalities().execute();
+            //new RetrieveNotications().execute();
         } else {
             Log.d("Status", "Not connected");
             Interactions.showError("Please check your internet connection.", SplashActivity.this);
@@ -82,6 +84,7 @@ public class SplashActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            pBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -142,11 +145,11 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                 } else {
                     if(isConnectedToInternet()) {
-                        Interactions.showError("Please check your internet connection.", SplashActivity.this);
+                        //Interactions.showError("Please check your internet connection.", SplashActivity.this);
+                        Toast.makeText(SplashActivity.this, "Please check your internet connection.", Toast.LENGTH_SHORT);
                     } else {
-                        Interactions.showError("Something went wrong. Sorry.", SplashActivity.this);
+                        //Interactions.showError("Something went wrong. Sorry.", SplashActivity.this);
                     }
-                    finish();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -155,98 +158,6 @@ public class SplashActivity extends AppCompatActivity {
         }
 
     } // end of ListNationalities Thread
-
-    class RetrieveNotications extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(String... info) {
-            // TODO Auto-generated method stub
-
-            int success;
-
-            try {
-                // Building Parameters
-                List<NameValuePair> params = new ArrayList<>();
-                Log.d("request!", "starting");
-
-                JSONObject json = jsonParser.makeHttpRequest(
-                        NOTIFICATIONS_URL, "POST", params);
-
-                Log.d("Fetching...", json.toString());
-
-                success = json.getInt(TAG_STATUS);
-
-                if (success == 1) {
-                    Log.d("Successful!", json.toString());
-
-                    return json.getString(TAG_RESPONSE);
-                } else {
-                    Log.d("Fetching failed!", json.getString(TAG_RESPONSE));
-                    return json.getString(TAG_RESPONSE);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(String message) {
-            try {
-
-                if(message.equals("New notifications.")) {
-                    NotificationCompat.Builder mBuilder =
-                            new NotificationCompat.Builder(SplashActivity.this)
-                                    .setSmallIcon(R.drawable.meetmeup)
-                                    .setContentTitle("Notifications")
-                                    .setContentText("You have new notifications");
-                    mBuilder.build();
-
-// Creates an explicit intent for an Activity in your app
-                    Intent resultIntent = new Intent(SplashActivity.this, NotificationActivity.class);
-
-// The stack builder object will contain an artificial back stack for the
-// started Activity.
-// This ensures that navigating backward from the Activity leads out of
-// your application to the Home screen.
-                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(SplashActivity.this);
-// Adds the back stack for the Intent (but not the Intent itself)
-                    stackBuilder.addParentStack(LoginActivity.class);
-// Adds the Intent that starts the Activity to the top of the stack
-                    stackBuilder.addNextIntent(resultIntent);
-                    PendingIntent resultPendingIntent =
-                            stackBuilder.getPendingIntent(
-                                    0,
-                                    PendingIntent.FLAG_UPDATE_CURRENT
-                            );
-                    mBuilder.setContentIntent(resultPendingIntent);
-                    NotificationManager mNotificationManager =
-                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-                    mNotificationManager.notify(1,mBuilder.build());
-
-                    new ListOfNationalities().execute();
-                } else {
-                    if(isConnectedToInternet()) {
-                        Interactions.showError("Please check your internet connection.", SplashActivity.this);
-                    } else {
-                        Interactions.showError("Something went wrong. Sorry.", SplashActivity.this);
-                    }
-                    finish();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-        }
-
-    }
 
     //check internet connection
     public boolean isConnectedToInternet() {

@@ -191,6 +191,14 @@ public class User {
         this.userImage = userImage;
     }
 
+    public Preference getPreference() {
+        return preference;
+    }
+
+    public void setPreference(Preference preference) {
+        this.preference = preference;
+    }
+
     @Override
     public String toString() {
         return "User{" +

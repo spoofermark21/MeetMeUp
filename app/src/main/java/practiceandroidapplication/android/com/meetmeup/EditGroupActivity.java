@@ -84,6 +84,8 @@ public class EditGroupActivity extends AppCompatActivity {
 
     String fileName;
 
+    boolean isNewImage = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,6 +193,8 @@ public class EditGroupActivity extends AppCompatActivity {
                 // Set the Image in ImageView after decoding the String
                 imgGroup.setImageBitmap(BitmapFactory
                         .decodeFile(imgDecodableString));
+
+                isNewImage = true;
 
             } else {
                 Toast.makeText(this, "You haven't picked Image",
@@ -534,22 +538,12 @@ public class EditGroupActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
 
-                    Bitmap image = ((BitmapDrawable) imgGroup.getDrawable()).getBitmap();
-                    new UploadGroupImage(image, fileName,"groups").execute();
+                    if (isNewImage) {
+                        Bitmap image = ((BitmapDrawable) imgGroup.getDrawable()).getBitmap();
+                        new UploadGroupImage(image, fileName,"groups").execute();
+                    }
 
                     Toast.makeText(EditGroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
-
-                    /*new Thread() {
-                        public void run() {
-                            try {
-                                sleep(500);
-                                startActivity(new Intent(EditGroupActivity.this, GroupActivity.class));
-                                finish();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }.start();*/
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
