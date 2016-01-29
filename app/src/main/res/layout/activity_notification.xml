@@ -21,11 +21,44 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
-        android:layout_marginTop="65dp"
+    <!--<LinearLayout
+        android:layout_marginTop="60dp"
         android:layout_width="fill_parent"
-        android:layout_height="400dp">
-    </LinearLayout>
+        android:layout_height="fill_parent">
+        <ListView
+            android:id="@+id/list_notifications"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        </ListView>
+    </LinearLayout>-->
+
+    <ScrollView
+        android:layout_marginTop="65dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/linear_notifications"
+            android:background="@drawable/main_background"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/lbl_message"
+                android:textSize="15sp"
+                android:text="No notifications"
+                android:gravity="center"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+    </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -66,7 +66,7 @@ public class EventsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
+                startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -100,6 +100,7 @@ public class EventsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
         finish();
     }
 
@@ -209,14 +210,22 @@ public class EventsActivity extends AppCompatActivity {
                                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
                                     //final TextView key = (TextView) parent.getChildAt(2);
                                     String removeId = parent.getTag() + "";
-                                    new DisableEvent().execute(removeId);
+
                                     listOfEvents.removeView(parent);
+                                    new DisableEvent().execute(removeId);
+
+                                    if(listOfEvents.getChildCount() == 1)
+                                        lblMessage.setVisibility(View.VISIBLE);
+                                    else
+                                        lblMessage.setVisibility(View.GONE);
+
                                 }
                             });
 
                     dlgAlert.setNegativeButton("Cancel",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    //do nothing
                                 }
                             });
 

@@ -157,7 +157,7 @@
         </activity>
         <activity
             android:name=".EditEventsActivity"
-            android:label="View event"
+            android:label="Edit event"
             android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
@@ -167,7 +167,7 @@
         </activity>
         <activity
             android:name=".EditGroupActivity"
-            android:label="View group"
+            android:label="Edit group"
             android:theme="@style/MyMaterialTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.NEWSFEED" />
@@ -239,8 +239,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ViewMeetupsActivity"
+        <activity
+            android:name=".ViewMeetupsActivity"
             android:label="Meetups"
             android:theme="@style/MyMaterialTheme" >
             <intent-filter>
@@ -249,7 +249,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ViewProfileActivity"
+            android:label="User profile"
+            android:theme="@style/MyMaterialTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.NEWSFEED" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MapsActivity"
             android:label="Map"
@@ -272,6 +281,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity android:name=".ViewEventsActivity" >
+        </activity>
     </application>
 
 </manifest>

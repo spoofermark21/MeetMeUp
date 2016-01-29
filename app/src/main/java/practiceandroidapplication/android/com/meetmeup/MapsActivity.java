@@ -41,19 +41,25 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
+                startActivity(new Intent(MapsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
 
+
+
         try {
             // Loading map
             initilizeMap();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    public void onBackPressed() {
+        startActivity(new Intent(MapsActivity.this, NewsfeedActivity.class));
+        finish();
     }
 
     /**

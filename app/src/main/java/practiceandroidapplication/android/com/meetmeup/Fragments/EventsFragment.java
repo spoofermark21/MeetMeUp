@@ -142,10 +142,10 @@ public class EventsFragment extends Fragment {
             eventDetails.setTextSize(15);
             eventDetails.setTextColor(Color.BLACK);
 
-            final TextView eventKey = new TextView(getActivity());
+            /*final TextView eventKey = new TextView(getActivity());
             eventKey.setText("Key: " + event.getKey());
             eventKey.setTextSize(15);
-            eventKey.setTextColor(Color.BLACK);
+            eventKey.setTextColor(Color.BLACK);*/
 
             final TextView eventLocation = new TextView(getActivity());
             eventLocation.setText("Location: " + event.getLocation());
@@ -197,7 +197,7 @@ public class EventsFragment extends Fragment {
             recordOfEvents.addView(eventName);
             recordOfEvents.addView(eventPostedBy);
             recordOfEvents.addView(eventDetails);
-            recordOfEvents.addView(eventKey);
+            //recordOfEvents.addView(eventKey);
             recordOfEvents.addView(eventLocation);
             recordOfEvents.addView(startDate);
             recordOfEvents.addView(endDate);

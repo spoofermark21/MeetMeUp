@@ -69,6 +69,7 @@ public class CreateGroupActivity extends AppCompatActivity {
 
     //to avoid multiple save
     private boolean isClickSave = false;
+    private boolean isNewImage = false;
 
     private static int RESULT_LOAD_IMG = 1;
     String imgDecodableString;
@@ -123,6 +124,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (validateForm() && !isClickSave) {
+
                     createGroup = new Group(txtGroupName.getText().toString(),
                             txtDetails.getText().toString(), currentUser.getId());
 
@@ -178,6 +180,8 @@ public class CreateGroupActivity extends AppCompatActivity {
                 // Set the Image in ImageView after decoding the String
                 imgGroup.setImageBitmap(BitmapFactory
                         .decodeFile(imgDecodableString));
+
+                isNewImage = true;
 
             } else {
                 Toast.makeText(this, "You haven't picked Image",
@@ -359,7 +363,11 @@ public class CreateGroupActivity extends AppCompatActivity {
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
                 //group image file name
-                fileName = Interactions.generateString(new Random(),"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
+                if(isNewImage) {
+                    fileName = Interactions.generateString(new Random(),"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
+                } else {
+                    fileName = "";
+                }
 
                 params.add(new BasicNameValuePair("group_name", groupInfo[0]));
                 params.add(new BasicNameValuePair("details", groupInfo[1]));
@@ -394,8 +402,11 @@ public class CreateGroupActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     //upload image to server
-                    Bitmap image = ((BitmapDrawable) imgGroup.getDrawable()).getBitmap();
-                    new UploadGroupImage(image, fileName, "groups").execute();
+                    if(isNewImage) {
+                        Bitmap image = ((BitmapDrawable) imgGroup.getDrawable()).getBitmap();
+                        new UploadGroupImage(image, fileName, "groups").execute();
+                    }
+
 
                     Toast.makeText(CreateGroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     /*new Thread() {

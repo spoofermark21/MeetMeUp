@@ -336,7 +336,11 @@ public class EditGroupActivity extends AppCompatActivity {
 
                     //sample download image 22/01/2016
                     try {
-                        new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                        if(!group.getGroupImage().equals("")) {
+                            new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                        } else {
+                            scrollView.setVisibility(View.VISIBLE);
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -508,6 +512,8 @@ public class EditGroupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("details", groupInfo[1]));
                 params.add(new BasicNameValuePair("id", groupInfo[2]));
                 params.add(new BasicNameValuePair("group_image", fileName));
+
+                params.add(new BasicNameValuePair("query_type", "update"));
 
                 Log.d("request!", "starting");
 

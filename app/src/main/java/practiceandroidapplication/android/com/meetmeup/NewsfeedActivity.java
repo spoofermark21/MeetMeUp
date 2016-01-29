@@ -122,6 +122,8 @@ public class NewsfeedActivity extends AppCompatActivity
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.linear_feeds, meetups, "MEETUPS_FRAGMENT");
             fragmentTransaction.commit();
+
+            Log.d("User Preference: ", currentUser.getPreference().getGender() + "");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -148,7 +150,7 @@ public class NewsfeedActivity extends AppCompatActivity
         } else if (id == R.id.nav_events) {
             navEvents();
         } else if (id == R.id.nav_notifations) {
-
+            navNotications();
         } else if (id == R.id.nav_logout) {
             navLogOutEvent();
         } else if (id == R.id.nav_location) {
@@ -306,29 +308,37 @@ public class NewsfeedActivity extends AppCompatActivity
     public void navUserProfile() {
         Log.d("USER_ID (newsfeed)", currentUser.getId() + "");
         startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class));//.putExtra("USER_ID",user().getId() + ""));
-            /*fragmentTransaction.add(R.id.focus_layout, userProfile,"USER_PROFILE_FRAGMENT");
-            fragmentTransaction.commit();*/
+        finish();
     }
 
     public void navGroups() {
         //fragmentTransaction.addToBackStack(null);
         //fragmentTransaction.commit();
         startActivity(new Intent(NewsfeedActivity.this, GroupActivity.class));
+        finish();
     }
 
     public void navMeetups() {
         startActivity(new Intent(NewsfeedActivity.this, MeetupsActivity.class));
+        finish();
     }
 
     public void navEvents() {
         startActivity(new Intent(NewsfeedActivity.this, EventsActivity.class));
+        finish();
     }
 
     public void navLocation() {
         startActivity(new Intent(NewsfeedActivity.this, MapsActivity.class));
+        finish();
         /*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                 Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
         startActivity(intent);*/
+    }
+
+    public void navNotications() {
+        startActivity(new Intent(NewsfeedActivity.this, NotificationActivity.class));
+        finish();
     }
 
     public void navLogOutEvent() {
@@ -338,11 +348,6 @@ public class NewsfeedActivity extends AppCompatActivity
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public void navUserPreference() {
-        Log.d("USER_ID (newsfeed)", currentUser.getId() + "");
-        startActivity(new Intent(NewsfeedActivity.this, SetPreferenceActivity.class));
     }
 
     public void setUserProfile() {

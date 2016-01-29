@@ -32,6 +32,8 @@ import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Attendees;
 import practiceandroidapplication.android.com.meetmeup.Entity.Comments;
@@ -40,6 +42,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Notification;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
+import practiceandroidapplication.android.com.meetmeup.Entity.SensoredWords;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
@@ -72,7 +75,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     EditText txtComment;
 
-    Button btnJoin, btnComment;
+    Button btnJoin, btnComment, btnProfile;
 
     ScrollView scrollView;
 
@@ -84,6 +87,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     String meetupId;
     ArrayAdapter<String> adapter;
+    //Timer timer = new Timer();
+    Thread thread = new Thread();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +111,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         meetupId = getIntent().getStringExtra("MEETUPS_ID");
 
         new RetrieveMeetups().execute();
-
 
     }
 
@@ -140,21 +144,39 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         btnComment = (Button) findViewById(R.id.btn_comment);
         btnComment.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(isReadyToComment()) {
+                if (isReadyToComment()) {
                     new InsertComment(new Comments(Integer.parseInt(meetupId), 'M',
-                            currentUser.getId(), txtComment.getText().toString())).execute();
-                    btnComment.setText("");
-                    btnComment.setError(null);
+                            currentUser.getId(), checkComment(txtComment.getText().toString()))).execute();
+                    txtComment.setText("");
+                    txtComment.setError(null);
                 } else {
-                    btnComment.setError("This is a required field.");
+                    txtComment.setError("This is a required field.");
                 }
 
+            }
+        });
+
+        btnProfile = (Button) findViewById(R.id.btn_view_profile);
+        btnProfile.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                startActivity(new Intent(ViewMeetupsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", meetups.getPostedBy() + ""));
+                Log.d("USER_ID", meetups.getPostedBy() + "");
             }
         });
     }
 
     private boolean isReadyToComment() {
-        return !btnComment.getText().toString().trim().equals("");
+        return !txtComment.getText().toString().trim().equals("");
+    }
+
+    private String checkComment(String comment) {
+
+        for (SensoredWords sensoredWords : SensoredWords.values()) {
+            comment = comment.replaceAll("(?i)" + sensoredWords.name(), "****");
+            Log.d("Words", sensoredWords.name());
+        }
+
+        return comment;
     }
 
     @Override
@@ -165,10 +187,11 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     private void loadComments() {
 
-        adapter = new ArrayAdapter<String>(ViewMeetupsActivity.this,
+        adapter = new ArrayAdapter<>(ViewMeetupsActivity.this,
                 android.R.layout.simple_list_item_1, meetups.listOfComments());
 
         listComments.setAdapter(adapter);
+        listComments.setSelection(listComments.getAdapter().getCount() - 1);
 
         listComments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -176,13 +199,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                // ListView Clicked item index
                 int itemPosition = position;
 
-                // ListView Clicked item value
                 String itemValue = (String) listComments.getItemAtPosition(position);
 
-                // Show Alert
                 Toast.makeText(getApplicationContext(),
                         "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
                         .show();
@@ -194,7 +214,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
     /*
         thread
      */
-
 
 
     class RetrieveMeetups extends AsyncTask<String, String, String> {
@@ -270,8 +289,25 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-                    //if not join comments will be disable
-                    new RetrieveAttendees().execute();
+
+                    //check if the viewer is the user
+                    if(currentUser.getId() == meetups.getPostedBy()) {
+                        scrollView.setVisibility(View.VISIBLE);
+                        lblSubject.setText(meetups.getSubject());
+                        lblPostedDate.setText(meetups.getPostedDate());
+                        lblDetails.setText(meetups.getDetails());
+                        lblLocation.setText(meetups.getLocation());
+                        lblPostedBy.setText(meetups.getPostedByName());
+
+                        new RetrieveComments().execute();
+
+                    } else {
+                        //if not join comments will be disable
+                        new RetrieveAttendees().execute();
+                    }
+
+
+
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -279,6 +315,14 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         }
 
     }
+
+
+    class CheckComments extends TimerTask {
+        public void run() {
+            new RetrieveComments().execute();
+        }
+    }
+
 
     class RetrieveAttendees extends AsyncTask<String, String, String> {
 
@@ -374,7 +418,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             pDialog = new ProgressDialog(ViewMeetupsActivity.this, R.style.progress);
             pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.show();
         }
 
         @Override
@@ -435,17 +478,18 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
 
         protected void onPostExecute(String message) {
-            pDialog.dismiss();
             try {
+                lblComments.setText("Comments");
+                lblComments.setVisibility(View.VISIBLE);
+                linearComments.setVisibility(View.VISIBLE);
+                listComments.setVisibility(View.VISIBLE);
+
                 if (message.equals("Successful")) {
-
-                    lblComments.setText("Comments");
-
-                    lblComments.setVisibility(View.VISIBLE);
-                    linearComments.setVisibility(View.VISIBLE);
-                    listComments.setVisibility(View.VISIBLE);
-
                     loadComments();
+
+                    //thread.sleep(20000);
+                    //new RetrieveComments().execute();
+
 
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
@@ -518,6 +562,18 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                 if (message.equals("Successful")) {
                     Toast.makeText(ViewMeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     new RetrieveComments().execute();
+
+
+                    //add new notifications
+                    if(currentUser.getId() != meetups.getPostedBy()) {
+
+                        String details = currentUser.getFirstName() + " " + currentUser.getLastName()
+                                + " commented to your meetups (" + meetups.getSubject() + ") ";
+
+
+                        new InsertNotications(new Notification(meetups.getId(), meetups
+                                .getPostedBy(), currentUser.getId(), Integer.parseInt(meetupId), 'M', details)).execute();
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

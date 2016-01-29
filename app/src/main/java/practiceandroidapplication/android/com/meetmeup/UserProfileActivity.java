@@ -114,6 +114,7 @@ public class UserProfileActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
+                startActivity(new Intent(UserProfileActivity.this,NewsfeedActivity.class));
                 finish();
             }
         });
@@ -144,13 +145,15 @@ public class UserProfileActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Sessions sessions = Sessions.getSessionsInstance();
 
-                params.add(new BasicNameValuePair("user_info", "current_user"));
-                Log.d("USER_ID (userProfile)", sessions.currentUser.getId() + "");
+                Log.d("USER_ID (userProfile)", currentUser.getId() + "");
+                params.add(new BasicNameValuePair("type", "current_user"));
                 params.add(new BasicNameValuePair("user_id", sessions.currentUser.getId() + ""));
+
+
 
                 Log.d("request!", "starting");
 
@@ -234,11 +237,11 @@ public class UserProfileActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(UserProfileActivity.this, R.style.progress);
+            /*pDialog = new ProgressDialog(UserProfileActivity.this, R.style.progress);
             pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            //pDialog.setMessage("Downloading image...");
-            pDialog.show();
+            pDialog.setMessage("Downloading image...");
+            pDialog.show();*/
         }
 
         @Override
@@ -266,7 +269,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
         protected void onPostExecute(Bitmap bitmap) {
-            pDialog.dismiss();
+            //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
                     imgUser.setImageBitmap(bitmap);
@@ -278,6 +281,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
+        startActivity(new Intent(UserProfileActivity.this,NewsfeedActivity.class));
         finish();
     }
 

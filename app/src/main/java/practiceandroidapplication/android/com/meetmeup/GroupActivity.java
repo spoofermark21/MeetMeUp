@@ -38,6 +38,8 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class GroupActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_GROUP_URL = Network.forDeploymentIp + "group_retrieve.php";
+    private static final String UPDATE_GROUP_URL = Network.forDeploymentIp + "group_update.php";
+
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -67,7 +69,7 @@ public class GroupActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
+                startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -102,6 +104,7 @@ public class GroupActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
         finish();
     }
 
@@ -208,7 +211,18 @@ public class GroupActivity extends AppCompatActivity {
                                     Toast.makeText(GroupActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
 
                                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
-                                    //new DisableEvent().execute(removeKey);
+
+                                    String groupId = parent.getTag() + "";
+
+                                    listOfGroups.removeView(parent);
+                                    new DisableGroup(groupId).execute();
+
+                                    Log.d("Group count", listOfGroups.getChildCount() + "");
+
+                                    if(listOfGroups.getChildCount() == 1)
+                                        lblMessage.setVisibility(View.VISIBLE);
+                                    else
+                                        lblMessage.setVisibility(View.GONE);
 
                                 }
                             });
@@ -358,6 +372,72 @@ public class GroupActivity extends AppCompatActivity {
             }
         }
 
-    } // end of thread group activity
+    }
+
+    class DisableGroup extends AsyncTask<String, String, String> {
+
+        String groupId;
+
+        public DisableGroup (String groupId) {
+            this.groupId = groupId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(GroupActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+                params.add(new BasicNameValuePair("id", groupId));
+                params.add(new BasicNameValuePair("query_type", "disable"));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        UPDATE_GROUP_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(GroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
 }

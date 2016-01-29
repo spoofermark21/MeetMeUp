@@ -35,6 +35,7 @@ public class Meetups {
 
     public Meetups(){}
 
+
     public Meetups(String subject, String details, int postedBy, String location, Preference preference) {
         this.subject = subject;
         this.details = details;
@@ -50,6 +51,19 @@ public class Meetups {
         this.location = location;
         this.postedDate = postedDate;
         this.key = key;
+    }
+
+
+    public Meetups(int id, String subject, String details, String location,
+                   String postedDate, String key, int postedBy, String postedByName){
+        this.id = id;
+        this.subject = subject;
+        this.details = details;
+        this.location = location;
+        this.postedDate = postedDate;
+        this.key = key;
+        this.postedBy = postedBy;
+        this.postedByName = postedByName;
     }
 
     public Meetups(int id, String subject, String details, int postedBy, String location,

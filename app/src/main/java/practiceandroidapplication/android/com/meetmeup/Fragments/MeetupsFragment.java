@@ -178,6 +178,9 @@ public class MeetupsFragment extends Fragment {
 
                     Intent meetups = new Intent(getActivity(), ViewMeetupsActivity.class);
                     meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+
+                    Log.d("MEETUPS_ID", parent.getTag() + "");
+
                     startActivity(meetups);
                     getActivity().finish();
                 }

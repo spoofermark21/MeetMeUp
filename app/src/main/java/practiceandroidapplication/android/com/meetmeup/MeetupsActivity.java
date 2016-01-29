@@ -65,7 +65,7 @@ public class MeetupsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
+                startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -73,7 +73,7 @@ public class MeetupsActivity extends AppCompatActivity {
         listOfMeetups = (LinearLayout) findViewById(R.id.linear_meetups);
         listOfMeetups.setVisibility(View.INVISIBLE);
         lblMessage = (TextView) findViewById(R.id.lbl_message);
-        lblMessage.setVisibility(View.INVISIBLE);
+        lblMessage.setVisibility(View.GONE);
 
         new RetrieveMeetups().execute();
     }
@@ -98,6 +98,7 @@ public class MeetupsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
         finish();
     }
 
@@ -132,6 +133,11 @@ public class MeetupsActivity extends AppCompatActivity {
             meetupKey.setTextSize(15);
             meetupKey.setTextColor(Color.BLACK);
 
+            final TextView meetupPostedBy = new TextView(this);
+            meetupPostedBy.setText("Posted by: " + meetups.getPostedByName());
+            meetupPostedBy.setTextSize(15);
+            meetupPostedBy.setTextColor(Color.BLACK);
+
 
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             params2.weight = 1.0f;
@@ -142,6 +148,14 @@ public class MeetupsActivity extends AppCompatActivity {
             options.setOrientation(LinearLayout.HORIZONTAL);
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
+
+            final TextView view = new TextView(this);
+            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            view.setPadding(10, 10, 0, 10);
+            view.setText("view");
+            view.setTextSize(15);
+            view.setBackgroundColor(Color.TRANSPARENT);
+
 
             final TextView edit = new TextView(this);
             edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -157,6 +171,18 @@ public class MeetupsActivity extends AppCompatActivity {
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Intent meetups = new Intent(MeetupsActivity.this, ViewMeetupsActivity.class);
+                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+                    startActivity(meetups);
+
+                    finish();
+                }
+            });
 
             edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -188,10 +214,16 @@ public class MeetupsActivity extends AppCompatActivity {
                                     Toast.makeText(MeetupsActivity.this, "Deleted!", Toast.LENGTH_SHORT).show();
                                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                                    String eventId = parent.getTag() + "";
+                                    String meetupId = parent.getTag() + "";
 
-                                    new DisableMeetups().execute(eventId);
                                     listOfMeetups.removeView(parent);
+                                    new DisableMeetups(meetupId).execute();
+
+
+                                    if (listOfMeetups.getChildCount() == 1)
+                                        lblMessage.setVisibility(View.VISIBLE);
+                                    else
+                                        lblMessage.setVisibility(View.GONE);
                                 }
                             });
 
@@ -206,11 +238,23 @@ public class MeetupsActivity extends AppCompatActivity {
                 }
             });
 
-            options.addView(edit);
-            options.addView(delete);
+            options.addView(view);
+
+
+
+            Log.d("Check", meetups.getPostedBy() + " " + currentUser.getId());
+
 
             recordOfMeetups.addView(meetupSubject);
             recordOfMeetups.addView(meetupDetails);
+
+            if(meetups.getPostedBy() == currentUser.getId()) {
+                options.addView(edit);
+                options.addView(delete);
+            } else {
+                recordOfMeetups.addView(meetupPostedBy);
+            }
+
             recordOfMeetups.addView(meetupLocation);
             recordOfMeetups.addView(meetupKey);
             recordOfMeetups.addView(options);
@@ -242,11 +286,13 @@ public class MeetupsActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                //to be investigate
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("filter", "all"));
 
                 Log.d("request!", "starting");
@@ -271,7 +317,10 @@ public class MeetupsActivity extends AppCompatActivity {
 
                         currentMeetups.add(new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
                                 jUserObject.getString("details"), jUserObject.getString("location"),
-                                jUserObject.getString("posted_date"), jUserObject.getString("key")));
+                                jUserObject.getString("posted_date"), jUserObject.getString("key"),
+                                jUserObject.getInt("posted_by"), jUserObject.getString("posted_by_user")));
+
+
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }
@@ -309,6 +358,13 @@ public class MeetupsActivity extends AppCompatActivity {
     } // end of thread retrieve user
 
     class DisableMeetups extends AsyncTask<String, String, String> {
+
+        String meetupId;
+
+        public DisableMeetups(String meetupId) {
+            this.meetupId = meetupId;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -327,9 +383,9 @@ public class MeetupsActivity extends AppCompatActivity {
             try {
                 // Building Parameters
                 Log.d("KEY", meetupInfo[0]);
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
-                params.add(new BasicNameValuePair("id", meetupInfo[0]));
+                params.add(new BasicNameValuePair("id", meetupId));
                 params.add(new BasicNameValuePair("query_type", "disable"));
 
                 Log.d("request!", "starting");
