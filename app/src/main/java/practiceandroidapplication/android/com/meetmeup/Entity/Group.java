@@ -16,6 +16,8 @@ public class Group {
 
     private int createdBy;
 
+    private String createdByName;
+
     private String createdDate;
 
     private char availFlag;
@@ -25,6 +27,7 @@ public class Group {
     private String groupImage;
 
     private int totalMembers;
+
 
     private List<GroupMember> members = new ArrayList<>();
 
@@ -38,6 +41,17 @@ public class Group {
         this.createdBy = createdBy;
         this.createdDate = createdDate;
         this.totalMembers = totalMembers;
+    }
+
+    public Group(int id, String groupName, String details,
+                 int createdBy, String createdDate, String createByName, int totalMembers) {
+        this.id = id;
+        this.groupName = groupName;
+        this.details = details;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.totalMembers = totalMembers;
+        this.createdByName = createByName;
     }
 
     public Group(int id, String groupName, String details,int createdBy, String createdDate, int totalMembers, String groupImage) {
@@ -135,5 +149,13 @@ public class Group {
 
     public int getTotalMembers() {
         return totalMembers;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createByName) {
+        this.createdByName = createByName;
     }
 }

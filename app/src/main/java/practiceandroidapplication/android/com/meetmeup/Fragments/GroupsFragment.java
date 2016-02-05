@@ -3,6 +3,8 @@ package practiceandroidapplication.android.com.meetmeup.Fragments;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +43,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
+import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 import practiceandroidapplication.android.com.meetmeup.R;
 
 
@@ -61,6 +69,10 @@ public class GroupsFragment extends Fragment {
     List<Group> currentGroups = new ArrayList<>();
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
+    //List<Bitmap> groupImages = new ArrayList<>();
+    //int index = 0;
+
+    //Bitmap image;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -80,7 +92,7 @@ public class GroupsFragment extends Fragment {
         lblMessage = (TextView) getActivity().findViewById(R.id.lbl_message);
 
         listOfGroups.setVisibility(View.INVISIBLE);
-        lblMessage.setVisibility(View.INVISIBLE);
+        lblMessage.setVisibility(View.GONE);
 
         /*btnGroup = (Button) getActivity().findViewById(R.id.btn_groups);
         btnGroup.setOnClickListener(new View.OnClickListener(){
@@ -111,8 +123,11 @@ public class GroupsFragment extends Fragment {
 
         for (Group group : currentGroups) {
 
+            final LinearLayout.LayoutParams linearGroups = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            linearGroups.setMargins(0,0,0,60);
+
             LinearLayout recordOfGroups = new LinearLayout(getActivity());
-            recordOfGroups.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            recordOfGroups.setLayoutParams(linearGroups);
             recordOfGroups.setOrientation(LinearLayout.VERTICAL);
             //recordOfGroups.setPadding(10, 10, 10, 10);
             //recordOfEvents.setBackgroundColor(getResources().getColor(R.color.colorMainBackground));
@@ -121,21 +136,93 @@ public class GroupsFragment extends Fragment {
             Log.d("Group name", group.getGroupName());
             recordOfGroups.setTag(group.getId());
 
-            /*final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            //imageGroupParams.weight = 1.0f;
-            imageGroupParams.height = 150;
-            imageGroupParams.width = 150;
-            imageGroupParams.gravity = Gravity.LEFT;
+            final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            imageGroupParams.weight = 1.0f;
+            imageGroupParams.height = 650;
+            imageGroupParams.width = 550;
+            //imageGroupParams.setMargins(0,0,0,60);
+            imageGroupParams.gravity = Gravity.CENTER;
             //imageGroupParams.leftMargin = 50;
 
             final ImageView groupImage = new ImageView(getActivity());
-            groupImage.setImageResource(R.drawable.meetmeup);
-            groupImage.setLayoutParams(imageGroupParams);*/
+            groupImage.setVisibility(View.GONE);
+
+            if(!group.getGroupImage().equals("null") && !group.getGroupImage().equals("")) {
+
+                class DownloadGroupImage extends AsyncTask<Void, Void, Bitmap> {
+
+                    String filename;
+                    //Bitmap groupImage;
+
+                    public DownloadGroupImage(String filename) {
+                        this.filename = filename;
+                    }
+
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+                    }
+
+                    @Override
+                    protected Bitmap doInBackground(Void... params) {
+                        // TODO Auto-generated method stub
+
+                        try {
+                            final String USER_IMAGE_URL = Network.forDeploymentIp + "meetmeup/uploads/groups/" + this.filename;
+                            Log.d("Image", USER_IMAGE_URL);
+                            URLConnection connection = new URL(USER_IMAGE_URL).openConnection();
+                            connection.setConnectTimeout(1000 * 30);
+
+                            return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
+                        } catch (FileNotFoundException ex) {
+                            ex.printStackTrace();
+                            return null;
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            return null;
+                        }
+                    }
+
+
+                    protected void onPostExecute(Bitmap bitmap) {
+                        //pDialog.dismiss();
+                        try {
+                            if(bitmap!=null) {
+                                Log.d("Image", "Success");
+                                groupImage.setImageBitmap(bitmap);
+
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+
+                }
+
+                new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                groupImage.setLayoutParams(imageGroupParams);
+                groupImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                groupImage.setVisibility(View.VISIBLE);
+            }
+
 
             final TextView groupName = new TextView(getActivity());
             groupName.setText(group.getGroupName());
             groupName.setTextSize(25);
             groupName.setTextColor(Color.BLACK);
+            groupName.setTextColor(Color.parseColor("#37BC9B"));
+
+            groupName.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Intent groups = new Intent(getActivity(), EditGroupActivity.class);
+                    groups.putExtra("Groups ID", parent.getTag() + "");
+                    startActivity(groups);
+
+                    Toast.makeText(getActivity(), parent.getTag() + "!", Toast.LENGTH_SHORT).show();
+                }
+            });
 
             final TextView groupDetails = new TextView(getActivity());
             groupDetails.setText(group.getDetails());
@@ -169,6 +256,7 @@ public class GroupsFragment extends Fragment {
             view.setText("view");
             view.setTextSize(15);
             view.setBackgroundColor(Color.TRANSPARENT);
+            view.setTextColor(Color.parseColor("#37BC9B"));
 
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -183,23 +271,34 @@ public class GroupsFragment extends Fragment {
                 }
             });
 
-            options.addView(view);
+            //options.addView(view);
 
-            //recordOfGroups.addView(groupImage);
             recordOfGroups.addView(groupName);
             recordOfGroups.addView(groupDetails);
-            recordOfGroups.addView(groupCountMembers);
             recordOfGroups.addView(createdBy);
-            recordOfGroups.addView(options);
+            recordOfGroups.addView(groupCountMembers);
+            recordOfGroups.addView(groupImage);
+
+            //recordOfGroups.addView(options);
 
             listOfGroups.addView(recordOfGroups);
 
         }
+
+        //groupImages.clear();
     }
 
     /*
         thread
      */
+
+    public void loadGroupImage() {
+        for(Group group : currentGroups) {
+            //new DownloadUserImage(group.getGroupImage() + ".JPG");
+        }
+
+        displayGroups();
+    }
 
     class RetrieveGroups extends AsyncTask<String, String, String> {
 
@@ -250,7 +349,7 @@ public class GroupsFragment extends Fragment {
                         currentGroups.add(new Group(jUserObject.getInt("id"),
                                 jUserObject.getString("group_name"), jUserObject.getString("details"),
                                 jUserObject.getInt("created_by"), jUserObject.getString("created_date"),
-                                jUserObject.getInt("count_members")));
+                                jUserObject.getInt("count_members"), jUserObject.getString("group_image")));
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }
@@ -272,9 +371,11 @@ public class GroupsFragment extends Fragment {
             try {
                 listOfFeeds.setVisibility(View.VISIBLE);
                 listOfGroups.setVisibility(View.VISIBLE);
+
                 if (message.equals("Successful")) {
                     Toast.makeText(getActivity(), message + "!", Toast.LENGTH_SHORT).show();
                     displayGroups();
+
 
                 } else if (message.equals("No group")) {
                     lblMessage.setVisibility(View.VISIBLE);

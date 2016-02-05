@@ -26,9 +26,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_margin="5dp"
         android:orientation="vertical">
 
         <EditText
@@ -36,7 +34,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text"
             android:drawableStart="@drawable/ic_search_black_24dp"
             android:gravity="left"
@@ -52,7 +49,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:padding="5dp"
         android:gravity="center"
         android:background="@drawable/main_background"
@@ -91,8 +88,8 @@
     <ScrollView
         android:background="@drawable/main_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp">
+        android:layout_margin="5dp"
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:id="@+id/linear_feeds"

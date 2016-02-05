@@ -1,23 +1,32 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -27,6 +36,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
@@ -52,6 +63,7 @@ public class SetPreferenceActivity extends AppCompatActivity {
 
     EditText txtMinAge, txtMaxAge, txtLocation;
 
+    LinearLayout listOfNationalities;
     ScrollView scrollView;
 
     Preference preference = new Preference();
@@ -78,8 +90,8 @@ public class SetPreferenceActivity extends AppCompatActivity {
 
         initUI();
         btnEvents();
-
         new RetrievePreference().execute();
+
     }
 
     public void initUI() {
@@ -92,6 +104,10 @@ public class SetPreferenceActivity extends AppCompatActivity {
         txtLocation = (EditText) findViewById(R.id.txt_location);
         spnGender = (Spinner) findViewById(R.id.spn_gender);
         loadGender();
+
+        listOfNationalities = (LinearLayout) findViewById(R.id.linear_nationalities);
+        //listOfNationalities.setVisibility(View.GONE);
+        displayMeetups();
 
         btnSave = (Button) findViewById(R.id.btn_pref);
     }
@@ -121,8 +137,8 @@ public class SetPreferenceActivity extends AppCompatActivity {
                     preference.setGender(spnGender.getSelectedItem().toString().charAt(0));
                     preference.setLocation(txtLocation.getText().toString());
 
-                    new PreferenceUser().execute(preference.getStartAge()+"",preference.getEndAge()+"",
-                            preference.getGender()+"", preference.getLocation());
+                    new PreferenceUser().execute(preference.getStartAge() + "", preference.getEndAge() + "",
+                            preference.getGender() + "", preference.getLocation());
                 }
 
             }
@@ -133,12 +149,12 @@ public class SetPreferenceActivity extends AppCompatActivity {
 
         boolean isReadyToSave = true;
 
-        if(preference.getStartAge() > preference.getEndAge()){
+        if (preference.getStartAge() > preference.getEndAge()) {
             Interactions.showError("Minimum age must not be greater than maximum.", SetPreferenceActivity.this);
             isReadyToSave = false;
         }
 
-        if((!txtMinAge.getText().toString().equals("") &&
+        if ((!txtMinAge.getText().toString().equals("") &&
                 txtMaxAge.getText().toString().equals("")) ||
                 !txtMinAge.getText().toString().equals("") &&
                         txtMaxAge.getText().toString().equals("")) {
@@ -149,6 +165,31 @@ public class SetPreferenceActivity extends AppCompatActivity {
         return isReadyToSave;
     }
 
+    public void displayMeetups() {
+        for (Nationality nationality : ListNationalities.getInstanceListNationalities().nationalities) {
+
+            LinearLayout recordOfNationalities = new LinearLayout(this);
+            recordOfNationalities.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            recordOfNationalities.setOrientation(LinearLayout.VERTICAL);
+            recordOfNationalities.setPadding(10, 10, 10, 10);
+
+            Log.d("nationalities", nationality.getNatioNalityName());
+            recordOfNationalities.setTag(nationality.getId());
+
+            final CheckBox meetupCheckBox = new CheckBox(this);
+            meetupCheckBox.setText(nationality.getNatioNalityName());
+            meetupCheckBox.setTextSize(15);
+            meetupCheckBox.setTextColor(Color.BLACK);
+
+            recordOfNationalities.addView(meetupCheckBox);
+
+
+            listOfNationalities.addView(recordOfNationalities);
+        }
+    }
+    /*
+        thread
+     */
 
     class PreferenceUser extends AsyncTask<String, String, String> {
 
@@ -171,7 +212,7 @@ public class SetPreferenceActivity extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-                params.add(new BasicNameValuePair("id", currentUser.getId()+""));
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("min_age", user[0]));
                 params.add(new BasicNameValuePair("max_age", user[1]));
                 params.add(new BasicNameValuePair("gender", user[2]));
@@ -202,7 +243,7 @@ public class SetPreferenceActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
-                if(message.equals("Successful")) {
+                if (message.equals("Successful")) {
                     Interactions.showError(message, SetPreferenceActivity.this);
                 }
             } catch (Exception ex) {
@@ -271,14 +312,14 @@ public class SetPreferenceActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
-                if(message.equals("Successful")) {
+                if (message.equals("Successful")) {
 
                     scrollView.setVisibility(View.VISIBLE);
 
-                    txtMinAge.setText(currentPreference.getStartAge()+"");
-                    txtMaxAge.setText(currentPreference.getEndAge()+"");
+                    txtMinAge.setText(currentPreference.getStartAge() + "");
+                    txtMaxAge.setText(currentPreference.getEndAge() + "");
 
-                    if(currentPreference.getGender() == 'M')
+                    if (currentPreference.getGender() == 'M')
                         spnGender.setSelection(0);
                     else if (currentPreference.getGender() == 'F')
                         spnGender.setSelection(1);

@@ -240,8 +240,6 @@ public class MeetupsActivity extends AppCompatActivity {
 
             options.addView(view);
 
-
-
             Log.d("Check", meetups.getPostedBy() + " " + currentUser.getId());
 
 
@@ -355,7 +353,7 @@ public class MeetupsActivity extends AppCompatActivity {
             }
         }
 
-    } // end of thread retrieve user
+    }
 
     class DisableMeetups extends AsyncTask<String, String, String> {
 

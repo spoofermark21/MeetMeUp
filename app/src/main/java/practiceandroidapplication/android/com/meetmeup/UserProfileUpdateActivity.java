@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
@@ -49,6 +50,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
+import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 
 public class UserProfileUpdateActivity extends AppCompatActivity {
 
@@ -62,7 +64,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
-
+    ProgressBar progressImage;
 
     EditText txtFirstname, txtLastname,
             txtCurrentLocation, txtEmailAddress, txtContactNumber;
@@ -170,6 +172,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         });
 
         imgUser = (ImageView) findViewById(R.id.img_user);
+        //imgUser.setVisibility(View.GONE);
+        progressImage = (ProgressBar) findViewById(R.id.progress_image);
+        progressImage.setVisibility(View.GONE);
+
         btnUpload = (Button) findViewById(R.id.btn_image);
         btnUpload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -428,7 +434,12 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                             Integer.parseInt(date[1]), Integer.parseInt(date[2]));
 
                     try {
-                        new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
+                        if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
+                            progressImage.setVisibility(View.VISIBLE);
+                            imgUser.setVisibility(View.GONE);
+                            new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
+                        }
+
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -597,7 +608,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 Toast.makeText(UserProfileUpdateActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -615,11 +625,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pDialog = new ProgressDialog(UserProfileUpdateActivity.this, R.style.progress);
-            pDialog.setCancelable(true);
-            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            //pDialog.setMessage("Downloading image...");
-            pDialog.show();
+
         }
 
         @Override
@@ -643,11 +649,13 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
 
         protected void onPostExecute(Bitmap bitmap) {
-            pDialog.dismiss();
+            //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
+                    //imgUser.setVisibility(View.VISIBLE);
+                    progressImage.setVisibility(View.GONE);
+                    imgUser.setVisibility(View.VISIBLE);
                     imgUser.setImageBitmap(bitmap);
-                    scrollView.setVisibility(View.VISIBLE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -201,9 +201,9 @@ public class LoginActivity extends AppCompatActivity {
                     currentUser.setFirstName(jUser.getString(1));
                     currentUser.setLastName(jUser.getString(2));
                     currentUser.setNationality(
-                            new Nationality(Integer.parseInt(jUser.getString(4))));
-                    currentUser.setPreference(new Preference(jUser.getInt(10),
-                            jUser.getInt(11), jUser.getString(12).charAt(0)));
+                            new Nationality(Integer.parseInt(jUser.getString(3))));
+                    /*currentUser.setPreference(new Preference(jUser.getInt(10),
+                            jUser.getInt(11), jUser.getString(12).charAt(0)));*/
 
                     startActivity(intent);
                     finish();

@@ -31,6 +31,10 @@ public class Events {
 
     private char activeFlag;
 
+    private String postedByName;
+
+    private String postedUserImage;
+
     public String[] getEventTypeString() {
         return eventTypeString;
     }
@@ -52,6 +56,19 @@ public class Events {
     private String[] eventTypeString = {"Traditional","Personal","Blah"};
 
     public Events(){}
+
+    public Events(int id, String eventName, String details, String location,
+                  String key, String startDate, String endDate, int postedBy, String postedByName) {
+        this.id = id;
+        this.eventName = eventName;
+        this.details = details;
+        this.location = location;
+        this.key = key;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.postedBy = postedBy;
+        this.postedByName = postedByName;
+    }
 
     public Events(int id, String eventName, String details, String location,
                   String key, String startDate, String endDate) {
@@ -167,4 +184,21 @@ public class Events {
     public void setActiveFlag(char activeFlag) {
         this.activeFlag = activeFlag;
     }
+
+    public String getPostedByName() {
+        return postedByName;
+    }
+
+    public void setPostedByName(String postedByName) {
+        this.postedByName = postedByName;
+    }
+
+    public String getPostedUserImage() {
+        return postedUserImage;
+    }
+
+    public void setPostedUserImage(String postedUserImage) {
+        this.postedUserImage = postedUserImage;
+    }
+
 }

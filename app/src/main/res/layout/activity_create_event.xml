@@ -54,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:hint="Event name"
                 android:inputType="text"
                 android:padding="15dp"
@@ -86,7 +85,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:gravity="top|left"
                 android:hint="Details"
                 android:inputType="textMultiLine"
@@ -103,7 +101,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/edit_text"
-                android:elevation="2dp"
                 android:hint="Location"
                 android:inputType="text"
                 android:padding="15dp"
@@ -148,7 +145,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:background="@color/colorPrimary"
-                android:elevation="5dp"
                 android:text="Create"
                 android:textColor="@color/white" />
 

@@ -2,6 +2,8 @@ package practiceandroidapplication.android.com.meetmeup.Fragments;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +26,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +39,9 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
+import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 import practiceandroidapplication.android.com.meetmeup.R;
+import practiceandroidapplication.android.com.meetmeup.ViewMeetupsActivity;
 
 
 public class EventsFragment extends Fragment {
@@ -77,8 +85,8 @@ public class EventsFragment extends Fragment {
 
         listOfEvents = (LinearLayout) getActivity().findViewById(R.id.linear_events);
         lblMessage = (TextView) getActivity().findViewById(R.id.lbl_message);
+        lblMessage.setVisibility(View.GONE);
 
-        lblMessage.setVisibility(View.INVISIBLE);
         listOfEvents.setVisibility(View.INVISIBLE);
 
         /*btnEvents = (Button) getActivity().findViewById(R.id.btn_events);
@@ -108,26 +116,92 @@ public class EventsFragment extends Fragment {
 
         for (Events event : currentEvents) {
 
+            final LinearLayout.LayoutParams linearGroups = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            linearGroups.setMargins(0,0,0,60);
+
             LinearLayout recordOfEvents = new LinearLayout(getActivity());
-            recordOfEvents.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            recordOfEvents.setLayoutParams(linearGroups);
             recordOfEvents.setOrientation(LinearLayout.VERTICAL);
-            recordOfEvents.setPadding(3, 3, 3, 3);
+           //recordOfEvents.setPadding(3, 3, 3, 3);
 
             Log.d("Event name", event.getEventName());
             recordOfEvents.setTag(event.getId());
 
-
-            /*final LinearLayout.LayoutParams imageGroupParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            imageGroupParams.height = 50;
-            imageGroupParams.width = 50;
-            imageGroupParams.gravity = Gravity.LEFT;
+            final LinearLayout.LayoutParams imageEventParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            imageEventParams.weight = 1.0f;
+            imageEventParams.height = 650;
+            imageEventParams.width = 550;
+            //imageEventParams.setMargins(0,0,0,60);
+            imageEventParams.gravity = Gravity.CENTER;
 
             final ImageView eventPostedByImage = new ImageView(getActivity());
-            eventPostedByImage.setImageResource(R.drawable.meetmeup);
-            eventPostedByImage.setLayoutParams(imageGroupParams);*/
+            eventPostedByImage.setVisibility(View.GONE);
+
+            eventPostedByImage.setTag("Posted by" + event.getPostedBy());
+
+            if(!event.getPostedByName().equals("null") && !event.getPostedByName().equals("")) {
+
+                class DownloadEventsImage extends AsyncTask<Void, Void, Bitmap> {
+
+                    String filename;
+                    //Bitmap groupImage;
+
+                    public DownloadEventsImage(String filename) {
+                        this.filename = filename;
+                    }
+
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+                    }
+
+                    @Override
+                    protected Bitmap doInBackground(Void... params) {
+                        // TODO Auto-generated method stub
+
+                        try {
+                            final String USER_IMAGE_URL = Network.forDeploymentIp + "meetmeup/uploads/users/" + this.filename;
+                            Log.d("Image", USER_IMAGE_URL);
+                            URLConnection connection = new URL(USER_IMAGE_URL).openConnection();
+                            connection.setConnectTimeout(1000 * 30);
+
+                            return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
+                        } catch (FileNotFoundException ex) {
+                            ex.printStackTrace();
+                            return null;
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            return null;
+                        }
+                    }
+
+
+                    protected void onPostExecute(Bitmap bitmap) {
+                        //pDialog.dismiss();
+                        try {
+                            if (bitmap != null) {
+                                Log.d("Image", "Success");
+                                eventPostedByImage.setImageBitmap(bitmap);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+
+                }
+
+                /*DownloadGroupImage downloadUserImage = new DownloadGroupImage(group.getGroupImage() + ".JPG");
+                downloadUserImage.execute();
+                groupImage.setImageResource(R.drawable.meetmeup);
+                //groupImage.setImageBitmap(downloadUserImage.downloadImage());*/
+                new DownloadEventsImage(event.getPostedUserImage() + ".JPG").execute();
+                eventPostedByImage.setLayoutParams(imageEventParams);
+                eventPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                eventPostedByImage.setVisibility(View.VISIBLE);
+            }
 
             final TextView eventPostedBy = new TextView(getActivity());
-            eventPostedBy.setText("Posted by: Mark Sibi");
+            eventPostedBy.setText("Posted by :" + event.getPostedByName());
             eventPostedBy.setTextSize(15);
             eventPostedBy.setTextColor(Color.BLACK);
 
@@ -136,6 +210,21 @@ public class EventsFragment extends Fragment {
             eventName.setText(event.getEventName());
             eventName.setTextSize(25);
             eventName.setTextColor(Color.BLACK);
+            eventName.setTextColor(Color.parseColor("#37BC9B"));
+
+            eventName.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Intent meetups = new Intent(getActivity(), ViewMeetupsActivity.class);
+                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+
+                    Log.d("MEETUPS_ID", parent.getTag() + "");
+
+                    startActivity(meetups);
+                    getActivity().finish();
+                }
+            });
 
             final TextView eventDetails = new TextView(getActivity());
             eventDetails.setText("Details: " + event.getDetails());
@@ -178,6 +267,7 @@ public class EventsFragment extends Fragment {
             view.setText("view");
             view.setTextSize(15);
             view.setBackgroundColor(Color.TRANSPARENT);
+            view.setTextColor(Color.parseColor("#37BC9B"));
 
             view.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -191,17 +281,18 @@ public class EventsFragment extends Fragment {
                 }
             });
 
-            options.addView(view);
+            //options.addView(view);
 
-            //recordOfEvents.addView(eventPostedByImage);
             recordOfEvents.addView(eventName);
-            recordOfEvents.addView(eventPostedBy);
             recordOfEvents.addView(eventDetails);
             //recordOfEvents.addView(eventKey);
             recordOfEvents.addView(eventLocation);
             recordOfEvents.addView(startDate);
             recordOfEvents.addView(endDate);
-            recordOfEvents.addView(options);
+            recordOfEvents.addView(eventPostedBy);
+            recordOfEvents.addView(eventPostedByImage);
+
+            //recordOfEvents.addView(options);
 
             listOfEvents.addView(recordOfEvents);
 
@@ -258,9 +349,15 @@ public class EventsFragment extends Fragment {
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-                        currentEvents.add(new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
+                        Events event = new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
                                 jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key"),
-                                jUserObject.getString("start_date"), jUserObject.getString("end_date")));
+                                jUserObject.getString("start_date"), jUserObject.getString("end_date"));
+
+                        event.setPostedBy(jUserObject.getInt("posted_by"));
+                        event.setPostedByName(jUserObject.getString("posted_by_user"));
+                        event.setPostedUserImage(jUserObject.getString("user_image"));
+
+                        currentEvents.add(event);
 
 
                         Log.d("ID:", jUserObject.getInt("id") + "");

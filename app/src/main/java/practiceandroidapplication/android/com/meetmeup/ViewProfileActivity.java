@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
@@ -33,6 +34,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
+import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 
 public class ViewProfileActivity extends AppCompatActivity {
 
@@ -42,6 +44,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
+    ProgressBar progressImage;
 
     TextView lblFullName,lblGender, lblNationality,
             lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
@@ -84,6 +87,9 @@ public class ViewProfileActivity extends AppCompatActivity {
         linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
         imgUser = (ImageView) findViewById(R.id.img_user);
+        imgUser.setVisibility(View.GONE);
+
+        progressImage = (ProgressBar) findViewById(R.id.progress_image);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -170,9 +176,12 @@ public class ViewProfileActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if(message.equals("Successful")) {
-
                     // download user image based on the file name query
-                    new DownloadUserImage(user.getUserImage() + ".JPG").execute();
+                    if(!user.getUserImage().equals("null") && !user.getUserImage().equals("")) {
+                        new DownloadUserImage(user.getUserImage() + ".JPG").execute();
+                    }
+
+                    //new DownloadUserImage(user.getUserImage() + ".JPG").execute();
 
                     linearProfile.setVisibility(View.VISIBLE);
 
@@ -240,7 +249,9 @@ public class ViewProfileActivity extends AppCompatActivity {
             //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
-                    imgUser.setImageBitmap(bitmap);
+                    imgUser.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bitmap, 100));
+                    imgUser.setVisibility(View.VISIBLE);
+                    progressImage.setVisibility(View.GONE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

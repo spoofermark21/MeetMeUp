@@ -78,6 +78,8 @@ public class NotificationActivity extends AppCompatActivity {
         });
 
         listOfNotifications = (LinearLayout) findViewById(R.id.linear_notifications);
+        listOfNotifications.setVisibility(View.GONE);
+
         lblMessage = (TextView) findViewById(R.id.lbl_message);
         lblMessage.setVisibility(View.GONE);
 
@@ -331,7 +333,7 @@ public class NotificationActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
-                //listOfMeetups.setVisibility(View.VISIBLE);
+                listOfNotifications.setVisibility(View.VISIBLE);
                 if (message.equals("New notifications.")) {
                     Toast.makeText(NotificationActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     displayNotifs();

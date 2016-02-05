@@ -30,16 +30,13 @@
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="fill_parent"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight=".85"
         android:paddingTop="5dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".90"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
             android:paddingLeft="15dp"
             android:paddingRight="15dp">
@@ -54,13 +51,24 @@
                 android:text="Personal Details"
                 android:textSize="20sp" />
 
-            <ImageView
+            <ProgressBar
+                android:id="@+id/progress_image"
+                style="?android:attr/progressBarStyleSmall"
                 android:layout_gravity="center"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:padding="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminateDrawable="@drawable/progress"/>
+
+            <ImageView
                 android:background="@drawable/edit_text"
-                android:scaleType="fitCenter"
+                android:layout_gravity="center"
+                android:scaleType="fitXY"
                 android:id="@+id/img_user"
-                android:layout_width="100dp"
-                android:layout_height="100dp" />
+                android:layout_width="200dp"
+                android:layout_height="200dp" />
 
             <Button
                 android:id="@+id/btn_image"
@@ -69,7 +77,6 @@
                 android:layout_marginTop="5dp"
                 android:background="@color/transparent"
                 android:elevation="5dp"
-                android:textAllCaps="false"
                 android:text="select image"
                 android:textColor="@color/colorPrimaryDark" />
 
@@ -230,7 +237,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:background="@color/colorPrimary"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/button_background"
                 android:elevation="5dp"
                 android:text="Update"
                 android:textColor="@color/white" />

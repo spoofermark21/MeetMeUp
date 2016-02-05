@@ -10,6 +10,8 @@ import android.app.ProgressDialog;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +38,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,7 +129,7 @@ public class NewsfeedActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.linear_feeds, meetups, "MEETUPS_FRAGMENT");
             fragmentTransaction.commit();
 
-            Log.d("User Preference: ", currentUser.getPreference().getGender() + "");
+            //Log.d("User Preference: ", currentUser.getPreference().getGender() + "");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -221,7 +227,8 @@ public class NewsfeedActivity extends AppCompatActivity
      */
 
     public void initUI() {
-        //imgUserProfile = (ImageView) findViewById(R.id.user_image);
+        imgUserProfile = (ImageView) findViewById(R.id.user_image);
+        imgUserProfile.setBackgroundColor(Color.parseColor("#E6E9ED"));
         txtUserFullName = (TextView) findViewById(R.id.user_fullname);
         txtUserNationality = (TextView) findViewById(R.id.user_nationality);
 
@@ -355,6 +362,60 @@ public class NewsfeedActivity extends AppCompatActivity
                 + currentUser.getLastName());
         txtUserNationality.setText(currentUser.getNationality()
                 .getNatioNalityName());
+
+        if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
+
+            class DownloadUserImage extends AsyncTask<Void, Void, Bitmap> {
+
+                String filename;
+
+                public DownloadUserImage(String filename) {
+                    this.filename = filename;
+                }
+
+                @Override
+                protected void onPreExecute() {
+                    super.onPreExecute();
+                }
+
+                @Override
+                protected Bitmap doInBackground(Void... params) {
+                    // TODO Auto-generated method stub
+
+                    try {
+                        final String USER_IMAGE_URL = Network.forDeploymentIp + "meetmeup/uploads/users/" + this.filename;
+                        Log.d("Image", USER_IMAGE_URL);
+                        URLConnection connection = new URL(USER_IMAGE_URL).openConnection();
+                        connection.setConnectTimeout(1000 * 30);
+
+                        return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
+                        return null;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
+                }
+
+
+                protected void onPostExecute(Bitmap bitmap) {
+                    //pDialog.dismiss();
+                    try {
+                        if(bitmap!=null) {
+                            Log.d("Image", "Success");
+                            imgUserProfile.setImageBitmap(bitmap);
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+            }
+
+            new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
+            imgUserProfile.setScaleType(ImageView.ScaleType.FIT_XY);
+        }
     }
 
     public User user() {

@@ -208,7 +208,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                         .show();
             }
         });
-
+        //new RefreshComment().execute();
     }
 
     /*
@@ -306,14 +306,11 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                         new RetrieveAttendees().execute();
                     }
 
-
-
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-
     }
 
 
@@ -486,8 +483,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
                 if (message.equals("Successful")) {
                     loadComments();
-
-                    //thread.sleep(20000);
+                    //thread.sleep(13 * 1000);
                     //new RetrieveComments().execute();
 
 
@@ -500,6 +496,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         }
 
     }
+
 
     class InsertComment extends AsyncTask<String, String, String> {
 

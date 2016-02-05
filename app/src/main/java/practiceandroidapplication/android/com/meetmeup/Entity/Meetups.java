@@ -20,6 +20,8 @@ public class Meetups {
 
     private String postedByName;
 
+    private String postedByNameImage;
+
     private String location;
 
     private String postedDate;
@@ -33,7 +35,8 @@ public class Meetups {
     private static List<Comments> comments;
 
 
-    public Meetups(){}
+    public Meetups() {
+    }
 
 
     public Meetups(String subject, String details, int postedBy, String location, Preference preference) {
@@ -44,7 +47,7 @@ public class Meetups {
         this.preference = preference;
     }
 
-    public Meetups(int id, String subject, String details, String location, String postedDate, String key){
+    public Meetups(int id, String subject, String details, String location, String postedDate, String key) {
         this.id = id;
         this.subject = subject;
         this.details = details;
@@ -55,7 +58,7 @@ public class Meetups {
 
 
     public Meetups(int id, String subject, String details, String location,
-                   String postedDate, String key, int postedBy, String postedByName){
+                   String postedDate, String key, int postedBy, String postedByName) {
         this.id = id;
         this.subject = subject;
         this.details = details;
@@ -76,6 +79,14 @@ public class Meetups {
         this.preference = preference;
     }
 
+    public String getPostedByNameImage() {
+        return postedByNameImage;
+    }
+
+    public void setPostedByNameImage(String postedByNameImage) {
+        this.postedByNameImage = postedByNameImage;
+    }
+
     public static List<Comments> getComments() {
         return comments;
     }
@@ -88,13 +99,12 @@ public class Meetups {
 
         List<String> listOfComments = new ArrayList<>();
 
-        for(Comments comments : getComments()) {
+        for (Comments comments : getComments()) {
             listOfComments.add(comments.getComment() + " -" + comments.getUserName());
         }
 
         return listOfComments;
     }
-
 
 
     public String getSubject() {

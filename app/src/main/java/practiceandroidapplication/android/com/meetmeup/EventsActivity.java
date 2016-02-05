@@ -148,6 +148,11 @@ public class EventsActivity extends AppCompatActivity {
             endDate.setTextSize(15);
             endDate.setTextColor(Color.BLACK);
 
+            final TextView eventPostedBy = new TextView(this);
+            eventPostedBy.setText("Posted by: " + event.getPostedByName());
+            eventPostedBy.setTextSize(15);
+            eventPostedBy.setTextColor(Color.BLACK);
+
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             params2.weight = 1.0f;
             params2.gravity = Gravity.RIGHT;
@@ -157,6 +162,13 @@ public class EventsActivity extends AppCompatActivity {
             options.setOrientation(LinearLayout.HORIZONTAL);
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
+
+            final TextView view = new TextView(this);
+            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            view.setPadding(10, 10, 0, 10);
+            view.setText("view");
+            view.setTextSize(15);
+            view.setBackgroundColor(Color.TRANSPARENT);
 
             final TextView edit = new TextView(this);
             edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -172,6 +184,18 @@ public class EventsActivity extends AppCompatActivity {
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Intent meetups = new Intent(EventsActivity.this, ViewEventsActivity.class);
+                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+                    startActivity(meetups);
+
+                    finish();
+                }
+            });
 
             edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -214,7 +238,7 @@ public class EventsActivity extends AppCompatActivity {
                                     listOfEvents.removeView(parent);
                                     new DisableEvent().execute(removeId);
 
-                                    if(listOfEvents.getChildCount() == 1)
+                                    if (listOfEvents.getChildCount() == 1)
                                         lblMessage.setVisibility(View.VISIBLE);
                                     else
                                         lblMessage.setVisibility(View.GONE);
@@ -234,8 +258,7 @@ public class EventsActivity extends AppCompatActivity {
                 }
             });
 
-            options.addView(edit);
-            options.addView(delete);
+            options.addView(view);
 
             recordOfEvents.addView(eventName);
             recordOfEvents.addView(eventDetails);
@@ -243,6 +266,14 @@ public class EventsActivity extends AppCompatActivity {
             recordOfEvents.addView(eventLocation);
             recordOfEvents.addView(startDate);
             recordOfEvents.addView(endDate);
+
+            if(event.getPostedBy() == currentUser.getId()) {
+                options.addView(edit);
+                options.addView(delete);
+            } else {
+                recordOfEvents.addView(eventPostedBy);
+            }
+
             recordOfEvents.addView(options);
 
             listOfEvents.addView(recordOfEvents);
@@ -302,7 +333,8 @@ public class EventsActivity extends AppCompatActivity {
 
                         currentEvents.add(new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
                                 jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key"),
-                                jUserObject.getString("start_date"), jUserObject.getString("end_date")));
+                                jUserObject.getString("start_date"), jUserObject.getString("end_date"), jUserObject.getInt("posted_by"),
+                                jUserObject.getString("posted_by_user")));
 
 
                         Log.d("ID:", jUserObject.getInt("id") + "");

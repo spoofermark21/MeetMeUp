@@ -20,6 +20,7 @@ public class Sessions {
     public static double currentLocationLatitude;
     public static double currentLocationLongtitude;
 
+
     private Sessions () {}
 
     public static Sessions getSessionsInstance() {

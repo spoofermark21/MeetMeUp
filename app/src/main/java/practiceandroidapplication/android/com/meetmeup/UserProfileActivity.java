@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
+import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -43,6 +45,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
+    ProgressBar progressImage;
 
     TextView lblFullName,lblGender, lblNationality,
             lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
@@ -108,6 +111,9 @@ public class UserProfileActivity extends AppCompatActivity {
         linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
         imgUser = (ImageView) findViewById(R.id.img_user);
+        imgUser.setVisibility(View.GONE);
+
+        progressImage = (ProgressBar) findViewById(R.id.progress_image);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -204,8 +210,9 @@ public class UserProfileActivity extends AppCompatActivity {
                 if(message.equals("Successful")) {
 
                     // download user image based on the file name query
-                    new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
-
+                    if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
+                        new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
+                    }
                     linearProfile.setVisibility(View.VISIBLE);
 
                     lblFullName.setText(currentUser.getFirstName() + " "
@@ -259,7 +266,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
-                //Toast.makeText(UserProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
                 return null;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -272,7 +279,9 @@ public class UserProfileActivity extends AppCompatActivity {
             //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
-                    imgUser.setImageBitmap(bitmap);
+                    imgUser.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bitmap, 100));
+                    imgUser.setVisibility(View.VISIBLE);
+                    progressImage.setVisibility(View.GONE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -137,7 +137,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 user.getPassword(), user.getFirstName(),
                                 user.getLastName(), user.getBirthDate(),
                                 user.getNationality().getId() + "", user.getGender() + "", user.getCurrentLocation(),
-                                user.getEmailAddress(), user.getContactNumber(), "mark.png");
+                                user.getEmailAddress(), user.getContactNumber(), "");
                     }
 
 

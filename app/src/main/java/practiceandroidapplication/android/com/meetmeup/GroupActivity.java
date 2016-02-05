@@ -143,6 +143,11 @@ public class GroupActivity extends AppCompatActivity {
             groupDetails.setTextSize(15);
             groupDetails.setTextColor(Color.BLACK);
 
+            final TextView groupCreatedBy = new TextView(this);
+            groupCreatedBy.setText(group.getDetails());
+            groupCreatedBy.setTextSize(15);
+            groupCreatedBy.setTextColor(Color.BLACK);
+
             final TextView groupCountMembers = new TextView(this);
             groupCountMembers.setText(group.getTotalMembers() + " members");
             groupCountMembers.setTextSize(15);
@@ -158,6 +163,13 @@ public class GroupActivity extends AppCompatActivity {
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
+            final TextView view = new TextView(this);
+            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            view.setPadding(10, 10, 0, 10);
+            view.setText("view");
+            view.setTextSize(15);
+            view.setBackgroundColor(Color.TRANSPARENT);
+
             //final ImageButton edit = new ImageButton(this);
             //edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
             final TextView edit = new TextView(this);
@@ -172,13 +184,26 @@ public class GroupActivity extends AppCompatActivity {
             delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             delete.setPadding(10, 10, 0, 10);
             delete.setBackgroundColor(Color.TRANSPARENT);*/
-
             final TextView delete = new TextView(this);
             delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             delete.setPadding(10, 10, 0, 10);
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
+
+
+
+            view.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    /*Intent meetups = new Intent(EventsActivity.this, ViewEventsActivity.class);
+                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
+                    startActivity(meetups);
+
+                    finish();*/
+                }
+            });
 
             edit.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -190,7 +215,7 @@ public class GroupActivity extends AppCompatActivity {
 
                     finish();
 
-                    Toast.makeText(GroupActivity.this, parent.getTag()  + "!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GroupActivity.this, parent.getTag() + "!", Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -219,7 +244,7 @@ public class GroupActivity extends AppCompatActivity {
 
                                     Log.d("Group count", listOfGroups.getChildCount() + "");
 
-                                    if(listOfGroups.getChildCount() == 1)
+                                    if (listOfGroups.getChildCount() == 1)
                                         lblMessage.setVisibility(View.VISIBLE);
                                     else
                                         lblMessage.setVisibility(View.GONE);
@@ -238,13 +263,20 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
-            options.addView(edit);
-            options.addView(delete);
+            options.addView(view);
 
             //recordOfGroups.addView(groupImage);
             recordOfGroups.addView(groupName);
             recordOfGroups.addView(groupDetails);
             recordOfGroups.addView(groupCountMembers);
+
+            if(group.getCreatedBy() == currentUser.getId()) {
+                options.addView(edit);
+                options.addView(delete);
+            } else {
+                recordOfGroups.addView(groupCreatedBy);
+            }
+
             recordOfGroups.addView(options);
 
             listOfGroups.addView(recordOfGroups);
@@ -304,7 +336,7 @@ public class GroupActivity extends AppCompatActivity {
                         currentGroups.add(new Group(jUserObject.getInt("id"),
                                 jUserObject.getString("group_name"), jUserObject.getString("details"),
                                 jUserObject.getInt("created_by"), jUserObject.getString("created_date"),
-                                jUserObject.getInt("count_members")));
+                                jUserObject.getString("created_by_user"),jUserObject.getInt("count_members")));
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }
