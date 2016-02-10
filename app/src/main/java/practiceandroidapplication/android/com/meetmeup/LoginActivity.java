@@ -194,7 +194,6 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("User info", jUser.toString());
 
                     // retrieve user info
-
                     Log.d("USER ID (Login)", jUser.getString(0) + "");
 
                     currentUser.setId(Integer.parseInt(jUser.getString(0)));
@@ -202,6 +201,8 @@ public class LoginActivity extends AppCompatActivity {
                     currentUser.setLastName(jUser.getString(2));
                     currentUser.setNationality(
                             new Nationality(Integer.parseInt(jUser.getString(3))));
+                    currentUser.setUserImage(jUser.getString(4));
+
                     /*currentUser.setPreference(new Preference(jUser.getInt(10),
                             jUser.getInt(11), jUser.getString(12).charAt(0)));*/
 

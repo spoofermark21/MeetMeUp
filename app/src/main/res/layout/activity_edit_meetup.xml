@@ -26,14 +26,13 @@
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp">
+        android:layout_margin="5dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="15dp">
+            android:padding="5dp">
 
             <TextView
                 android:layout_width="wrap_content"

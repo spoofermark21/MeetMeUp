@@ -18,6 +18,8 @@ public class Group {
 
     private String createdByName;
 
+    private String createdByNameImage;
+
     private String createdDate;
 
     private char availFlag;
@@ -64,12 +66,46 @@ public class Group {
         this.groupImage = groupImage;
     }
 
+    public Group(int id, String groupName, String details,int createdBy,
+                 String createdDate, int totalMembers, String groupImage,
+                 String createdByName, String createdByNameImage) {
+        this.id = id;
+        this.groupName = groupName;
+        this.details = details;
+        this.createdBy = createdBy;
+        this.createdDate = createdDate;
+        this.totalMembers = totalMembers;
+        this.groupImage = groupImage;
+        this.createdByName = createdByName;
+        this.createdByNameImage = createdByNameImage;
+    }
+
+    public Group(int id, String groupName, String details,int createdBy,
+                int totalMembers, String groupImage,
+                 String createdByName, String createdByNameImage) {
+        this.id = id;
+        this.groupName = groupName;
+        this.details = details;
+        this.createdBy = createdBy;
+        this.totalMembers = totalMembers;
+        this.groupImage = groupImage;
+        this.createdByName = createdByName;
+        this.createdByNameImage = createdByNameImage;
+    }
+
     public Group(String groupName, String details, int createdBy) {
         this.groupName = groupName;
         this.details = details;
         this.createdBy = createdBy;
     }
 
+    public String getCreatedByNameImage() {
+        return createdByNameImage;
+    }
+
+    public void setCreatedByNameImage(String createdByNameImage) {
+        this.createdByNameImage = createdByNameImage;
+    }
 
     public int getId() {
         return id;

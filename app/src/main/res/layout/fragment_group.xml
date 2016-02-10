@@ -15,12 +15,9 @@
 
         <LinearLayout
             android:id="@+id/linear_groups"
-            android:background="@color/colorMainBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/lbl_message"

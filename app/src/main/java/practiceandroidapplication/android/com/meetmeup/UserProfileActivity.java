@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,7 +47,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
-    ProgressBar progressImage;
+    //ProgressBar progressImage;
 
     TextView lblFullName,lblGender, lblNationality,
             lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
@@ -63,6 +65,15 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
         initUI();
         try {
             linearProfile.setVisibility(View.INVISIBLE);
@@ -73,7 +84,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.user_profile_menu, menu);
         return true;
@@ -92,7 +103,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     /*
         functions
@@ -111,17 +122,16 @@ public class UserProfileActivity extends AppCompatActivity {
         linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
         imgUser = (ImageView) findViewById(R.id.img_user);
-        imgUser.setVisibility(View.GONE);
+        imgUser.setBackgroundColor(Color.parseColor("#E6E9ED"));
 
-        progressImage = (ProgressBar) findViewById(R.id.progress_image);
+        //imgUser.setVisibility(View.GONE);
+        //progressImage = (ProgressBar) findViewById(R.id.progress_image);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View view) {
-                startActivity(new Intent(UserProfileActivity.this,NewsfeedActivity.class));
-                finish();
+                startActivity(new Intent(UserProfileActivity.this, UserProfileUpdateActivity.class));
             }
         });
 
@@ -186,7 +196,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     currentUser.setBirthDate(jUserObject.getString("bdate"));
                     currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
                     currentUser.setGender(jUserObject.getString("gender").charAt(0));
-                    currentUser.setCurrentLocation(jUserObject.getString("current_location"));
+                    currentUser.setCurrentLocation(jUserObject.getString("location"));
                     currentUser.setEmailAddress(jUserObject.getString("email_address"));
                     currentUser.setContactNumber(jUserObject.getString("contact_number"));
                     currentUser.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
@@ -266,7 +276,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
-                Toast.makeText(UserProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(UserProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
                 return null;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -279,9 +289,9 @@ public class UserProfileActivity extends AppCompatActivity {
             //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
-                    imgUser.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bitmap, 100));
-                    imgUser.setVisibility(View.VISIBLE);
-                    progressImage.setVisibility(View.GONE);
+                    imgUser.setImageBitmap(bitmap);
+                    //imgUser.setVisibility(View.VISIBLE);
+                    //progressImage.setVisibility(View.GONE);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -290,7 +300,6 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        startActivity(new Intent(UserProfileActivity.this,NewsfeedActivity.class));
         finish();
     }
 

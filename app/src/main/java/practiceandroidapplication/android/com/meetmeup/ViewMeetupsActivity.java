@@ -45,6 +45,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.SensoredWords;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
@@ -363,6 +364,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     return json.getString(TAG_RESPONSE);
                 } else {
                     Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+
                     return json.getString(TAG_RESPONSE);
                 }
             } catch (Exception e) {
@@ -461,6 +463,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     }
 
                     meetups.setComments(comments);
+                    //clear comments
+                    //comments.clear();
 
                     return jsonObject.getString(TAG_RESPONSE);
                 } else {
@@ -696,6 +700,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     return json.getString(TAG_RESPONSE);
                 } else {
                     Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+
+
                     return json.getString(TAG_RESPONSE);
                 }
             } catch (Exception e) {
@@ -715,6 +721,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     //need to insert the meetup
                     new InsertNotications(new Notification(meetups.getId(), meetups
                             .getPostedBy(), currentUser.getId(), Integer.parseInt(meetupId), 'M', details)).execute();
+
+                    Toast.makeText(ViewMeetupsActivity.this, "Request sent.", Toast.LENGTH_SHORT);
+                } else if(message.equals("Already sent a request.")) {
+                    Toast.makeText(ViewMeetupsActivity.this, "Already sent a request", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

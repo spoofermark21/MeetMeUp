@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
@@ -227,8 +228,8 @@ public class NewsfeedActivity extends AppCompatActivity
      */
 
     public void initUI() {
-        imgUserProfile = (ImageView) findViewById(R.id.user_image);
-        imgUserProfile.setBackgroundColor(Color.parseColor("#E6E9ED"));
+        //imgUserProfile = (ImageView) findViewById(R.id.user_image);
+        //imgUserProfile.setBackgroundColor(Color.parseColor("#E6E9ED"));
         txtUserFullName = (TextView) findViewById(R.id.user_fullname);
         txtUserNationality = (TextView) findViewById(R.id.user_nationality);
 
@@ -309,35 +310,39 @@ public class NewsfeedActivity extends AppCompatActivity
         });
 
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(NewsfeedActivity.this,"Refreshing", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 
     public void navUserProfile() {
         Log.d("USER_ID (newsfeed)", currentUser.getId() + "");
         startActivity(new Intent(NewsfeedActivity.this, UserProfileActivity.class));//.putExtra("USER_ID",user().getId() + ""));
-        finish();
     }
 
     public void navGroups() {
         //fragmentTransaction.addToBackStack(null);
         //fragmentTransaction.commit();
         startActivity(new Intent(NewsfeedActivity.this, GroupActivity.class));
-        finish();
     }
 
     public void navMeetups() {
         startActivity(new Intent(NewsfeedActivity.this, MeetupsActivity.class));
-        finish();
     }
 
     public void navEvents() {
         startActivity(new Intent(NewsfeedActivity.this, EventsActivity.class));
-        finish();
+
     }
 
     public void navLocation() {
         startActivity(new Intent(NewsfeedActivity.this, MapsActivity.class));
-        finish();
         /*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                 Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
         startActivity(intent);*/
@@ -345,7 +350,6 @@ public class NewsfeedActivity extends AppCompatActivity
 
     public void navNotications() {
         startActivity(new Intent(NewsfeedActivity.this, NotificationActivity.class));
-        finish();
     }
 
     public void navLogOutEvent() {
@@ -363,7 +367,7 @@ public class NewsfeedActivity extends AppCompatActivity
         txtUserNationality.setText(currentUser.getNationality()
                 .getNatioNalityName());
 
-        if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
+        /*if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
 
             class DownloadUserImage extends AsyncTask<Void, Void, Bitmap> {
 
@@ -415,7 +419,7 @@ public class NewsfeedActivity extends AppCompatActivity
 
             new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
             imgUserProfile.setScaleType(ImageView.ScaleType.FIT_XY);
-        }
+        }*/
     }
 
     public User user() {
@@ -501,9 +505,10 @@ public class NewsfeedActivity extends AppCompatActivity
                 if(message.equals("New notifications.")) {
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(NewsfeedActivity.this)
-                                    .setSmallIcon(R.drawable.ic_arrow_back_black)
-                                    .setContentTitle("Notifications")
+                                    .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                                    .setContentTitle("#MeetMeUp")
                                     .setContentText("You have new notifications");
+                    mBuilder.setAutoCancel(true);
                     mBuilder.build();
 
 // Creates an explicit intent for an Activity in your app
@@ -515,7 +520,7 @@ public class NewsfeedActivity extends AppCompatActivity
 // your application to the Home screen.
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(NewsfeedActivity.this);
 // Adds the back stack for the Intent (but not the Intent itself)
-                    stackBuilder.addParentStack(LoginActivity.class);
+                    stackBuilder.addParentStack(NewsfeedActivity.class);
 // Adds the Intent that starts the Activity to the top of the stack
                     stackBuilder.addNextIntent(resultIntent);
                     PendingIntent resultPendingIntent =
@@ -528,7 +533,6 @@ public class NewsfeedActivity extends AppCompatActivity
                             (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 // mId allows you to update the notification later on.
                     mNotificationManager.notify(1,mBuilder.build());
-
 
                 }
             } catch (Exception ex) {

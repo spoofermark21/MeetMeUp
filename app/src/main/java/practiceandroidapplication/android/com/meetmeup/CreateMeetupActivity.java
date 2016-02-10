@@ -2,6 +2,8 @@ package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,20 +19,31 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
+import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class CreateMeetupActivity extends AppCompatActivity {
@@ -39,21 +52,30 @@ public class CreateMeetupActivity extends AppCompatActivity {
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
+    private GoogleMap googleMap;
+    MarkerOptions markerOptions;
+
+    LatLng latLng;
+
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
 
     EditText txtSubjects, txtDetails, txtLocation, txtStartAge,
             txtEndAge;
 
-    Spinner spnGender;
+    Spinner spnGender, spnLocation;
 
-    Button btnCreate;
+    Button btnCreate, btnFind;
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     Meetups meetups;
 
     String meetupId;
+    String location;
+
+    boolean isCreate = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +95,51 @@ public class CreateMeetupActivity extends AppCompatActivity {
 
         initUI();
 
+        try {
+            // Loading map
+            initilizeMap();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * function to load map. If map is not created it will create it for you
+     * */
+    private void initilizeMap() {
+        if (googleMap == null) {
+            googleMap = ((MapFragment) getFragmentManager().findFragmentById(
+                    R.id.map)).getMap();
+
+            double latitude = 10.342887;
+            double longitude = 123.960722;
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().target(
+                    new LatLng(latitude, longitude)).zoom(12).build();
+
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            /*MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Meetmeup developer home");
+            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+            googleMap.addMarker(marker);*/
+
+            googleMap.setMyLocationEnabled(true);
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+            googleMap.getUiSettings().setZoomGesturesEnabled(true);
+            googleMap.getUiSettings().setCompassEnabled(true);
+            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            googleMap.getUiSettings().setRotateGesturesEnabled(true);
+            googleMap.getUiSettings().setTiltGesturesEnabled(true);
+            googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+
+            // check if map is created successfully or not
+            if (googleMap == null) {
+                Toast.makeText(getApplicationContext(),
+                        "Sorry! unable to create maps", Toast.LENGTH_SHORT)
+                        .show();
+            }
+        }
     }
 
     public void initUI() {
@@ -83,33 +149,56 @@ public class CreateMeetupActivity extends AppCompatActivity {
         txtStartAge = (EditText) findViewById(R.id.txt_min_age);
         txtEndAge = (EditText) findViewById(R.id.txt_max_age);
         spnGender = (Spinner) findViewById(R.id.spn_gender);
+        spnLocation = (Spinner) findViewById(R.id.spn_location);
+
+        btnFind = (Button) findViewById(R.id.btn_find);
+        btnFind.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
+
+                if (location != null && !location.equals("")) {
+                    isCreate = false;
+                    new GeocoderTask().execute(location);
+                }
+            }
+        });
 
         btnCreate = (Button) findViewById(R.id.btn_create);
+        btnCreate.setVisibility(View.GONE);
         btnCreate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(validateForm()) {
 
-                    char gender = spnGender.getSelectedItem().toString().charAt(0);
+                if (validateForm()) {
 
-                    try {
+                    location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
-                        meetups = new Meetups(txtSubjects.getText().toString(),
-                                txtDetails.getText().toString(),
-                                currentUser.getId(),
-                                txtLocation.getText().toString(),
-                                new Preference(Integer.parseInt(txtStartAge.getText().toString()),
-                                        Integer.parseInt(txtEndAge.getText().toString()), gender));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
+                    //Toast.makeText(CreateMeetupActivity.this, location + "!", Toast.LENGTH_SHORT).show();
+
+                    if (location != null && !location.equals("")) {
+                        isCreate = true;
+                        new GeocoderTask().execute(location);
                     }
+                }
+            }
+        });
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
-                    new CreateMeetups().execute();
+                //Toast.makeText(CreateMeetupActivity.this, location + "!", Toast.LENGTH_SHORT).show();
+
+                if (location != null && !location.equals("")) {
+                    isCreate = true;
+                    new GeocoderTask().execute(location);
                 }
             }
         });
 
         loadGender();
+        loadLocations();
     }
 
     public void loadGender() {
@@ -126,34 +215,133 @@ public class CreateMeetupActivity extends AppCompatActivity {
         spnGender.setAdapter(adapter);
     }
 
+    public void loadLocations() {
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListLocations.getInstanceListLocations().loadLocations());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnLocation.setAdapter(adapter);
+    }
+
+    private class GeocoderTask extends AsyncTask<String, Void, List<Address>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(CreateMeetupActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.setMessage("Searching location...");
+            pDialog.show();
+        }
+
+        @Override
+        protected List<Address> doInBackground(String... locationName) {
+            Geocoder geocoder = new Geocoder(getBaseContext());
+            List<Address> addresses = null;
+
+            try {
+                // Getting a maximum of 3 Address that matches the input text
+                addresses = geocoder.getFromLocationName(locationName[0], 3);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return addresses;
+        }
+
+        @Override
+        protected void onPostExecute(List<Address> addresses) {
+            pDialog.dismiss();
+            if (addresses == null || addresses.size() == 0) {
+                Toast.makeText(CreateMeetupActivity.this, "No Location found", Toast.LENGTH_SHORT).show();
+            } else {
+                char gender = spnGender.getSelectedItem().toString().charAt(0);
+
+                try {
+
+                    googleMap.clear();
+
+                    Address address = addresses.get(0);
+
+                    latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+                    String addressText = String.format("%s %s",
+                            address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
+                            address.getCountryName());
+
+                    CameraPosition cameraPosition = new CameraPosition.Builder().target(
+                            new LatLng(address.getLatitude(),
+                                    address.getLongitude())).zoom(17).build();
+
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                    /*MarkerOptions marker = new MarkerOptions().position(new LatLng(address.getLatitude(),
+                            address.getLongitude()));
+                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                    googleMap.addMarker(marker);*/
+
+                    markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    markerOptions.title(addressText);
+
+                    googleMap.addMarker(markerOptions);
+
+                    //googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                    if(isCreate) {
+                        meetups = new Meetups(txtSubjects.getText().toString(),
+                                txtDetails.getText().toString(),
+                                currentUser.getId(),
+                                location,
+                                //txtLocation.getText().toString(),
+                                new Preference(Integer.parseInt(txtStartAge.getText().toString()),
+                                        Integer.parseInt(txtEndAge.getText().toString()), gender));
+
+                        meetups.setLattitude(address.getLatitude() + "");
+                        meetups.setLongtitude(address.getLongitude() + "");
+
+                        new CreateMeetups().execute();
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                // if btn is click trigger create meetups
+            }
+
+        }
+    }
+
     public boolean validateForm() {
         boolean isReadyToSave = true;
 
-        if(txtSubjects.getText().toString().equals("")){
+        if (txtSubjects.getText().toString().equals("")) {
             txtSubjects.setError("Subject is required.");
             isReadyToSave = false;
         } else
             txtSubjects.setError(null);
 
-        if(txtDetails.getText().toString().equals("")){
+        if (txtDetails.getText().toString().equals("")) {
             txtDetails.setError("Details is required.");
             isReadyToSave = false;
         } else
             txtDetails.setError(null);
 
-        if(txtLocation.getText().toString().equals("")){
+        if (txtLocation.getText().toString().equals("")) {
             txtLocation.setError("Location is required.");
             isReadyToSave = false;
         } else
             txtLocation.setError(null);
 
-        if(txtStartAge.getText().toString().equals("")){
+        if (txtStartAge.getText().toString().equals("")) {
             txtStartAge.setError("Minimum age is required.");
             isReadyToSave = false;
         } else
             txtStartAge.setError(null);
 
-        if(txtEndAge.getText().toString().equals("")){
+        if (txtEndAge.getText().toString().equals("")) {
             txtEndAge.setError("Maximum age is required.");
             isReadyToSave = false;
         } else
@@ -195,6 +383,8 @@ public class CreateMeetupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("end_age", meetups.getPreference().getEndAge() + ""));
                 params.add(new BasicNameValuePair("gender", meetups.getPreference().getGender() + ""));
                 params.add(new BasicNameValuePair("user_id", meetups.getPostedBy() + ""));
+                params.add(new BasicNameValuePair("lattitude", meetups.getLattitude() + ""));
+                params.add(new BasicNameValuePair("longtitude", meetups.getLongtitude() + ""));
 
                 Log.d("request!", "starting");
 

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 
 public class MapsActivity extends AppCompatActivity {
 
@@ -168,12 +169,20 @@ public class MapsActivity extends AppCompatActivity {
                 // Creating an instance of GeoPoint, to display in Google Map
                 latLng = new LatLng(address.getLatitude(), address.getLongitude());
 
+                //own code
                 Sessions.currentLocationLatitude = address.getLatitude();
-                Sessions.currentLocationLatitude = address.getLongitude();
+                Sessions.currentLocationLongtitude = address.getLongitude();
 
-                String addressText = String.format("%s, %s",
+                /*Interactions.showError("Lat:" + Sessions.currentLocationLatitude
+                + "Lon:" + Sessions.currentLocationLongtitude, MapsActivity.this);*/
+
+
+                String addressText = String.format("%s %s",
                         address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
                         address.getCountryName());
+
+                /*Interactions.showError("Admin area " + address.getAdminArea() + " Feature name " +
+                        address.getFeatureName() +  " Locality " + address.getLocality(), MapsActivity.this);*/
 
                 markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
@@ -196,7 +205,6 @@ public class MapsActivity extends AppCompatActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 
 

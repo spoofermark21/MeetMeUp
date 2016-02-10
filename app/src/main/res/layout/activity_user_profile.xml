@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context="practiceandroidapplication.android.com.meetmeup.UserProfileActivity">
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -25,31 +24,29 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".85"
-        android:paddingTop="5dp">
-
+        android:layout_height="fill_parent"
+        android:layout_marginTop="60dp">
 
         <LinearLayout
-            android:background="@drawable/main_background"
             android:id="@+id/linear_profile"
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_margin="10dp"
-            android:layout_weight=".90"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:layout_height="fill_parent"
+            android:layout_margin="5dp"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/main_background"
+                android:orientation="horizontal"
+                android:padding="10dp">
 
-
+                <!--
                 <ProgressBar
                     android:id="@+id/progress_image"
-                    style="?android:attr/progressBarStyleSmall"
+                    style="?android:attr/progressBarStyleLarge"
                     android:layout_gravity="center"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
@@ -57,46 +54,54 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:indeterminateDrawable="@drawable/progress"/>
-
+                -->
                 <ImageView
                     android:id="@+id/img_user"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:background="@drawable/img"
-                    android:scaleType="fitXY"/>
-
-                <TextView
-                    android:id="@+id/lbl_user_fullname"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="Sample Sample"
-                    android:textSize="25sp" />
-
+                    android:scaleType="fitXY" />
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lbl_user_fullname"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
+                        android:gravity="left"
                         android:padding="5dp"
-                        android:text="Birthday: "
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
+                        android:text="Sample Sample"
+                        android:textSize="25sp" />
 
-                    <TextView
-                        android:id="@+id/lbl_age"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:padding="5dp"
-                        android:textSize="15sp" />
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:padding="5dp"
+                            android:text="Birthday: "
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/lbl_age"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:padding="5dp"
+                            android:textSize="15sp" />
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
@@ -104,10 +109,11 @@
             </LinearLayout>
 
             <LinearLayout
-
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:background="@drawable/main_background"
+                android:orientation="vertical"
+                android:padding="10dp">
                 <!--
                 <TextView
                     android:textColor="@color/colorPrimary"
@@ -129,7 +135,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".30"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:text="Gender:"
                         android:textSize="15sp"
@@ -140,7 +146,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".70"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -154,7 +160,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".30"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:text="Nationality:"
                         android:textSize="15sp"
@@ -165,7 +171,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".70"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:textSize="15sp" />
                 </LinearLayout>
@@ -179,7 +185,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".30"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:text="Location:"
                         android:textSize="15sp"
@@ -190,7 +196,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".70"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:textSize="15sp" />
 
@@ -206,7 +212,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".30"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:text="Contact Number:"
                         android:textSize="15sp"
@@ -217,7 +223,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".70"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:textSize="15sp" />
 
@@ -232,7 +238,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".30"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:text="Email Address:"
                         android:textSize="15sp"
@@ -243,15 +249,49 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
-                        android:layout_weight=".70"
+                        android:layout_weight=".50"
                         android:padding="5dp"
                         android:textSize="15sp" />
 
                 </LinearLayout>
 
+            </LinearLayout>
 
+            <!--
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:layout_margin="10dp"
+                    android:id="@+id/btn_view_meetups"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_background"
+                    android:text="Meetups"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:layout_margin="10dp"
+                    android:id="@+id/btn_view_event"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_background"
+                    android:text="Event"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:layout_margin="10dp"
+                    android:id="@+id/btn_view_group"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_background"
+                    android:text="Groups"
+                    android:textColor="@color/white" />
 
             </LinearLayout>
+            -->
 
         </LinearLayout>
 
@@ -259,4 +299,12 @@
     </ScrollView>
 
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_mode_edit_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

@@ -36,6 +36,7 @@ public class User {
     private String birthDate; //from date to string : difficulty issue
     private Nationality nationality;
     private String currentLocation;
+    private Location location;
 
     //contacts
     private String emailAddress;
@@ -197,6 +198,14 @@ public class User {
 
     public void setPreference(Preference preference) {
         this.preference = preference;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     @Override

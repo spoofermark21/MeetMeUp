@@ -11,6 +11,10 @@ public class GroupMember {
 
     private int userId;
 
+    private String userName;
+
+    private String userImage;
+
     private char collaborationStatus;
 
     private String requestDate;
@@ -19,6 +23,17 @@ public class GroupMember {
 
     public GroupMember(){
 
+    }
+
+    public GroupMember(int userId, String userName, String userImage) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userImage = userImage;
+    }
+
+    public GroupMember(int groupId, int userId) {
+        this.groupId = groupId;
+        this.userId = userId;
     }
 
     public GroupMember(int id, int groupId, int userId){
@@ -74,6 +89,23 @@ public class GroupMember {
 
     public void setAcceptedDate(String acceptedDate) {
         this.acceptedDate = acceptedDate;
+    }
+
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
     }
 
     @Override

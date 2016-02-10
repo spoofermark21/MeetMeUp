@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/colorMainBackground"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
 
     <android.support.design.widget.AppBarLayout
@@ -29,19 +30,17 @@
     <!-- end of toolbar -->
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight=".85"
-        android:paddingTop="5dp">
+        android:layout_height="fill_parent"
+        android:layout_marginTop="60dp">
 
         <LinearLayout
+            android:background="@drawable/main_background"
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight=".90"
+            android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp">
+            android:layout_margin="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -184,7 +183,7 @@
             </LinearLayout>
 
 
-            <EditText
+            <!--<EditText
                 android:id="@+id/txt_current_location"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -194,7 +193,25 @@
                 android:inputType="textLongMessage"
                 android:padding="15dp"
                 android:singleLine="true"
+                android:textSize="15sp" />-->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:text="Current location"
+                android:textColor="@color/black"
                 android:textSize="15sp" />
+
+            <Spinner
+                android:id="@+id/spn_location"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:padding="5dp"
+                android:layout_marginBottom="10dip"
+                android:background="@drawable/edit_text" />
 
             <EditText
                 android:id="@+id/txt_email_address"
@@ -264,7 +281,7 @@
                 android:id="@+id/txt_repeat_password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="30dp"
                 android:background="@drawable/edit_text"
                 android:hint="Repeat password"
                 android:inputType="textPassword"
@@ -290,4 +307,14 @@
 
     </ScrollView>
 
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:elevation="3dp"
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_save_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

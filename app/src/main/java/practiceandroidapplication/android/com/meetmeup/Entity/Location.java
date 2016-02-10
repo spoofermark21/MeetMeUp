@@ -16,6 +16,10 @@ public class Location {
 
     private String longtitude;
 
+    public Location(int id) {
+        this.id = id;
+    }
+
     public Location(int id, String location) {
         this.id = id;
         this.location = location;

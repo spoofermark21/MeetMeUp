@@ -3,6 +3,7 @@ package practiceandroidapplication.android.com.meetmeup;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
@@ -27,7 +28,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Location;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
@@ -52,7 +55,7 @@ public class RegistrationActivity extends AppCompatActivity {
     RadioButton rdMale, rdFemale;
 
 
-    Spinner spnNationality;
+    Spinner spnNationality, spnLocation;
     Button btnRegister;
 
     @Override
@@ -74,6 +77,9 @@ public class RegistrationActivity extends AppCompatActivity {
         initUI();
         //load nationalities options
         loadNationalities();
+
+        //load locations options
+        loadLocations();
     }
 
     /*
@@ -83,7 +89,7 @@ public class RegistrationActivity extends AppCompatActivity {
     public void initUI() {
         txtFirstname = (EditText) findViewById(R.id.txt_firstname);
         txtLastname = (EditText) findViewById(R.id.txt_lastname);
-        txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
+        //txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
         txtEmailAddress = (EditText) findViewById(R.id.txt_email_address);
         txtContactNumber = (EditText) findViewById(R.id.txt_contact_number);
         txtUsername = (EditText) findViewById(R.id.txt_username);
@@ -97,7 +103,9 @@ public class RegistrationActivity extends AppCompatActivity {
         rdFemale = (RadioButton) findViewById(R.id.rd_female);
         btnRegister = (Button) findViewById(R.id.btn_register);
         spnNationality = (Spinner) findViewById(R.id.spn_natio);
+        spnLocation = (Spinner) findViewById(R.id.spn_location);
 
+        btnRegister.setVisibility(View.GONE);
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,8 +121,11 @@ public class RegistrationActivity extends AppCompatActivity {
                         User user = new User();
                         user.setFirstName(txtFirstname.getText().toString());
                         user.setLastName(txtLastname.getText().toString());
-                        Log.d("Location (register)", txtCurrentLocation.getText().toString());
-                        user.setCurrentLocation(txtCurrentLocation.getText().toString());
+                        //Log.d("Location (register)", txtCurrentLocation.getText().toString());
+                        //user.setCurrentLocation(txtCurrentLocation.getText().toString());
+                        //user.setCurrentLocation(spnLocation.getSelectedItem().toString());
+                        //user.setLocation(spnLocation.getSelectedItemPosition());
+
                         user.setEmailAddress(txtEmailAddress.getText().toString());
                         user.setContactNumber(txtContactNumber.getText().toString());
                         user.setUsername(txtUsername.getText().toString());
@@ -136,7 +147,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         new RegisterUser().execute(user.getUsername(),
                                 user.getPassword(), user.getFirstName(),
                                 user.getLastName(), user.getBirthDate(),
-                                user.getNationality().getId() + "", user.getGender() + "", user.getCurrentLocation(),
+                                user.getNationality().getId() + "", user.getGender() + "", user.getCurrentLocation() + "",
                                 user.getEmailAddress(), user.getContactNumber(), "");
                     }
 
@@ -146,6 +157,61 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
             }
         }); // end of register onclick event
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+
+                    if(formValidation()) {
+
+                        //for debugging purposes...
+                        Log.d("Birthdate", dateBirth.getYear() + "-" +
+                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+
+
+                        User user = new User();
+                        user.setFirstName(txtFirstname.getText().toString());
+                        user.setLastName(txtLastname.getText().toString());
+                        //Log.d("Location (register)", txtCurrentLocation.getText().toString());
+                        //user.setCurrentLocation(txtCurrentLocation.getText().toString());
+                        user.setLocation(new Location(spnLocation.getSelectedItemPosition() + 1,
+                                spnLocation.getSelectedItem().toString()));
+
+                        user.setCurrentLocation(spnLocation.getSelectedItem().toString());
+                        user.setEmailAddress(txtEmailAddress.getText().toString());
+                        user.setContactNumber(txtContactNumber.getText().toString());
+                        user.setUsername(txtUsername.getText().toString());
+                        user.setPassword(txtPassword.getText().toString());
+                        user.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
+                                spnNationality.getSelectedItem().toString()));
+
+                        final RadioButton selectedGender = (RadioButton)
+                                findViewById(rdGender.getCheckedRadioButtonId());
+
+                        user.setGender(selectedGender.getText().toString().charAt(0));
+
+                        //for testing
+                        Log.d("Gender", user.getGender() + "");
+
+                        user.setBirthDate(dateBirth.getYear() + "-" +
+                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+
+                        new RegisterUser().execute(user.getUsername(),
+                                user.getPassword(), user.getFirstName(),
+                                user.getLastName(), user.getBirthDate(),
+                                user.getNationality().getId() + "", user.getGender() + "", user.getLocation().getId() + "",
+                                user.getEmailAddress(), user.getContactNumber(), "");
+                    }
+
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        });
     }
 
     public void loadNationalities(){
@@ -157,13 +223,22 @@ public class RegistrationActivity extends AppCompatActivity {
         spnNationality.setAdapter(adapter);
     }
 
+    public void loadLocations(){
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListLocations.getInstanceListLocations().loadLocations());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnLocation.setAdapter(adapter);
+    }
+
+
 
 
 
     public boolean isFieldsEmpty() {
         return (txtFirstname.getText().toString().equals("") ||
                 txtLastname.getText().toString().equals("") ||
-                txtCurrentLocation.getText().toString().equals("") ||
+                //txtCurrentLocation.getText().toString().equals("") ||
                 txtEmailAddress.getText().toString().equals("") ||
                 txtContactNumber.getText().toString().equals("") ||
                 txtUsername.getText().toString().equals("") ||
@@ -188,11 +263,11 @@ public class RegistrationActivity extends AppCompatActivity {
         else
             txtLastname.setError(null);
 
-        if(txtCurrentLocation.getText().toString().equals("")) {
+        /*if(txtCurrentLocation.getText().toString().equals("")) {
             txtCurrentLocation.setError("Current location is required.");
             isReadyToSave = false;
         } else
-            txtCurrentLocation.setError(null);
+            txtCurrentLocation.setError(null);*/
 
         String emailAddress = txtEmailAddress.getText().toString();
 

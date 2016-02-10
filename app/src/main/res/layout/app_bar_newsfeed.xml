@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context="practiceandroidapplication.android.com.meetmeup.NewsfeedActivity">
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -24,82 +23,96 @@
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
-
-        <EditText
-            android:id="@+id/txt_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:background="@drawable/edit_text"
-            android:drawableStart="@drawable/ic_search_black_24dp"
-            android:gravity="left"
-            android:hint="Search"
-            android:inputType="text"
-            android:maxLines="1"
-            android:padding="15dp"
-            android:singleLine="true"
-            android:textAlignment="inherit" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:padding="5dp"
-        android:gravity="center"
-        android:background="@drawable/main_background"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/btn_meetups"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".30"
-            android:background="@color/transparent"
-            android:text="Meetups"
-            android:textColor="@color/dgray" />
-
-        <Button
-            android:id="@+id/btn_events"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".30"
-            android:background="@color/transparent"
-            android:text="Events"
-            android:textColor="@color/dgray" />
-
-        <Button
-            android:id="@+id/btn_groups"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".30"
-            android:background="@color/transparent"
-            android:text="Groups"
-            android:textColor="@color/dgray" />
-
-    </LinearLayout>
-
-    <ScrollView
-        android:background="@drawable/main_background"
-        android:layout_width="match_parent"
-        android:layout_margin="5dp"
-        android:layout_height="match_parent">
+        android:orientation="vertical"
+        android:layout_marginTop="60dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
         <LinearLayout
-            android:id="@+id/linear_feeds"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/txt_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:background="@drawable/edit_text"
+                android:drawableStart="@drawable/ic_search_black_24dp"
+                android:gravity="left"
+                android:hint="Search"
+                android:inputType="text"
+                android:maxLines="1"
+                android:padding="15dp"
+                android:singleLine="true"
+                android:textAlignment="inherit" />
 
         </LinearLayout>
 
-    </ScrollView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:background="@drawable/main_background"
+            android:orientation="horizontal">
 
-</LinearLayout>
+
+            <Button
+                android:id="@+id/btn_meetups"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".30"
+                android:background="@color/transparent"
+                android:text="Meetups"
+                android:textColor="@color/dgray" />
+
+            <Button
+                android:id="@+id/btn_events"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".30"
+                android:background="@color/transparent"
+                android:text="Events"
+                android:textColor="@color/dgray" />
+
+            <Button
+                android:id="@+id/btn_groups"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".30"
+                android:background="@color/transparent"
+                android:text="Groups"
+                android:textColor="@color/dgray" />
+
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_margin="5dp"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+
+                android:id="@+id/linear_feeds"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_refresh_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

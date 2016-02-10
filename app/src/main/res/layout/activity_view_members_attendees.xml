@@ -5,10 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
+    tools:context="practiceandroidapplication.android.com.meetmeup.ViewMembersAttendees">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/MyMaterialTheme.AppBarOverlay">
@@ -22,23 +21,14 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!--
-    <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/list_events"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-    -->
-
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="60dp">
 
         <LinearLayout
-            android:id="@+id/linear_events"
+            android:id="@+id/linear_members"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/main_background"
@@ -52,7 +42,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="No events"
+                android:text="No members found"
                 android:textSize="15sp" />
 
         </LinearLayout>
@@ -61,12 +51,11 @@
     </ScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:elevation="3dp"
-        android:id="@+id/btn_save"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_refresh_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

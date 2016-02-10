@@ -24,6 +24,10 @@ public class Meetups {
 
     private String location;
 
+    private String lattitude;
+
+    private String longtitude;
+
     private String postedDate;
 
     private Preference preference;
@@ -193,5 +197,21 @@ public class Meetups {
 
     public void setPostedByName(String postedByName) {
         this.postedByName = postedByName;
+    }
+
+    public String getLattitude() {
+        return lattitude;
+    }
+
+    public void setLattitude(String lattitude) {
+        this.lattitude = lattitude;
+    }
+
+    public String getLongtitude() {
+        return longtitude;
+    }
+
+    public void setLongtitude(String longtitude) {
+        this.longtitude = longtitude;
     }
 }

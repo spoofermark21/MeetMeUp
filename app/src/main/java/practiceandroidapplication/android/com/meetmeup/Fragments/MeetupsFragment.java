@@ -45,6 +45,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 import practiceandroidapplication.android.com.meetmeup.R;
+import practiceandroidapplication.android.com.meetmeup.ViewMapsActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewMeetupsActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewProfileActivity;
 
@@ -69,6 +70,7 @@ public class MeetupsFragment extends Fragment {
     EditText txtSearch;
 
     List<Meetups> currentMeetups = new ArrayList<>();
+
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     @Override
@@ -98,17 +100,18 @@ public class MeetupsFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 //new RetrieveMeetups().execute();
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void afterTextChanged(Editable s) {
-                Log.e("TextWatcherTest", "afterTextChanged:\t" +s.toString());
+                Log.e("TextWatcherTest", "afterTextChanged:\t" + s.toString());
             }
         });
         new RetrieveMeetups().execute();
     }
-
 
 
     // to be examined
@@ -126,34 +129,36 @@ public class MeetupsFragment extends Fragment {
         for (Meetups meetups : currentMeetups) {
 
             final LinearLayout.LayoutParams linearMeetups = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            linearMeetups.setMargins(0, 0, 0, 90);
+            linearMeetups.setMargins(0, 0, 0, 15);
 
             LinearLayout recordOfMeetups = new LinearLayout(getActivity());
             recordOfMeetups.setLayoutParams(linearMeetups);
             recordOfMeetups.setOrientation(LinearLayout.VERTICAL);
-            //recordOfMeetups.setPadding(3, 3, 3, 3);
+            recordOfMeetups.setBackgroundResource(R.drawable.main_background);
+            recordOfMeetups.setPadding(20, 20, 20, 5);
 
 
             final LinearLayout.LayoutParams linearPostedBy = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            linearMeetups.setMargins(0, 0, 0, 50);
+            linearPostedBy.setMargins(0, 0, 0, 30);
 
             LinearLayout postedByLayout = new LinearLayout(getActivity());
             postedByLayout.setLayoutParams(linearPostedBy);
             postedByLayout.setOrientation(LinearLayout.HORIZONTAL);
             postedByLayout.setTag(meetups.getPostedBy());
-            postedByLayout.setOnClickListener(new View.OnClickListener(){
-                public void onClick(View view){
+            postedByLayout.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
                     startActivity(new Intent(getActivity(), ViewProfileActivity.class).putExtra("USER_ID", view.getTag() + "" + ""));
                     Log.d("USER_ID", view.getTag() + "");
                 }
             });
 
             final LinearLayout.LayoutParams linearDate = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            linearMeetups.setMargins(0, 0, 0, 30);
+            //linearMeetups.setMargins(0, 0, 0, 30);
 
             LinearLayout postedByDate = new LinearLayout(getActivity());
-            postedByDate.setLayoutParams(linearPostedBy);
+            postedByDate.setLayoutParams(linearDate);
             postedByDate.setOrientation(LinearLayout.VERTICAL);
+
 
             Log.d("Meetup", meetups.getDetails());
             recordOfMeetups.setTag(meetups.getId());
@@ -162,24 +167,22 @@ public class MeetupsFragment extends Fragment {
             imageMeetupsParams.weight = 1.0f;
             imageMeetupsParams.height = 80;
             imageMeetupsParams.width = 80;
-            imageMeetupsParams.setMargins(0,0,10,0);
+            imageMeetupsParams.setMargins(0, 0, 10, 0);
             imageMeetupsParams.gravity = Gravity.LEFT;
 
             final ImageView meetupPostedByImage = new ImageView(getActivity());
             meetupPostedByImage.setBackgroundColor(Color.parseColor("#E6E9ED"));
-            //meetupPostedByImage.setVisibility(View.GONE);
 
             final TextView meetupPostedBy = new TextView(getActivity());
             meetupPostedBy.setText(meetups.getPostedByName());
-            meetupPostedBy.setTextSize(17);
             meetupPostedBy.setTextColor(Color.BLACK);
+            meetupPostedBy.setTextSize(17);
 
-            if(!meetups.getPostedByNameImage().equals("null") && !meetups.getPostedByNameImage().equals("")) {
+            if (!meetups.getPostedByNameImage().equals("null") && !meetups.getPostedByNameImage().equals("")) {
 
                 class DownloadMeetupsImage extends AsyncTask<Void, Void, Bitmap> {
 
                     String filename;
-                    //Bitmap groupImage;
 
                     public DownloadMeetupsImage(String filename) {
                         this.filename = filename;
@@ -212,9 +215,8 @@ public class MeetupsFragment extends Fragment {
 
 
                     protected void onPostExecute(Bitmap bitmap) {
-                        //pDialog.dismiss();
                         try {
-                            if(bitmap!=null) {
+                            if (bitmap != null) {
                                 Log.d("Image", "Success");
                                 meetupPostedByImage.setImageBitmap(bitmap);
                             }
@@ -228,24 +230,18 @@ public class MeetupsFragment extends Fragment {
                 new DownloadMeetupsImage(meetups.getPostedByNameImage() + ".JPG").execute();
                 meetupPostedByImage.setLayoutParams(imageMeetupsParams);
                 meetupPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
-                //meetupPostedByImage.setVisibility(View.VISIBLE);
             }
 
 
-
             final TextView meetupPostedDate = new TextView(getActivity());
-            meetupPostedDate.setText(meetups.getPostedDate().substring(0,10));
+            meetupPostedDate.setText(timeDiff(meetups.getPostedDate()) + "");
             meetupPostedDate.setTextSize(15);
-            meetupPostedDate.setTextColor(Color.BLACK);
-            meetupPostedDate.setGravity(Gravity.RIGHT);
 
             final TextView meetupSubject = new TextView(getActivity());
             meetupSubject.setText(meetups.getSubject());
             meetupSubject.setTextSize(25);
             meetupSubject.setTextColor(Color.BLACK);
-            //meetupSubject.setTextColor(Color.parseColor("#37BC9B"));
-
-            meetupSubject.setOnClickListener(new View.OnClickListener(){
+            meetupSubject.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
 
@@ -260,46 +256,42 @@ public class MeetupsFragment extends Fragment {
             });
 
             final TextView meetupDetails = new TextView(getActivity());
-            meetupDetails.setText("Details: " + meetups.getDetails());
+            meetupDetails.setText(meetups.getDetails());
             meetupDetails.setTextSize(15);
-            meetupDetails.setTextColor(Color.BLACK);
+            meetupDetails.setTag(meetups.getLattitude());
 
             final TextView meetupLocation = new TextView(getActivity());
             meetupLocation.setText("Location: " + meetups.getLocation());
             meetupLocation.setTextSize(15);
-            meetupLocation.setTextColor(Color.BLACK);
+            meetupLocation.setTag(meetups.getLongtitude());
+
 
             final TextView border = new TextView(getActivity());
-            border.setText("_____________________________");
-            border.setTextColor(Color.BLACK);
+            border.setText("__________________________");
+            border.setTextSize(15);
+            border.setGravity(Gravity.CENTER);
 
-            /*final TextView meetupKey = new TextView(getActivity());
-            meetupKey.setText("Key: " + meetups.getKey());
-            meetupKey.setTextSize(15);
-            meetupKey.setTextColor(Color.BLACK);*/
-
-
-            final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            params2.weight = 1.0f;
-            params2.gravity = Gravity.LEFT;
-            params2.rightMargin = 40;
+            final LinearLayout.LayoutParams optionLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            optionLayout.weight = 1.0f;
+            optionLayout.gravity = Gravity.CENTER;
 
             LinearLayout options = new LinearLayout(getActivity());
             options.setOrientation(LinearLayout.HORIZONTAL);
-            options.setLayoutParams(params2);
+            options.setLayoutParams(optionLayout);
+            options.setTag(meetups.getLattitude() + "," + meetups.getLongtitude());
 
-            //final ImageButton edit = new ImageButton(this);
-            //edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+            final LinearLayout.LayoutParams btnLayout = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+            btnLayout.weight = 1.0f;
+            btnLayout.setMargins(10, 10, 10, 10);
+
             final Button view = new Button(getActivity());
-            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-            view.setText("view");
+            view.setLayoutParams(btnLayout);
+            view.setText("View");
             view.setTextSize(15);
             view.setAllCaps(false);
-            view.setBackgroundColor(Color.WHITE);
-            //view.setBackgroundColor(Color.parseColor("#E6E9ED"));
-            //view.setBackgroundResource(R.drawable.edit_text);
-            view.setGravity(Gravity.LEFT);
-            view.setTextColor(Color.BLACK);
+            view.setBackgroundColor(Color.parseColor("#00000000"));
+            //view.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_info_black_24dp,0,0,0);
+            view.setGravity(Gravity.CENTER);
 
             view.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -315,20 +307,49 @@ public class MeetupsFragment extends Fragment {
                 }
             });
 
+            final Button map = new Button(getActivity());
+            map.setLayoutParams(btnLayout);
+            map.setText("Map");
+            map.setTextSize(15);
+            map.setAllCaps(false);
+            map.setBackgroundColor(Color.parseColor("#00000000"));
+            map.setGravity(Gravity.CENTER);
+
+            map.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent();
+                    Intent intent = new Intent(getActivity(), ViewMapsActivity.class);
+
+                    Log.d("Location", parent.getTag() + "");
+
+                    String Str = new String(parent.getTag() + "");
+                    String location[] = Str.split(",", 3);
+
+                    intent.putExtra("LATTITUDE", location[0]);
+                    intent.putExtra("LONGTITUDE", location[1]);
+
+                    startActivity(intent);
+                    //getActivity().finish();
+                }
+            });
+
             options.addView(view);
+            options.addView(map);
 
-
-            postedByLayout.addView(meetupPostedByImage);
-            postedByLayout.addView(meetupPostedBy);
-            //postedByLayout.addView(meetupPostedDate);
 
             recordOfMeetups.addView(postedByLayout);
+            postedByLayout.addView(meetupPostedByImage);
+
+            postedByLayout.addView(postedByDate);
+            postedByDate.addView(meetupPostedBy);
+            postedByDate.addView(meetupPostedDate);
+
 
             recordOfMeetups.addView(meetupSubject);
             recordOfMeetups.addView(meetupDetails);
             //recordOfMeetups.addView(meetupPostedDate);
             recordOfMeetups.addView(meetupLocation);
-
+            //recordOfMeetups.addView(border);
             recordOfMeetups.addView(options);
 
             listOfMeetups.addView(recordOfMeetups);
@@ -340,12 +361,31 @@ public class MeetupsFragment extends Fragment {
         btnSeeMore.setText("see more");
         btnSeeMore.setTextSize(15);
         btnSeeMore.setAllCaps(false);
-        btnSeeMore.setBackgroundResource(R.drawable.main_background);
         btnSeeMore.setGravity(Gravity.CENTER);
-        btnSeeMore.setTextColor(Color.BLACK);
+        btnSeeMore.setBackgroundColor(Color.parseColor("#00000000"));
         listOfMeetups.addView(btnSeeMore);
     }
 
+    public String timeDiff(String timeDiff) {
+
+        Log.d("Time diff", timeDiff);
+
+        String Str = new String(timeDiff);
+        String date[] = Str.split(":", 3);
+        String time = "";
+
+        if (Integer.parseInt(date[0]) > 24) {
+            time = Integer.parseInt(date[0]) / 24 + " days";
+        } else if (Integer.parseInt(date[0]) < 24 && Integer.parseInt(date[0]) > 0) {
+            time = Integer.parseInt(date[0]) + " hrs";
+        } else if (Integer.parseInt(date[0]) == 0 && Integer.parseInt(date[1]) != 0) {
+            time = Integer.parseInt(date[1]) + " mins";
+        } else if (Integer.parseInt(date[0]) == 0 && Integer.parseInt(date[1]) == 0) {
+            time = Integer.parseInt(date[2]) + " secs";
+        }
+
+        return time;
+    }
 
     /* thread */
 
@@ -353,11 +393,11 @@ public class MeetupsFragment extends Fragment {
 
         String searchParameter;
 
-        public RetrieveMeetups(){
+        public RetrieveMeetups() {
 
         }
 
-        public RetrieveMeetups(String searchParameter){
+        public RetrieveMeetups(String searchParameter) {
             this.searchParameter = searchParameter;
         }
 
@@ -365,7 +405,7 @@ public class MeetupsFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(getActivity(), R.style.progress);
-            pDialog.setCancelable(true);
+            pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -410,10 +450,15 @@ public class MeetupsFragment extends Fragment {
                                 jUserObject.getString("details"), jUserObject.getString("location"),
                                 jUserObject.getString("posted_date"), jUserObject.getString("key"));
 
-                        meetup.setPostedDate(jUserObject.getString("posted_date"));
+                        meetup.setPostedDate(jUserObject.getString("time_diff"));
                         meetup.setPostedBy(jUserObject.getInt("posted_by"));
                         meetup.setPostedByName(jUserObject.getString("posted_by_user"));
                         meetup.setPostedByNameImage(jUserObject.getString("user_image"));
+
+                        meetup.setLattitude(jUserObject.getString("lattitude"));
+                        meetup.setLongtitude(jUserObject.getString("longtitude"));
+
+                        Log.d("Location", meetup.getLattitude() + " " + meetup.getLongtitude());
 
                         currentMeetups.add(meetup);
 

@@ -41,6 +41,9 @@ public class NotificationActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_NOTIFICATIONS_URL = Network.forDeploymentIp + "notification_retrieve.php";
     private static final String UPDATE_ATTENDEES_URL = Network.forDeploymentIp + "attendees_update.php";
+
+    private static final String UPDATE_GROUP_MEMBERS_URL = Network.forDeploymentIp + "group_member_update.php";
+
     private static final String UPDATE_NOTIFICATIONS_URL = Network.forDeploymentIp + "notification_update.php";
 
     private static final String TAG_STATUS = "status";
@@ -116,7 +119,7 @@ public class NotificationActivity extends AppCompatActivity {
             notifDate.setText(notif.getDateNotified());
             notifDate.setTextSize(15);
             notifDate.setTextColor(Color.BLACK);
-            notifDate.setTag(notif.getDetails());
+            notifDate.setTag(notif.getType());
 
             final LinearLayout.LayoutParams params2 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
             params2.weight = 1.0f;
@@ -128,12 +131,19 @@ public class NotificationActivity extends AppCompatActivity {
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
-            final TextView accept = new TextView(this);
-            accept.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            accept.setPadding(10, 10, 0, 10);
-            accept.setText("accept");
-            accept.setTextSize(15);
-            accept.setBackgroundColor(Color.TRANSPARENT);
+            final TextView acceptEventMeetup = new TextView(this);
+            acceptEventMeetup.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            acceptEventMeetup.setPadding(10, 10, 0, 10);
+            acceptEventMeetup.setText("accept");
+            acceptEventMeetup.setTextSize(15);
+            acceptEventMeetup.setBackgroundColor(Color.TRANSPARENT);
+
+            final TextView acceptGroup = new TextView(this);
+            acceptGroup.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            acceptGroup.setPadding(10, 10, 0, 10);
+            acceptGroup.setText("accept");
+            acceptGroup.setTextSize(15);
+            acceptGroup.setBackgroundColor(Color.TRANSPARENT);
 
 
             final TextView ignore = new TextView(this);
@@ -150,7 +160,7 @@ public class NotificationActivity extends AppCompatActivity {
             view.setTextSize(15);
             view.setBackgroundColor(Color.TRANSPARENT);
 
-            accept.setOnClickListener(new View.OnClickListener() {
+            acceptEventMeetup.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
@@ -158,13 +168,35 @@ public class NotificationActivity extends AppCompatActivity {
                     String fromId = parent.getChildAt(0).getTag() + "";
                     String postCommentId = parent.getChildAt(1).getTag() + "";
                     String details = parent.getChildAt(1).getTag() + "";
+                    String type = parent.getChildAt(2).getTag() + "";
 
                     Log.d("FROM ID", fromId);
                     Log.d("POST COMMENT ID", postCommentId);
 
                     listOfNotifications.removeView(parent);
 
-                    new UpdateAttendees(fromId, postCommentId, notifId, details).execute();
+                    new UpdateAttendees(fromId, postCommentId, notifId, details, type).execute();
+
+                    if (listOfNotifications.getChildCount() == 1)
+                        lblMessage.setVisibility(View.VISIBLE);
+                    else
+                        lblMessage.setVisibility(View.GONE);
+                }
+            });
+
+            acceptGroup.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    String notifId = parent.getTag() + "";
+                    String fromId = parent.getChildAt(0).getTag() + "";
+                    String postCommentId = parent.getChildAt(1).getTag() + "";
+                    Log.d("POST COMMENT ID", postCommentId);
+
+                    Log.d("FROM ID", fromId);
+                    listOfNotifications.removeView(parent);
+
+                    new UpdateMembers(notifId, fromId, postCommentId).execute();
 
                     if (listOfNotifications.getChildCount() == 1)
                         lblMessage.setVisibility(View.VISIBLE);
@@ -237,13 +269,19 @@ public class NotificationActivity extends AppCompatActivity {
             });
 
             if(notif.getDetails().contains("join")) {
-                options.addView(accept);
-                options.addView(ignore);
+                if(notif.getDetails().contains("group")) {
+                    options.addView(acceptGroup);
+                } else {
+                    options.addView(acceptEventMeetup);
+                }
+
                 Toast.makeText(NotificationActivity.this, "Join", Toast.LENGTH_SHORT).show();
             } else if(notif.getDetails().contains("comment")) {
                 Toast.makeText(NotificationActivity.this, "Comment", Toast.LENGTH_SHORT).show();
                 options.addView(view);
             }
+
+            options.addView(ignore);
 
             recordOfNotifications.addView(notifFromUser);
             recordOfNotifications.addView(notifDetails);
@@ -393,6 +431,7 @@ public class NotificationActivity extends AppCompatActivity {
 
                 Log.d("NOTIF ID", notifId + "");
                 params.add(new BasicNameValuePair("notif_id", notifId + ""));
+                //params.add(new BasicNameValuePair("details", details + ""));
 
                 /*params.add(new BasicNameValuePair("user_id", userId + ""));
                 params.add(new BasicNameValuePair("from_id", fromId + ""));
@@ -444,12 +483,15 @@ public class NotificationActivity extends AppCompatActivity {
         String postCommentId;
         String notifId;
         String details;
+        String type;
 
-        public UpdateAttendees(String userId, String postCommentId, String notifId, String details) {
+        public UpdateAttendees(String userId, String postCommentId,
+                               String notifId, String details, String type) {
             this.userId = userId;
             this.postCommentId = postCommentId;
             this.notifId = notifId;
             this.details = details;
+            this.type = type;
         }
 
         @Override
@@ -474,6 +516,8 @@ public class NotificationActivity extends AppCompatActivity {
 
                 params.add(new BasicNameValuePair("user_id", userId));
                 params.add(new BasicNameValuePair("post_comment_id", postCommentId));
+                params.add(new BasicNameValuePair("post_type", type));
+
 
                 Log.d("request!", "starting");
 
@@ -505,6 +549,85 @@ public class NotificationActivity extends AppCompatActivity {
                 if (message.equals("Successful")) {
                     Toast.makeText(NotificationActivity.this, message + "!", Toast.LENGTH_SHORT).show();
 
+                    try {
+                        new UpdateNotification(Integer.parseInt(notifId)).execute();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
+    class UpdateMembers extends AsyncTask<String, String, String> {
+
+        String notifId;
+        String userId;
+        String groupId;
+
+
+        public UpdateMembers(String notifId, String userId, String groupId) {
+            this.notifId = notifId;
+            this.userId = userId;
+            this.groupId = groupId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(NotificationActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... userInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+
+                params.add(new BasicNameValuePair("user_id", userId));
+                params.add(new BasicNameValuePair("group_id", groupId));
+
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        UPDATE_GROUP_MEMBERS_URL, "POST", params);
+
+                Log.d("Fetching...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                //listOfMeetups.setVisibility(View.VISIBLE);
+                if (message.equals("Successful")) {
+                    Toast.makeText(NotificationActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     try {
                         new UpdateNotification(Integer.parseInt(notifId)).execute();
                     } catch (Exception ex) {

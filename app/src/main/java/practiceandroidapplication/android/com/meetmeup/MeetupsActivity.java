@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -75,10 +76,19 @@ public class MeetupsActivity extends AppCompatActivity {
         lblMessage = (TextView) findViewById(R.id.lbl_message);
         lblMessage.setVisibility(View.GONE);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MeetupsActivity.this, CreateMeetupActivity.class));
+                finish();
+            }
+        });
+
         new RetrieveMeetups().execute();
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.group_menu, menu);
         return true;
@@ -94,7 +104,7 @@ public class MeetupsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -117,11 +127,13 @@ public class MeetupsActivity extends AppCompatActivity {
             meetupSubject.setText(meetups.getSubject());
             meetupSubject.setTextSize(20);
             meetupSubject.setTextColor(Color.BLACK);
+            meetupSubject.setTag(meetups.getLattitude());
 
             final TextView meetupDetails = new TextView(this);
             meetupDetails.setText("Details: " + meetups.getDetails());
             meetupDetails.setTextSize(15);
             meetupDetails.setTextColor(Color.BLACK);
+            meetupDetails.setTag(meetups.getLongtitude());
 
             final TextView meetupLocation = new TextView(this);
             meetupLocation.setText("Location: " + meetups.getLocation());
@@ -149,6 +161,13 @@ public class MeetupsActivity extends AppCompatActivity {
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
+            final TextView map = new TextView(this);
+            map.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            map.setPadding(10, 10, 0, 10);
+            map.setText("map");
+            map.setTextSize(15);
+            map.setBackgroundColor(Color.TRANSPARENT);
+
             final TextView view = new TextView(this);
             view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             view.setPadding(10, 10, 0, 10);
@@ -171,6 +190,24 @@ public class MeetupsActivity extends AppCompatActivity {
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
+
+            map.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Log.d("Location", parent.getChildAt(0) + " " +  parent.getChildAt(1));
+
+                    Intent map = new Intent(MeetupsActivity.this, ViewMapsActivity.class);
+                    map.putExtra("LATTITUDE", parent.getChildAt(0).getTag() + "");
+                    map.putExtra("LONGTITUDE", parent.getChildAt(1).getTag() + "");
+
+                    startActivity(map);
+                    //finish();
+
+                    Toast.makeText(MeetupsActivity.this, parent.getTag() + "! "
+                            , Toast.LENGTH_SHORT).show();
+                }
+            });
 
             view.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -238,6 +275,7 @@ public class MeetupsActivity extends AppCompatActivity {
                 }
             });
 
+            options.addView(map);
             options.addView(view);
 
             Log.d("Check", meetups.getPostedBy() + " " + currentUser.getId());
@@ -313,12 +351,15 @@ public class MeetupsActivity extends AppCompatActivity {
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-                        currentMeetups.add(new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
+                        Meetups meetups = new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
                                 jUserObject.getString("details"), jUserObject.getString("location"),
                                 jUserObject.getString("posted_date"), jUserObject.getString("key"),
-                                jUserObject.getInt("posted_by"), jUserObject.getString("posted_by_user")));
+                                jUserObject.getInt("posted_by"), jUserObject.getString("posted_by_user"));
 
+                        meetups.setLattitude(jUserObject.getString("lattitude"));
+                        meetups.setLongtitude(jUserObject.getString("longtitude"));
 
+                        currentMeetups.add(meetups);
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }

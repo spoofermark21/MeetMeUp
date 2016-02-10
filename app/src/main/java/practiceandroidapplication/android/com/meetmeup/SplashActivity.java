@@ -194,7 +194,7 @@ public class SplashActivity extends AppCompatActivity {
                     Log.d("nationalities", locations.toString());
 
                     //save to singleton object ListNationality
-                    for (int i = 0; i < locations.length(); i++) {
+                    for (int i = 0; i < 53; i++) {
                         JSONObject jsonObject = locations.getJSONObject(i);
 
                         ListLocations listLocations = getInstanceListLocations();

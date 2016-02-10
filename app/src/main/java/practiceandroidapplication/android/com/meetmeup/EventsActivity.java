@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -77,10 +78,19 @@ public class EventsActivity extends AppCompatActivity {
         lblMessage = (TextView) findViewById(R.id.lbl_message);
         lblMessage.setVisibility(View.INVISIBLE);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(EventsActivity.this, CreateEventActivity.class));
+                finish();
+            }
+        });
+
         new RetrieveEvents().execute();
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.group_menu, menu);
         return true;
@@ -96,7 +106,7 @@ public class EventsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -189,9 +199,9 @@ public class EventsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                    Intent meetups = new Intent(EventsActivity.this, ViewEventsActivity.class);
-                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
-                    startActivity(meetups);
+                    Intent event = new Intent(EventsActivity.this, ViewEventsActivity.class);
+                    event.putExtra("EVENTS_ID", parent.getTag() + "");
+                    startActivity(event);
 
                     finish();
                 }

@@ -15,11 +15,9 @@
 
         <LinearLayout
             android:id="@+id/linear_meetups"
-            android:background="@color/colorMainBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="4dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/lbl_message"

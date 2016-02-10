@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/colorMainBackground"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
+
 
 
     <android.support.design.widget.AppBarLayout
@@ -31,15 +33,17 @@
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginBottom="20dp"
-        android:paddingTop="5dp">
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="60dp">
 
         <LinearLayout
+            android:background="@drawable/main_background"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp">
+            android:layout_margin="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
                 android:textColor="@color/black"
@@ -51,24 +55,13 @@
                 android:text="Personal Details"
                 android:textSize="20sp" />
 
-            <ProgressBar
-                android:id="@+id/progress_image"
-                style="?android:attr/progressBarStyleSmall"
-                android:layout_gravity="center"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:padding="80dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:indeterminateDrawable="@drawable/progress"/>
-
             <ImageView
-                android:background="@drawable/edit_text"
+                android:background="@drawable/img"
                 android:layout_gravity="center"
                 android:scaleType="fitXY"
                 android:id="@+id/img_user"
-                android:layout_width="200dp"
-                android:layout_height="200dp" />
+                android:layout_width="150dp"
+                android:layout_height="150dp" />
 
             <Button
                 android:id="@+id/btn_image"
@@ -140,7 +133,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:layout_marginBottom="10dip"
                 android:background="@drawable/edit_text" />
 
@@ -192,7 +185,7 @@
             </LinearLayout>
 
 
-            <EditText
+            <!--<EditText
                 android:hint="Current location"
                 android:id="@+id/txt_current_location"
                 android:layout_width="fill_parent"
@@ -202,7 +195,25 @@
                 android:inputType="textLongMessage"
                 android:padding="15dp"
                 android:singleLine="true"
+                android:textSize="15sp" />-->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:padding="10dp"
+                android:text="Current location"
+                android:textColor="@color/black"
                 android:textSize="15sp" />
+
+            <Spinner
+                android:id="@+id/spn_location"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:padding="10dp"
+                android:layout_marginBottom="10dip"
+                android:background="@drawable/edit_text" />
 
             <EditText
                 android:hint="Email address"
@@ -222,7 +233,7 @@
                 android:id="@+id/txt_contact_number"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="15dp"
                 android:background="@drawable/edit_text"
                 android:inputType="number"
                 android:padding="15dp"
@@ -230,7 +241,6 @@
                 android:textSize="15sp" />
 
             <!-- end of personal details -->
-
 
             <Button
                 android:id="@+id/btn_update"
@@ -248,4 +258,13 @@
 
     </ScrollView>
 
-</LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_save_white_24dp" />
+
+</android.support.design.widget.CoordinatorLayout>

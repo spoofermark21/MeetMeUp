@@ -1,5 +1,8 @@
 package practiceandroidapplication.android.com.meetmeup.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by sibimark on 26/12/2015.
  */
@@ -17,6 +20,10 @@ public class Events {
 
     private String location;
 
+    private double lattitude;
+
+    private double longtitude;
+
     private String startDate;
 
     private String endDate;
@@ -25,31 +32,17 @@ public class Events {
 
     private int postedBy;
 
+    private String postedByName;
+
     private char postedByType;
 
     private char availStatus;
 
     private char activeFlag;
 
-    private String postedByName;
-
     private String postedUserImage;
 
-    public String[] getEventTypeString() {
-        return eventTypeString;
-    }
-
-    public void setEventTypeString(String[] eventTypeString) {
-        this.eventTypeString = eventTypeString;
-    }
-
-    public int getAttendees() {
-        return attendees;
-    }
-
-    public void setAttendees(int attendees) {
-        this.attendees = attendees;
-    }
+    private static List<Comments> comments;
 
     private int attendees;
 
@@ -201,4 +194,54 @@ public class Events {
         this.postedUserImage = postedUserImage;
     }
 
+    public void setEventTypeString(String[] eventTypeString) {
+        this.eventTypeString = eventTypeString;
+    }
+
+    public int getAttendees() {
+        return attendees;
+    }
+
+    public void setAttendees(int attendees) {
+        this.attendees = attendees;
+    }
+
+    public String[] getEventTypeString() {
+        return eventTypeString;
+    }
+
+    public static List<Comments> getComments() {
+        return comments;
+    }
+
+    public static void setComments(List<Comments> comments) {
+        Events.comments = comments;
+    }
+
+    public List<String> listOfComments() {
+
+        List<String> listOfComments = new ArrayList<>();
+
+        for (Comments comments : getComments()) {
+            listOfComments.add(comments.getComment() + " -" + comments.getUserName());
+        }
+
+        return listOfComments;
+    }
+
+    public double getLattitude() {
+        return lattitude;
+    }
+
+    public void setLattitude(double lattitude) {
+        this.lattitude = lattitude;
+    }
+
+    public double getLongtitude() {
+        return longtitude;
+    }
+
+    public void setLongtitude(double longtitude) {
+        this.longtitude = longtitude;
+    }
 }

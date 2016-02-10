@@ -3,6 +3,7 @@ package practiceandroidapplication.android.com.meetmeup;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -72,6 +73,7 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
         txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
 
         btnUpdate = (Button) findViewById(R.id.btn_update);
+        btnUpdate.setVisibility(View.GONE);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (formValidation()) {
@@ -79,12 +81,22 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
                 }
             }
         });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (formValidation()) {
+                    new UpdateUser().execute(txtNewPassword.getText().toString());
+                }
+            }
+        });
+
     }
 
     public boolean formValidation() {
 
         boolean isReadyToSave = true;
-
 
         String oldPassword = txtOldPassword.getText().toString();
 

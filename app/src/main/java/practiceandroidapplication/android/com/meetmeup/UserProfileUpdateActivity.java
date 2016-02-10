@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -43,7 +45,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Location;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
@@ -77,7 +81,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     Toolbar toolBar;
 
-    Spinner spnNationality;
+    Spinner spnNationality, spnLocation;
     ImageView imgUser;
     Button btnUpdate, btnUpload;
 
@@ -100,7 +104,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
         initUI();
         loadNationalities();
-
+        loadLocations();
         try {
             new RetrieveUser().execute();
         } catch (Exception ex) {
@@ -120,7 +124,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
         if(id == R.id.action_password) {
             startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileUpdatePasswordActivity.class));
-            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -147,7 +150,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
         txtFirstname = (EditText) findViewById(R.id.txt_firstname);
         txtLastname = (EditText) findViewById(R.id.txt_lastname);
-        txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
+        //txtCurrentLocation = (EditText) findViewById(R.id.txt_current_location);
+
+        spnLocation = (Spinner) findViewById(R.id.spn_location);
+
         txtEmailAddress = (EditText) findViewById(R.id.txt_email_address);
         txtContactNumber = (EditText) findViewById(R.id.txt_contact_number);
 
@@ -166,15 +172,12 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileActivity.class));
                 finish();
             }
         });
 
         imgUser = (ImageView) findViewById(R.id.img_user);
-        //imgUser.setVisibility(View.GONE);
-        progressImage = (ProgressBar) findViewById(R.id.progress_image);
-        progressImage.setVisibility(View.GONE);
+        imgUser.setBackgroundColor(Color.parseColor("#E6E9ED"));
 
         btnUpload = (Button) findViewById(R.id.btn_image);
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -186,9 +189,12 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             }
         });
 
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
+        btnUpdate.setVisibility(View.GONE);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 try {
 
                     if (formValidation()) {
@@ -199,7 +205,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
                         updateUser.setFirstName(txtFirstname.getText().toString());
                         updateUser.setLastName(txtLastname.getText().toString());
-                        updateUser.setCurrentLocation(txtCurrentLocation.getText().toString());
+                        //updateUser.setCurrentLocation(txtCurrentLocation.getText().toString());
+                        //updateUser.setCurrentLocation(spnLocation.getSelectedItem().toString());
+                        updateUser.setLocation(new Location(spnLocation.getSelectedItemPosition() + 1));
+
                         updateUser.setEmailAddress(txtEmailAddress.getText().toString());
                         updateUser.setContactNumber(txtContactNumber.getText().toString());
                         updateUser.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
@@ -218,7 +227,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
                         new UpdateUser().execute(updateUser.getFirstName(),
                                 updateUser.getLastName(), updateUser.getBirthDate(),
-                                updateUser.getNationality().getId() + "", updateUser.getGender() + "", updateUser.getCurrentLocation(),
+                                updateUser.getNationality().getId() + "", updateUser.getGender() + "", updateUser.getLocation().getId() + "",
                                 updateUser.getEmailAddress(), updateUser.getContactNumber());
                     }
 
@@ -227,10 +236,17 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
             }
-        }); // end of update onclick event
+        });
 
     } // end of initUI
 
+    public void loadLocations(){
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListLocations.getInstanceListLocations().loadLocations());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnLocation.setAdapter(adapter);
+    }
 
     public boolean formValidation() {
 
@@ -248,11 +264,11 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         } else
             txtLastname.setError(null);
 
-        if (txtCurrentLocation.getText().toString().equals("")) {
+        /*if (txtCurrentLocation.getText().toString().equals("")) {
             txtCurrentLocation.setError("Current location is required.");
             isReadyToSave = false;
         } else
-            txtCurrentLocation.setError(null);
+            txtCurrentLocation.setError(null);*/
 
         String emailAddress = txtEmailAddress.getText().toString();
 
@@ -330,7 +346,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileActivity.class));
         finish();
     }
 
@@ -384,7 +399,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     currentUser.setBirthDate(jUserObject.getString("bdate"));
                     currentUser.setNationality(new Nationality(jUserObject.getInt("natio_id")));
                     currentUser.setGender(jUserObject.getString("gender").charAt(0));
-                    currentUser.setCurrentLocation(jUserObject.getString("current_location"));
+                    //currentUser.setCurrentLocation(jUserObject.getString("current_location"));
+
+                    currentUser.setLocation(new Location(jUserObject.getInt("current_location")));
+
                     currentUser.setEmailAddress(jUserObject.getString("email_address"));
                     currentUser.setContactNumber(jUserObject.getString("contact_number"));
                     currentUser.setUserImage(jUserObject.getString("user_image"));
@@ -423,7 +441,9 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     else
                         rdFemale.setChecked(true);
 
-                    txtCurrentLocation.setText(currentUser.getCurrentLocation());
+                    //txtCurrentLocation.setText(currentUser.getCurrentLocation());
+                    spnLocation.setSelection(currentUser.getLocation().getId() - 1);
+
                     txtEmailAddress.setText(currentUser.getEmailAddress());
                     txtContactNumber.setText(currentUser.getContactNumber());
 
@@ -435,8 +455,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
                     try {
                         if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
-                            progressImage.setVisibility(View.VISIBLE);
-                            imgUser.setVisibility(View.GONE);
                             new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
                         }
 
@@ -474,8 +492,11 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-                fileName = Interactions.generateString(new Random(),"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
 
+                if(isNewImage) {
+                    fileName = Interactions.generateString(new Random(),"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
+                    params.add(new BasicNameValuePair("user_image", fileName));
+                }
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("first_name", user[0]));
@@ -487,7 +508,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("email_address", user[6]));
                 params.add(new BasicNameValuePair("contact_number", user[7]));
                 params.add(new BasicNameValuePair("update_type", "profile"));
-                params.add(new BasicNameValuePair("user_image", fileName));
+
 
                 Log.d("request!", "starting");
 
@@ -652,9 +673,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
-                    //imgUser.setVisibility(View.VISIBLE);
-                    progressImage.setVisibility(View.GONE);
-                    imgUser.setVisibility(View.VISIBLE);
                     imgUser.setImageBitmap(bitmap);
                 }
             } catch (Exception ex) {
