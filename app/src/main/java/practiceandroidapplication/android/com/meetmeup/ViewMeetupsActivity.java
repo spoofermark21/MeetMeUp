@@ -181,6 +181,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                 Intent viewMembers = new Intent(ViewMeetupsActivity.this, ViewMembersAttendees.class);
                 viewMembers.putExtra("POST_ID", meetupId);
                 viewMembers.putExtra("TYPE", "meetup");
+                viewMembers.putExtra("POSTED_BY", meetups.getPostedBy() + "");
+                stopRepeatingTask();
                 startActivity(viewMembers);
             }
         });

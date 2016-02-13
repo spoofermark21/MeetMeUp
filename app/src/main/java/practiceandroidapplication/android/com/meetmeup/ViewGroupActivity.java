@@ -126,6 +126,8 @@ public class ViewGroupActivity extends AppCompatActivity {
                 Intent viewMembers = new Intent(ViewGroupActivity.this, ViewMembersAttendees.class);
                 viewMembers.putExtra("GROUP_ID", groupId);
                 viewMembers.putExtra("TYPE", "group");
+                viewMembers.putExtra("POSTED_BY", group.getCreatedBy() + "");
+
                 startActivity(viewMembers);
             }
         });

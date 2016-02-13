@@ -31,13 +31,15 @@
             android:id="@+id/linear_groups"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:background="@drawable/main_background"
             android:orientation="vertical"
-            android:padding="10dp">
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
             <TextView
                 android:id="@+id/lbl_message"
                 android:textSize="15sp"
+                android:padding="10dp"
                 android:text="No groups"
                 android:gravity="center"
                 android:layout_width="fill_parent"

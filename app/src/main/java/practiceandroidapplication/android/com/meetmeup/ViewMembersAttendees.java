@@ -44,12 +44,14 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class ViewMembersAttendees extends AppCompatActivity {
 
     private static final String RETRIEVE_GROUP_MEMBERS_URL = Network.forDeploymentIp + "group_member_retrieve.php";
     private static final String RETRIEVE_ATTENDEES_URL = Network.forDeploymentIp + "retrieve_attendees.php";
+    private static final String LEAVE_URL = Network.forDeploymentIp + "leave.php";
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
@@ -64,7 +66,7 @@ public class ViewMembersAttendees extends AppCompatActivity {
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
-    String groupId, postId, type;
+    String groupId, postId, type, postedBy;
 
     List<GroupMember> groupMembers = new ArrayList<>();
     List<Attendees> listAttendees = new ArrayList<>();
@@ -84,6 +86,7 @@ public class ViewMembersAttendees extends AppCompatActivity {
             }
         });
 
+        postedBy = getIntent().getStringExtra("POSTED_BY");
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +105,8 @@ public class ViewMembersAttendees extends AppCompatActivity {
                 } else if (type.equals("event")){
                     // do event
                     type = "E";
+                    postId = getIntent().getStringExtra("POST_ID");
+                    new RetrieveAttendees().execute();
                 }
             }
         });
@@ -164,10 +169,11 @@ public class ViewMembersAttendees extends AppCompatActivity {
             LinearLayout userLayout = new LinearLayout(this);
             userLayout.setLayoutParams(linearPostedBy);
             userLayout.setOrientation(LinearLayout.HORIZONTAL);
+            userLayout.setTag(groupMember.getGroupId());
             userLayout.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
-                    final LinearLayout profile = (LinearLayout) v.getParent();
+                    final String post = v.getTag() + "";
 
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ViewMembersAttendees.this);
                     dlgAlert.setMessage("Options");
@@ -181,17 +187,16 @@ public class ViewMembersAttendees extends AppCompatActivity {
                                 }
                             });
 
-                    /*if (Integer.parseInt(userId) == currentUser.getId()) {
+                    if (Integer.parseInt(postedBy) == currentUser.getId()) {
                         dlgAlert.setNegativeButton("Delete comment",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        String meetupId = parent.getTag() + "";
-                                        listOfMeetups.removeView(parent);
-
-                                        new LeaveMeetups(meetupId, currentUser.getId() + "").execute();
+                                        String postId = post;
+                                        new LeaveGroups(postId, parent.getTag() + "").execute();
+                                        listOfMembers.removeView(parent);
                                     }
                                 });
-                    }*/
+                    }
 
 
                     dlgAlert.create().show();
@@ -300,12 +305,47 @@ public class ViewMembersAttendees extends AppCompatActivity {
             LinearLayout userLayout = new LinearLayout(this);
             userLayout.setLayoutParams(linearPostedBy);
             userLayout.setOrientation(LinearLayout.HORIZONTAL);
+            userLayout.setTag(attendees.getPostId());
             userLayout.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
+                    final String post = v.getTag() + "";
 
-                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", parent.getTag() + ""));
-                    Log.d("USER_ID", parent.getTag() + "");
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ViewMembersAttendees.this);
+                    dlgAlert.setMessage("Options");
+                    dlgAlert.setCancelable(true);
+
+                    dlgAlert.setPositiveButton("View Profile",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", parent.getTag() + ""));
+                                }
+                            });
+
+                    if (Integer.parseInt(postedBy) == currentUser.getId() && type == "M") {
+                        dlgAlert.setNegativeButton("Remove attendees",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String postId = post;
+                                        new LeaveMeetups(postId, parent.getTag() + "").execute();
+                                        Interactions.showError(postId + " " +
+                                                parent.getTag() + "", ViewMembersAttendees.this);
+                                        listOfMembers.removeView(parent);
+                                    }
+                                });
+                    }
+
+                    if (Integer.parseInt(postedBy) == currentUser.getId() && type == "E") {
+                        dlgAlert.setNegativeButton("Remove attendees",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String postId = post;
+                                        new LeaveEvents(postId, parent.getTag() + "").execute();
+                                        listOfMembers.removeView(parent);
+                                    }
+                                });
+                    }
+                    dlgAlert.create().show();
                 }
             });
 
@@ -521,6 +561,13 @@ public class ViewMembersAttendees extends AppCompatActivity {
                                 jsonObject.getString("first_name") + " " +
                                         jsonObject.getString("last_name"), jsonObject.getString("user_image")));
 
+
+                        /*//get who posted the meetup
+                        if(jsonObject.getString("posted_by").equals("null") &&
+                                !jsonObject.getString("posted_by").equals(""))  {
+                            postedBy = jsonObject.getInt("posted_by");
+                        }*/
+
                     }
 
                     return json.getString(TAG_RESPONSE);
@@ -550,5 +597,221 @@ public class ViewMembersAttendees extends AppCompatActivity {
         }
 
     }
+
+    class LeaveGroups extends AsyncTask<String, String, String> {
+
+        String groupId;
+        String userId;
+
+        public LeaveGroups(String groupId, String userId) {
+            this.groupId = groupId;
+            this.userId = userId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewMembersAttendees.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", groupId));
+                params.add(new BasicNameValuePair("user_id", userId));
+                params.add(new BasicNameValuePair("query_type", "group"));
+
+                Log.d("Leave details", "Group id " + groupId + " User id " + userId);
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        LEAVE_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewMembersAttendees.this, message + "!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    class LeaveMeetups extends AsyncTask<String, String, String> {
+
+        String meetupId;
+        String userId;
+
+        public LeaveMeetups(String meetupId, String userId) {
+            this.meetupId = meetupId;
+            this.userId = userId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewMembersAttendees.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", meetupId));
+                params.add(new BasicNameValuePair("user_id", userId));
+                params.add(new BasicNameValuePair("query_type", "attendees"));
+                params.add(new BasicNameValuePair("type", "M"));
+
+                Log.d("Leave details", "Meetup id" + meetupId + " User id " + userId);
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        LEAVE_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewMembersAttendees.this, message + "!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    class LeaveEvents extends AsyncTask<String, String, String> {
+
+        String eventId;
+        String userId;
+
+        public LeaveEvents(String eventId, String userId) {
+            this.eventId = eventId;
+            this.userId = userId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewMembersAttendees.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", eventId));
+                params.add(new BasicNameValuePair("user_id", userId));
+                params.add(new BasicNameValuePair("query_type", "attendees"));
+                params.add(new BasicNameValuePair("type", "E"));
+
+                Log.d("Leave details", "Meetup id " + eventId + " User id " + userId);
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        LEAVE_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewMembersAttendees.this, message + "!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
 
 }

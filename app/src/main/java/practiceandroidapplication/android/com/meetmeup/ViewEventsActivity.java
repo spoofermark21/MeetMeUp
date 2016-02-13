@@ -161,6 +161,8 @@ public class ViewEventsActivity extends AppCompatActivity {
                 Intent viewMembers = new Intent(ViewEventsActivity.this, ViewMembersAttendees.class);
                 viewMembers.putExtra("POST_ID", eventId);
                 viewMembers.putExtra("TYPE", "event");
+                viewMembers.putExtra("POSTED_BY", event.getPostedBy() + "");
+
                 startActivity(viewMembers);
             }
         });
