@@ -40,6 +40,7 @@ public class GroupActivity extends AppCompatActivity {
 
     private static final String RETRIEVE_GROUP_URL = Network.forDeploymentIp + "group_retrieve.php";
     private static final String UPDATE_GROUP_URL = Network.forDeploymentIp + "group_update.php";
+    private static final String LEAVE_URL = Network.forDeploymentIp + "leave.php";
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
@@ -76,6 +77,7 @@ public class GroupActivity extends AppCompatActivity {
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setVisibility(View.GONE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,7 +95,7 @@ public class GroupActivity extends AppCompatActivity {
         new RetrieveGroups().execute();
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.group_menu, menu);
         return true;
@@ -108,7 +110,7 @@ public class GroupActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     @Override
     public void onBackPressed() {
@@ -165,13 +167,17 @@ public class GroupActivity extends AppCompatActivity {
             params2.gravity = Gravity.RIGHT;
             params2.leftMargin = 50;
 
+            final LinearLayout.LayoutParams btnLayout = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+            btnLayout.weight = 1.0f;
+            btnLayout.setMargins(10, 10, 10, 10);
+
             LinearLayout options = new LinearLayout(this);
             options.setOrientation(LinearLayout.HORIZONTAL);
             options.setPadding(10, 10, 10, 10);
             options.setLayoutParams(params2);
 
             final TextView view = new TextView(this);
-            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            view.setLayoutParams(btnLayout);
             view.setPadding(10, 10, 0, 10);
             view.setText("view");
             view.setTextSize(15);
@@ -180,7 +186,7 @@ public class GroupActivity extends AppCompatActivity {
             //final ImageButton edit = new ImageButton(this);
             //edit.setImageResource(R.drawable.ic_mode_edit_black_24dp);
             final TextView edit = new TextView(this);
-            edit.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            edit.setLayoutParams(btnLayout);
             edit.setPadding(10, 10, 0, 10);
             edit.setText("edit");
             edit.setTextSize(15);
@@ -192,12 +198,19 @@ public class GroupActivity extends AppCompatActivity {
             delete.setPadding(10, 10, 0, 10);
             delete.setBackgroundColor(Color.TRANSPARENT);*/
             final TextView delete = new TextView(this);
-            delete.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            delete.setLayoutParams(btnLayout);
             delete.setPadding(10, 10, 0, 10);
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
 
+            final TextView leave = new TextView(this);
+            leave.setLayoutParams(btnLayout);
+            leave.setPadding(10, 10, 0, 10);
+            leave.setText("leave");
+            leave.setTextSize(15);
+            leave.setGravity(Gravity.CENTER);
+            leave.setBackgroundColor(Color.TRANSPARENT);
 
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -267,6 +280,45 @@ public class GroupActivity extends AppCompatActivity {
                 }
             });
 
+            leave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(GroupActivity.this);
+                    dlgAlert.setMessage("Are you sure to leave this Group?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(GroupActivity.this, "Successful!", Toast.LENGTH_SHORT).show();
+
+                                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                                    String eventId = parent.getTag() + "";
+
+                                    listOfGroups.removeView(parent);
+
+                                    new LeaveGroups(eventId, currentUser.getId() + "").execute();
+
+                                    if (listOfGroups.getChildCount() == 1)
+                                        lblMessage.setVisibility(View.VISIBLE);
+                                    else
+                                        lblMessage.setVisibility(View.GONE);
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+
+                    dlgAlert.create().show();
+
+                }
+            });
+
             options.addView(view);
 
             //recordOfGroups.addView(groupImage);
@@ -278,6 +330,7 @@ public class GroupActivity extends AppCompatActivity {
                 options.addView(edit);
                 options.addView(delete);
             } else {
+                options.addView(leave);
                 recordOfGroups.addView(groupCreatedBy);
             }
 
@@ -444,6 +497,77 @@ public class GroupActivity extends AppCompatActivity {
 
                 JSONObject json = jsonParser.makeHttpRequest(
                         UPDATE_GROUP_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(GroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    class LeaveGroups extends AsyncTask<String, String, String> {
+
+        String groupId;
+        String userId;
+
+        public LeaveGroups(String groupId, String userId) {
+            this.groupId = groupId;
+            this.userId = userId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(GroupActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", groupId));
+                params.add(new BasicNameValuePair("user_id", userId));
+                params.add(new BasicNameValuePair("query_type", "group"));
+
+                Log.d("Leave details", "Group id " + groupId + " User id " + userId);
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        LEAVE_URL, "POST", params);
 
                 Log.d("Updating...", json.toString());
 

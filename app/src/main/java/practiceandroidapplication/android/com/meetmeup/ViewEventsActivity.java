@@ -65,7 +65,7 @@ public class ViewEventsActivity extends AppCompatActivity {
 
     EditText txtComment;
 
-    Button btnJoin, btnComment, btnProfile;
+    Button btnJoin, btnComment, btnProfile, btnViewMembers;
 
     ScrollView scrollView;
 
@@ -150,8 +150,18 @@ public class ViewEventsActivity extends AppCompatActivity {
         btnProfile = (Button) findViewById(R.id.btn_view_profile);
         btnProfile.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                //startActivity(new Intent(ViewEventsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", meetups.getPostedBy() + ""));
-                //Log.d("USER_ID", meetups.getPostedBy() + "");
+                startActivity(new Intent(ViewEventsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", event.getPostedBy() + ""));
+                Log.d("USER_ID", event.getPostedBy() + "");
+            }
+        });
+
+        btnViewMembers = (Button) findViewById(R.id.btn_view_members);
+        btnViewMembers.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                Intent viewMembers = new Intent(ViewEventsActivity.this, ViewMembersAttendees.class);
+                viewMembers.putExtra("POST_ID", eventId);
+                viewMembers.putExtra("TYPE", "event");
+                startActivity(viewMembers);
             }
         });
     }
@@ -257,8 +267,6 @@ public class ViewEventsActivity extends AppCompatActivity {
                     Log.d("Event name", jUserObject.getString("event_name"));
 
                     event.setPostedDate(jUserObject.getString("posted_date"));
-                    event.setStartDate(jUserObject.getString("start_date"));
-                    event.setEndDate(jUserObject.getString("end_date"));
                     event.setPostedBy(jUserObject.getInt("posted_by"));
                     event.setPostedByName(jUserObject.getString("posted_by_user"));
 
@@ -290,6 +298,7 @@ public class ViewEventsActivity extends AppCompatActivity {
                         lblLocation.setText(event.getLocation());
                         lblPostedBy.setText(event.getPostedByName());
 
+                        Log.d("Event date", event.getStartDate() + " - "  + event.getEndDate());
                         lblEventDate.setText(event.getStartDate() + " - "  + event.getEndDate());
 
                         new RetrieveComments().execute();
@@ -540,6 +549,7 @@ public class ViewEventsActivity extends AppCompatActivity {
                 lblDetails.setText(event.getDetails());
                 lblLocation.setText(event.getLocation());
                 lblPostedBy.setText(event.getPostedByName());
+                lblEventDate.setText(event.getStartDate() + " - "  + event.getEndDate());
 
                 if (message.equals("Not yet joined.")) {
 

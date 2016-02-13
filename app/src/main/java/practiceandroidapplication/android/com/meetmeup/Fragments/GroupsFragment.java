@@ -379,7 +379,7 @@ public class GroupsFragment extends Fragment {
         }
         currentGroups.clear();
 
-        Button btnSeeMore = new Button(getActivity());
+        /*Button btnSeeMore = new Button(getActivity());
         btnSeeMore.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         btnSeeMore.setText("see more");
         btnSeeMore.setTextSize(15);
@@ -387,7 +387,7 @@ public class GroupsFragment extends Fragment {
         btnSeeMore.setGravity(Gravity.CENTER);
         btnSeeMore.setBackgroundColor(Color.parseColor("#00000000"));
 
-        listOfGroups.addView(btnSeeMore);
+        listOfGroups.addView(btnSeeMore);*/
     }
 
     public String timeDiff(String timeDiff) {

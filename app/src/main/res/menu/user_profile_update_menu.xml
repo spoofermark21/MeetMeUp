@@ -5,6 +5,12 @@
     tools:context=".MainActivity">
 
 
+    <item android:id="@+id/action_save"
+        android:title="Save"
+        android:icon="@drawable/ic_save_white_24dp"
+        android:orderInCategory="300"
+        app:showAsAction="ifRoom" />
+
     <item android:id="@+id/action_password"
         android:title="Change password"
         android:icon="@drawable/ic_security_white_24dp"

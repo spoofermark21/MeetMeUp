@@ -53,7 +53,6 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(UserProfileUpdatePasswordActivity.this, UserProfileUpdateActivity.class));
                 finish();
             }
         });
@@ -156,7 +155,6 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        startActivity(new Intent(UserProfileUpdatePasswordActivity.this, UserProfileUpdateActivity.class));
         finish();
     }
 

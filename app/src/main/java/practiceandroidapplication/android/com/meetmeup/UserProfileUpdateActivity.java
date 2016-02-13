@@ -135,6 +135,8 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
         if(id == R.id.action_password) {
             startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileUpdatePasswordActivity.class));
+        } else if(id == R.id.action_save) {
+            save();
         }
 
         return super.onOptionsItemSelected(item);
@@ -183,6 +185,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileActivity.class));
                 finish();
             }
         });
@@ -231,6 +234,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         btnUpdate.setVisibility(View.GONE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setVisibility(View.GONE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -278,6 +282,49 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         });
 
     } // end of initUI
+
+    public void save(){
+        try {
+
+            if (formValidation()) {
+
+                //for debugging purposes...
+                Log.d("Birthdate", dateBirth.getYear() + "-" +
+                        dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+
+                updateUser.setFirstName(txtFirstname.getText().toString());
+                updateUser.setLastName(txtLastname.getText().toString());
+                //updateUser.setCurrentLocation(txtCurrentLocation.getText().toString());
+                //updateUser.setCurrentLocation(spnLocation.getSelectedItem().toString());
+                updateUser.setLocation(new Location(spnLocation.getSelectedItemPosition() + 1));
+
+                updateUser.setEmailAddress(txtEmailAddress.getText().toString());
+                updateUser.setContactNumber(txtContactNumber.getText().toString());
+                updateUser.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
+                        spnNationality.getSelectedItem().toString()));
+
+                final RadioButton selectedGender = (RadioButton)
+                        findViewById(rdGender.getCheckedRadioButtonId());
+
+                updateUser.setGender(selectedGender.getText().toString().charAt(0));
+
+                //for testing
+                Log.d("Gender", updateUser.getGender() + "");
+
+                updateUser.setBirthDate(dateBirth.getYear() + "-" +
+                        dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+
+                new UpdateUser().execute(updateUser.getFirstName(),
+                        updateUser.getLastName(), updateUser.getBirthDate(),
+                        updateUser.getNationality().getId() + "", updateUser.getGender() + "", updateUser.getLocation().getId() + "",
+                        updateUser.getEmailAddress(), updateUser.getContactNumber());
+            }
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public void loadLocations(){
         ArrayAdapter<String> adapter;
@@ -385,6 +432,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
+        startActivity(new Intent(UserProfileUpdateActivity.this, UserProfileActivity.class));
         finish();
     }
 

@@ -64,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
     private Sessions sessions = Sessions.getSessionsInstance();
     private User currentUser = sessions.currentUser;
 
+    boolean isClick = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,9 +94,11 @@ public class LoginActivity extends AppCompatActivity {
                     try {
                         if (!txtUsername.getText().toString().contains(" ") &&
                                 !txtPassword.getText().toString().contains(" ") &&
-                                !isFieldsEmpty()) {
-                                User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
+                                !isFieldsEmpty() && !isClick) {
+                            isClick = true;
+                            User user = new User(txtUsername.getText().toString(), txtPassword.getText().toString());
                             new LoginUser().execute(user.getUsername(), user.getPassword());
+
                         } else {
                             Interactions.showError("Username and password must not contain spaces", LoginActivity.this);
                         }
@@ -225,6 +229,7 @@ public class LoginActivity extends AppCompatActivity {
             pDialog.dismiss();
             if (message.equals("Username or Password is incorrect.")) {
                 Interactions.showError("Incorrect username or password.", LoginActivity.this);
+                isClick = false;
             }
         }
 

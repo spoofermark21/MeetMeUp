@@ -2,19 +2,21 @@ package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,29 +24,28 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.games.Notifications;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Comment;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Attendees;
 import practiceandroidapplication.android.com.meetmeup.Entity.Comments;
-import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Events;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Notification;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.SensoredWords;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
-import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
@@ -72,25 +73,26 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             lblPostedBy, lblComments;
 
     ListView listComments;
-    LinearLayout linearComments;
+    LinearLayout linearComments, linearListComments;
 
     EditText txtComment;
 
-    Button btnJoin, btnComment, btnProfile;
+    Button btnJoin, btnComment, btnProfile, btnViewMembers;
 
     ScrollView scrollView;
 
     Meetups meetups;
-    Attendees attendees;
 
     Sessions sessions = Sessions.getSessionsInstance();
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     String meetupId;
     ArrayAdapter<String> adapter;
-    //Timer timer = new Timer();
-    //Thread thread = new Thread();
-    boolean isExit = false;
+    List<Comments> listOfComments = new ArrayList<>();
+
+    private final static int INTERVAL = 1000 * 1;
+
+    Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +105,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
-                isExit = true;
+                stopRepeatingTask();
                 finish();
             }
         });
@@ -133,11 +134,14 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         lblComments = (TextView) findViewById(R.id.lbl_comments);
         lblComments.setVisibility(View.GONE);
 
-        listComments = (ListView) findViewById(R.id.list_comments);
-        listComments.setVisibility(View.GONE);
+        /*listComments = (ListView) findViewById(R.id.list_comments);
+        listComments.setVisibility(View.GONE);*/
 
         linearComments = (LinearLayout) findViewById(R.id.linear_comments);
         linearComments.setVisibility(View.GONE);
+
+        linearListComments = (LinearLayout) findViewById(R.id.list_comments);
+        linearListComments.setVisibility(View.GONE);
 
         btnJoin = (Button) findViewById(R.id.btn_join);
         btnJoin.setVisibility(View.GONE);
@@ -160,10 +164,20 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         });
 
         btnProfile = (Button) findViewById(R.id.btn_view_profile);
-        btnProfile.setOnClickListener(new View.OnClickListener(){
+        btnProfile.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startActivity(new Intent(ViewMeetupsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", meetups.getPostedBy() + ""));
                 Log.d("USER_ID", meetups.getPostedBy() + "");
+            }
+        });
+
+        btnViewMembers = (Button) findViewById(R.id.btn_view_members);
+        btnViewMembers.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent viewMembers = new Intent(ViewMeetupsActivity.this, ViewMembersAttendees.class);
+                viewMembers.putExtra("POST_ID", meetupId);
+                viewMembers.putExtra("TYPE", "meetup");
+                startActivity(viewMembers);
             }
         });
     }
@@ -182,14 +196,89 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         return comment;
     }
 
+    public void displayComments() {
+
+        linearListComments.removeAllViews();
+
+        for (Comments comments : listOfComments) {
+            final LinearLayout.LayoutParams layoutComments = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutComments.setMargins(0, 0, 0, 10);
+
+            LinearLayout recordOfComments = new LinearLayout(this);
+            recordOfComments.setLayoutParams(layoutComments);
+            recordOfComments.setOrientation(LinearLayout.VERTICAL);
+            recordOfComments.setBackgroundResource(R.drawable.main_background);
+            recordOfComments.setPadding(10, 10, 10, 5);
+
+
+            final LinearLayout.LayoutParams linearPostedBy = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            linearPostedBy.setMargins(0, 0, 0, 30);
+
+            LinearLayout postedByLayout = new LinearLayout(this);
+            postedByLayout.setLayoutParams(linearPostedBy);
+            postedByLayout.setOrientation(LinearLayout.HORIZONTAL);
+            postedByLayout.setTag(comments.getUserName());
+            postedByLayout.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    startActivity(new Intent(ViewMeetupsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", view.getTag() + "" + ""));
+                    Log.d("USER_ID", view.getTag() + "");
+                }
+            });
+
+            final LinearLayout.LayoutParams linearDate = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            linearDate.setMargins(0, 0, 0, 30);
+
+            LinearLayout postedByDate = new LinearLayout(this);
+            postedByDate.setLayoutParams(linearDate);
+            postedByDate.setOrientation(LinearLayout.VERTICAL);
+
+
+            Log.d("Comment", comments.getComment());
+            recordOfComments.setTag(comments.getId());
+
+
+            final TextView commentPostedBy = new TextView(ViewMeetupsActivity.this);
+            commentPostedBy.setText(comments.getUserName() + " ");
+            commentPostedBy.setTextSize(15);
+            commentPostedBy.setTextColor(Color.BLACK);
+
+
+            final TextView commentPostedDate = new TextView(this);
+            commentPostedDate.setText(" @" + comments.getCommentDate() + "");
+            commentPostedDate.setTextSize(12);
+
+            final TextView commment = new TextView(this);
+            commment.setText(comments.getComment());
+            commment.setTextSize(12);
+            commment.setTextColor(Color.BLACK);
+            commment.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+
+                }
+            });
+
+            Log.d("added", "true");
+
+            postedByLayout.addView(commentPostedBy);
+            postedByLayout.addView(commentPostedDate);
+            recordOfComments.addView(postedByLayout);
+
+            recordOfComments.addView(commment);
+
+            linearListComments.addView(recordOfComments);
+        }
+        listOfComments.clear();
+    }
+
     @Override
     public void onBackPressed() {
-        //startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
-        isExit = true;
+        stopRepeatingTask();
         finish();
     }
 
-    private void loadComments() {
+    /*private void loadComments() {
 
         adapter = new ArrayAdapter<>(ViewMeetupsActivity.this,
                 android.R.layout.simple_list_item_1, meetups.listOfComments());
@@ -203,18 +292,31 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                int itemPosition = position;
 
-                String itemValue = (String) listComments.getItemAtPosition(position);
-
-                Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                        .show();
             }
-        });
+        };
+    }*/
 
 
+    //check comment every 5 seconds
+
+
+    Runnable mHandlerTask = new Runnable() {
+        @Override
+        public void run() {
+            new RetrieveComments().execute();
+            mHandler.postDelayed(mHandlerTask, INTERVAL);
+        }
+    };
+
+    void startRepeatingTask() {
+        mHandlerTask.run();
     }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mHandlerTask);
+    }
+
 
     /*
         thread
@@ -296,7 +398,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                 if (message.equals("Successful")) {
 
                     //check if the viewer is the user
-                    if(currentUser.getId() == meetups.getPostedBy()) {
+                    if (currentUser.getId() == meetups.getPostedBy()) {
                         scrollView.setVisibility(View.VISIBLE);
                         lblSubject.setText(meetups.getSubject());
                         lblPostedDate.setText(meetups.getPostedDate());
@@ -304,8 +406,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                         lblLocation.setText(meetups.getLocation());
                         lblPostedBy.setText(meetups.getPostedByName());
 
-                        new RetrieveComments().execute();
-
+                        //new RetrieveComments().execute();
+                        startRepeatingTask();
                     } else {
                         //if not join comments will be disable
                         new RetrieveAttendees().execute();
@@ -315,13 +417,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }
-    }
-
-
-    class CheckComments extends TimerTask {
-        public void run() {
-            new RetrieveComments().execute();
         }
     }
 
@@ -404,7 +499,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
                 } else if (message.equals("Successful")) {
                     //check if there is comments
-                    new RetrieveComments().execute();
+                    //new RetrieveComments().execute();
+                    startRepeatingTask();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -453,22 +549,20 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
                     JSONArray jsonArray = jsonObject.getJSONArray("comments");
 
-                    List<Comments> comments = new ArrayList<>();
+                    //List<Comments> comments = new ArrayList<>();
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
-                        comments.add(new Comments(jsonObject1.getInt("id"), jsonObject1.getInt("post_id"),
+                        listOfComments.add(new Comments(jsonObject1.getInt("id"), jsonObject1.getInt("post_id"),
                                 jsonObject1.getString("post_type").charAt(0), jsonObject1.getInt("user_id"),
                                 jsonObject1.getString("comment"), jsonObject1.getString("comment_date"),
-                                jsonObject1.getString("user")));
+                                jsonObject1.getString("user"), jsonObject1.getString("user_image")));
 
                         Log.d("ID:", jsonObject1.getInt("id") + "");
                     }
 
-                    meetups.setComments(comments);
-                    //clear comments
-                    //comments.clear();
+                    //meetups.setComments(comments);
 
                     return jsonObject.getString(TAG_RESPONSE);
                 } else {
@@ -487,32 +581,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                 lblComments.setText("Comments");
                 lblComments.setVisibility(View.VISIBLE);
                 linearComments.setVisibility(View.VISIBLE);
-                listComments.setVisibility(View.VISIBLE);
+                linearListComments.setVisibility(View.VISIBLE);
 
                 if (message.equals("Successful")) {
-                    loadComments();
-
-                    if(!isExit) {
-                        new RetrieveComments().execute();
-                    }
-
-
-                    /*Runnable refreshComments = new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                //sleep(1000);
-                                new RetrieveComments().execute();
-                            } catch(Exception ex) {
-                                //to do
-                                ex.printStackTrace();
-                            }
-                        }
-                    };
-                    Thread thread = new Thread(refreshComments);
-                    thread.sleep(2000);
-                    thread.start();*/
-
+                    displayComments();
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
                 }
@@ -584,11 +656,11 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(ViewMeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
-                    new RetrieveComments().execute();
+                    //new RetrieveComments().execute();
 
 
                     //add new notifications
-                    if(currentUser.getId() != meetups.getPostedBy()) {
+                    if (currentUser.getId() != meetups.getPostedBy()) {
 
                         String details = currentUser.getFirstName() + " " + currentUser.getLastName()
                                 + " commented to your meetups (" + meetups.getSubject() + ") ";
@@ -745,7 +817,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                             .getPostedBy(), currentUser.getId(), Integer.parseInt(meetupId), 'M', details)).execute();
 
                     Toast.makeText(ViewMeetupsActivity.this, "Request sent.", Toast.LENGTH_SHORT);
-                } else if(message.equals("Already sent a request.")) {
+                } else if (message.equals("Already sent a request.")) {
                     Toast.makeText(ViewMeetupsActivity.this, "Already sent a request", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception ex) {

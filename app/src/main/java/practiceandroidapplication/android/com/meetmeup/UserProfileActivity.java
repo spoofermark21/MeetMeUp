@@ -84,7 +84,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.user_profile_menu, menu);
         return true;
@@ -97,13 +97,13 @@ public class UserProfileActivity extends AppCompatActivity {
         if(id == R.id.action_edit){
             startActivity(new Intent(UserProfileActivity.this, UserProfileUpdateActivity.class));
             finish();
-        } else if (id == R.id.action_preferrence ){
+        } /*else if (id == R.id.action_preferrence ){
             startActivity(new Intent(UserProfileActivity.this, SetPreferenceActivity.class));
             finish();
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 
     /*
         functions
@@ -124,14 +124,13 @@ public class UserProfileActivity extends AppCompatActivity {
         imgUser = (ImageView) findViewById(R.id.img_user);
         imgUser.setBackgroundColor(Color.parseColor("#E6E9ED"));
 
-        //imgUser.setVisibility(View.GONE);
-        //progressImage = (ProgressBar) findViewById(R.id.progress_image);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setVisibility(View.GONE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(UserProfileActivity.this, UserProfileUpdateActivity.class));
+                finish();
             }
         });
 

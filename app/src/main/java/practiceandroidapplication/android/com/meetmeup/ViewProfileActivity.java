@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -44,8 +45,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
-    ProgressBar progressImage;
-
     TextView lblFullName,lblGender, lblNationality,
             lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
 
@@ -88,9 +87,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
         imgUser = (ImageView) findViewById(R.id.img_user);
-        imgUser.setVisibility(View.GONE);
 
-        progressImage = (ProgressBar) findViewById(R.id.progress_image);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -218,8 +215,6 @@ public class ViewProfileActivity extends AppCompatActivity {
             pDialog = new ProgressDialog(ViewProfileActivity.this, R.style.progress);
             pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            //pDialog.setMessage("Downloading image...");
-            //pDialog.show();
         }
 
         @Override
@@ -237,7 +232,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
             } catch (FileNotFoundException ex) {
                 ex.printStackTrace();
-                //Toast.makeText(UserProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewProfileActivity.this, "Set a profile picture @ update user section.", Toast.LENGTH_SHORT).show();
                 return null;
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -250,9 +245,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             //pDialog.dismiss();
             try {
                 if(bitmap!=null) {
-                    imgUser.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bitmap, 100));
-                    imgUser.setVisibility(View.VISIBLE);
-                    progressImage.setVisibility(View.GONE);
+                    imgUser.setImageBitmap(ImageHelper.getRoundedCornerBitmap(bitmap, 20));
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

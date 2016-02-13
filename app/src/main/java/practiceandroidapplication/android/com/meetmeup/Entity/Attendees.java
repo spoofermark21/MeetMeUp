@@ -13,6 +13,10 @@ public class Attendees {
 
     private int userId;
 
+    private String userName;
+
+    private String userImage;
+
     private char collaborationStatus;
 
     private String requestDate;
@@ -21,6 +25,12 @@ public class Attendees {
 
     public Attendees() {
 
+    }
+
+    public Attendees(int userId, String userName, String userImage){
+        this.userId = userId;
+        this.userName = userName;
+        this.userImage = userImage;
     }
 
     public Attendees(int postId, char postType, int userId,
@@ -99,6 +109,24 @@ public class Attendees {
     public void setAcceptedDate(String acceptedDate) {
         this.acceptedDate = acceptedDate;
     }
+
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
+    }
+
 
     @Override
     public String toString() {

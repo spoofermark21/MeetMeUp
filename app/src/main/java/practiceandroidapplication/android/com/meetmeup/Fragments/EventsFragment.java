@@ -353,14 +353,14 @@ public class EventsFragment extends Fragment {
         }
         currentEvents.clear();
 
-        Button btnSeeMore = new Button(getActivity());
+        /*Button btnSeeMore = new Button(getActivity());
         btnSeeMore.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         btnSeeMore.setText("see more");
         btnSeeMore.setTextSize(15);
         btnSeeMore.setAllCaps(false);
         btnSeeMore.setGravity(Gravity.CENTER);
         btnSeeMore.setBackgroundColor(Color.parseColor("#00000000"));
-        listOfEvents.addView(btnSeeMore);
+        listOfEvents.addView(btnSeeMore);*/
 
     }
 

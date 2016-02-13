@@ -97,6 +97,7 @@ public class RegistrationActivity extends AppCompatActivity {
         txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
 
         dateBirth = (DatePicker) findViewById(R.id.date_birth);
+        dateBirth.setMaxDate(new Date().getTime());
 
         rdGender = (RadioGroup) findViewById(R.id.rd_gender);
         rdMale = (RadioButton) findViewById(R.id.rd_male);

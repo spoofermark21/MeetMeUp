@@ -5,11 +5,11 @@
     tools:context=".MainActivity">
 
 
-    <item android:id="@+id/action_preferrence"
+    <!--<item android:id="@+id/action_preferrence"
         android:title="Set Preference"
         android:icon="@drawable/ic_favorite_white_24dp"
         android:orderInCategory="300"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
 
     <item android:id="@+id/action_edit"
         android:title="Edit Profile"

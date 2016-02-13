@@ -125,6 +125,7 @@ public class ViewGroupActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent viewMembers = new Intent(ViewGroupActivity.this, ViewMembersAttendees.class);
                 viewMembers.putExtra("GROUP_ID", groupId);
+                viewMembers.putExtra("TYPE", "group");
                 startActivity(viewMembers);
             }
         });
@@ -202,7 +203,10 @@ public class ViewGroupActivity extends AppCompatActivity {
                         lblDetails.setText(group.getDetails());
                         lblPostedBy.setText(group.getCreatedByName());
 
-                        new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                        if(!group.getGroupImage().equals("") && !group.getGroupImage().equals("null")) {
+                            new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                        }
+
                     } else {
                         //if not join comments will be disable
                         new RetrieveMembers().execute();

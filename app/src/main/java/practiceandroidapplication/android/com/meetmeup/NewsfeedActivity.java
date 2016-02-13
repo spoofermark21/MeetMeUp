@@ -364,6 +364,7 @@ public class NewsfeedActivity extends AppCompatActivity
     public void setUserProfile() {
         txtUserFullName.setText(currentUser.getFirstName() + " "
                 + currentUser.getLastName());
+
         txtUserNationality.setText(currentUser.getNationality()
                 .getNatioNalityName());
 
@@ -503,7 +504,10 @@ public class NewsfeedActivity extends AppCompatActivity
             try {
 
                 if(message.equals("New notifications.")) {
-                    NotificationCompat.Builder mBuilder =
+
+                    Toast.makeText(NewsfeedActivity.this, "You have new notifications", Toast.LENGTH_SHORT).show();
+
+                    /*NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(NewsfeedActivity.this)
                                     .setSmallIcon(R.drawable.ic_notifications_black_24dp)
                                     .setContentTitle("#MeetMeUp")
@@ -533,7 +537,7 @@ public class NewsfeedActivity extends AppCompatActivity
                             (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 // mId allows you to update the notification later on.
                     mNotificationManager.notify(1,mBuilder.build());
-
+                */
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context="practiceandroidapplication.android.com.meetmeup.UserProfileActivity">
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -25,10 +24,8 @@
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".85"
-        android:paddingTop="5dp">
-
+        android:layout_height="fill_parent"
+        android:layout_marginTop="60dp">
 
         <LinearLayout
             android:id="@+id/linear_profile"
@@ -39,24 +36,23 @@
             android:background="@drawable/main_background"
             android:orientation="vertical"
             android:padding="10dp">
-
-            <ProgressBar
-                android:id="@+id/progress_image"
+            
+            <LinearLayout
+                android:background="@color/colorPrimaryDark"
                 android:layout_gravity="center"
+                android:padding="10dp"
                 android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:padding="80dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:indeterminateDrawable="@drawable/progress"/>
+                android:layout_height="200dp">
 
-            <ImageView
-                android:id="@+id/img_user"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:background="@drawable/img"
-                android:scaleType="fitXY" />
+                <ImageView
+                    android:id="@+id/img_user"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:layout_gravity="center"
+                    android:background="@color/gray"
+                    android:scaleType="fitXY" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/lbl_user_fullname"
@@ -73,17 +69,19 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:padding="5dp"
+                    android:layout_weight=".30"
                     android:text="Birthday: "
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/lbl_age"
-                    android:layout_width="wrap_content"
+                    android:layout_weight=".70"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:padding="5dp"
@@ -239,6 +237,7 @@
 
             </LinearLayout>
 
+            <!--
             <Button
                 android:id="@+id/btn_view_group"
                 android:layout_width="fill_parent"
@@ -246,12 +245,11 @@
                 android:background="@drawable/button_background"
                 android:text="View Groups"
                 android:layout_marginBottom="20dp"
-                android:textColor="@color/white" />
+                android:textColor="@color/white" /> -->
 
         </LinearLayout>
 
 
     </ScrollView>
 
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -25,16 +25,14 @@
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
         android:layout_margin="5dp"
         android:paddingTop="5dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight=".90"
+            android:layout_height="fill_parent"
             android:background="@drawable/main_background"
             android:orientation="vertical"
             android:padding="10dp">
@@ -158,7 +156,6 @@
                 </LinearLayout>
 
 
-
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -188,14 +185,34 @@
                             android:text="Mark Sibi"
                             android:textSize="15sp" />
 
-                        <Button
-                            android:id="@+id/btn_view_profile"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:background="@color/transparent"
-                            android:text="View Profile"
-                            android:textAllCaps="false"
-                            android:textColor="@color/colorPrimaryDark" />
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:id="@+id/btn_view_profile"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="0.50"
+                                android:background="@color/transparent"
+                                android:text="View profile"
+                                android:textAllCaps="false"
+                                android:textColor="@color/colorPrimaryDark" />
+
+                            <Button
+                                android:id="@+id/btn_view_members"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="0.50"
+                                android:background="@color/transparent"
+                                android:text="View members"
+                                android:textAllCaps="false"
+                                android:textColor="@color/colorPrimaryDark" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -238,53 +255,62 @@
                     android:text="0 Comments"
                     android:textSize="15sp" />
 
-                <ListView
+                <LinearLayout
+                    android:orientation="vertical"
                     android:id="@+id/list_comments"
-                    android:layout_width="match_parent"
-                    android:layout_height="350dp"></ListView>
+                    android:padding="5dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
 
-            </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/linear_comments"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/txt_comment"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_weight=".70"
-                    android:background="@drawable/edit_text"
-                    android:hint="Add a comment"
-                    android:inputType="text"
-                    android:padding="15dp"
-                    android:singleLine="true"
-                    android:textSize="15sp" />
-
-                <Button
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:src="@drawable/ic_search_black_24dp"
-                    android:id="@+id/btn_comment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:background="@color/transparent"
-                    android:text="Comment"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorPrimaryDark"
-                    android:textSize="15sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-
-
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/linear_comments"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:layout_weight="2"
+        android:background="@drawable/main_background"
+        android:orientation="horizontal"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <EditText
+            android:id="@+id/txt_comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_weight=".70"
+            android:background="@drawable/edit_text"
+            android:hint="Add a comment"
+            android:inputType="text"
+            android:padding="15dp"
+            android:singleLine="true"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/btn_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_search_black_24dp"
+            android:text="Comment"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
 
 </LinearLayout>

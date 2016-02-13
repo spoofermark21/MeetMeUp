@@ -339,8 +339,8 @@ public class MeetupsFragment extends Fragment {
 
             recordOfMeetups.addView(postedByLayout);
             postedByLayout.addView(meetupPostedByImage);
-
             postedByLayout.addView(postedByDate);
+
             postedByDate.addView(meetupPostedBy);
             postedByDate.addView(meetupPostedDate);
 
@@ -356,14 +356,14 @@ public class MeetupsFragment extends Fragment {
         }
         currentMeetups.clear();
 
-        Button btnSeeMore = new Button(getActivity());
+        /*Button btnSeeMore = new Button(getActivity());
         btnSeeMore.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         btnSeeMore.setText("see more");
         btnSeeMore.setTextSize(15);
         btnSeeMore.setAllCaps(false);
         btnSeeMore.setGravity(Gravity.CENTER);
         btnSeeMore.setBackgroundColor(Color.parseColor("#00000000"));
-        listOfMeetups.addView(btnSeeMore);
+        listOfMeetups.addView(btnSeeMore);*/
     }
 
     public String timeDiff(String timeDiff) {

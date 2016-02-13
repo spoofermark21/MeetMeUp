@@ -31,6 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -461,6 +462,9 @@ public class EditGroupActivity extends AppCompatActivity {
                 connection.setConnectTimeout(1000 * 30);
 
                 return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
+            } catch (FileNotFoundException ex) {
+                Interactions.showError("File not found", EditGroupActivity.this);
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

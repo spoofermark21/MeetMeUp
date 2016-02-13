@@ -15,6 +15,8 @@ public class Comments {
 
     private String userName;
 
+    private String userImage;
+
     private String comment;
 
     private String commentDate;
@@ -38,6 +40,18 @@ public class Comments {
         this.comment = comment;
         this.commentDate = commentDate;
         this.userName = userName;
+    }
+
+    public Comments(int id, int postId, char postType, int userId,
+                    String comment, String commentDate, String userName, String userImage) {
+        this.id = id;
+        this.postId = postId;
+        this.postType = postType;
+        this.userId = userId;
+        this.comment = comment;
+        this.commentDate = commentDate;
+        this.userName = userName;
+        this.userImage = userImage;
     }
 
     public Comments(int id, int postId, char postType, int userId, String comment, String commentDate) {
@@ -103,5 +117,13 @@ public class Comments {
 
     public void setCommentDate(String commentDate) {
         this.commentDate = commentDate;
+    }
+
+    public String getUserImage() {
+        return userImage;
+    }
+
+    public void setUserImage(String userImage) {
+        this.userImage = userImage;
     }
 }
