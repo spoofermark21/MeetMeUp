@@ -88,7 +88,6 @@ public class CreateMeetupActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CreateMeetupActivity.this, MeetupsActivity.class));
                 finish();
             }
         });
@@ -101,6 +100,11 @@ public class CreateMeetupActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
     }
 
     /**

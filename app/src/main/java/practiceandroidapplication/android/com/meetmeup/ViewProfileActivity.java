@@ -55,6 +55,8 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     User user = new User();
 
+    String userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +66,6 @@ public class ViewProfileActivity extends AppCompatActivity {
         try {
             linearProfile.setVisibility(View.INVISIBLE);
             new RetrieveUser().execute();
-
         } catch(Exception ex) {
             ex.printStackTrace();
         }
@@ -123,7 +124,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<>();
 
-                String userId = getIntent().getStringExtra("USER_ID");
+                userId = getIntent().getStringExtra("USER_ID");
 
                 params.add(new BasicNameValuePair("type", "current_user"));
                 params.add(new BasicNameValuePair("user_id", userId));

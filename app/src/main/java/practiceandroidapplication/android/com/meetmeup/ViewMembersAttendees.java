@@ -47,7 +47,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class ViewMembersAttendees extends AppCompatActivity {
 
-    private static final String RETRIEVE_MEMBERS_URL = Network.forDeploymentIp + "group_member_retrieve.php";
+    private static final String RETRIEVE_GROUP_MEMBERS_URL = Network.forDeploymentIp + "group_member_retrieve.php";
 
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
@@ -127,7 +127,7 @@ public class ViewMembersAttendees extends AppCompatActivity {
             recordOfMembers.setOrientation(LinearLayout.VERTICAL);
             recordOfMembers.setBackgroundResource(R.drawable.main_background);
             recordOfMembers.setPadding(20, 20, 20, 5);
-
+            recordOfMembers.setTag(groupMember.getUserId());
 
             final LinearLayout.LayoutParams linearPostedBy = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             linearPostedBy.setMargins(0, 0, 0, 30);
@@ -135,15 +135,16 @@ public class ViewMembersAttendees extends AppCompatActivity {
             LinearLayout userLayout = new LinearLayout(this);
             userLayout.setLayoutParams(linearPostedBy);
             userLayout.setOrientation(LinearLayout.HORIZONTAL);
-            userLayout.setTag(groupMember.getId());
             userLayout.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", v.getTag() + ""));
-                    Log.d("USER_ID", v.getTag() + "");
+                    final LinearLayout parent = (LinearLayout) v.getParent();
+
+                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", parent.getTag() + ""));
+                    Log.d("USER_ID", parent.getTag() + "");
                 }
             });
 
-            Log.d("User ID", groupMember.getId() + "");
+            Log.d("User ID", groupMember.getUserId() + "");
 
             final LinearLayout.LayoutParams userImageLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             userImageLayout.weight = 1.0f;
@@ -159,7 +160,6 @@ public class ViewMembersAttendees extends AppCompatActivity {
             userName.setText(groupMember.getUserName());
             userName.setTextColor(Color.BLACK);
             userName.setTextSize(17);
-
 
 
             if (!groupMember.getUserImage().equals("null") && !groupMember.getUserImage().equals("")) {
@@ -216,37 +216,12 @@ public class ViewMembersAttendees extends AppCompatActivity {
                 userImage.setScaleType(ImageView.ScaleType.FIT_XY);
             }
 
-            /*
-            final LinearLayout.LayoutParams optionLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            optionLayout.weight = 1.0f;
-            optionLayout.gravity = Gravity.CENTER;
+            userLayout.addView(userImage);
+            userLayout.addView(userName);
 
-            LinearLayout options = new LinearLayout(this);
-            options.setOrientation(LinearLayout.HORIZONTAL);
-            options.setLayoutParams(optionLayout);
-
-            final LinearLayout.LayoutParams btnLayout = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
-            btnLayout.weight = 1.0f;
-            btnLayout.setMargins(10, 10, 10, 10);
-
-            final Button view = new Button(this);
-            view.setLayoutParams(btnLayout);
-            view.setText("View");
-            view.setTextSize(15);
-            view.setAllCaps(false);
-            view.setBackgroundColor(Color.parseColor("#00000000"));
-            view.setGravity(Gravity.CENTER);
-            view.setTag(groupMember.getId());
-
-            view.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", view.getTag() + "" + ""));
-                    Log.d("USER_ID", view.getTag() + "");
-                }
-            });*/
-
+            recordOfMembers.addView(userLayout);
+            listOfMembers.addView(recordOfMembers);
         }
-        groupMembers.clear();
     }
 
 
@@ -276,14 +251,15 @@ public class ViewMembersAttendees extends AppCompatActivity {
                 // Building Parameters
                 List<NameValuePair> params = new ArrayList<>();
 
-                Log.d("USER_ID (user)", currentUser.getId() + "" + groupId);
-                params.add(new BasicNameValuePair("id", groupId + ""));
-                params.add(new BasicNameValuePair("query_type", "individual_join_user"));
+                Log.d("USER_ID (user)", currentUser.getId() + " Members " + groupId);
 
-                Log.d("request!", "starting");
+                params.add(new BasicNameValuePair("group_id", groupId + ""));
+                //params.add(new BasicNameValuePair("query_type", "individual_join_user"));
+
+                Log.d("request!", "starting to " + RETRIEVE_GROUP_MEMBERS_URL);
 
                 JSONObject json = jsonParser.makeHttpRequest(
-                        RETRIEVE_MEMBERS_URL, "POST", params);
+                        Network.forDeploymentIp + "group_member_retrieve.php", "POST", params);
 
                 Log.d("Fetching...", json.toString());
 
@@ -299,7 +275,7 @@ public class ViewMembersAttendees extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++) {
                         jsonObject = jsonArray.getJSONObject(i);
 
-                        groupMembers.add(new GroupMember(jsonObject.getInt("user_id"),
+                        groupMembers.add(new GroupMember(jsonObject.getInt("id_user"),
                                 jsonObject.getString("first_name") + " " +
                                         jsonObject.getString("last_name"), jsonObject.getString("user_image")));
 

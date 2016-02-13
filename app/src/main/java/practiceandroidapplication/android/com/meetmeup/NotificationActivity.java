@@ -75,7 +75,6 @@ public class NotificationActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(NotificationActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -295,7 +294,6 @@ public class NotificationActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        startActivity(new Intent(NotificationActivity.this, NewsfeedActivity.class));
         finish();
     }
 

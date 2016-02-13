@@ -139,7 +139,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onBackPressed() {
         //for animation
         //overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
-        finish();
+        //finish();
+        moveTaskToBack(true);
     }
 
     /*

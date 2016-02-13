@@ -89,7 +89,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
     String meetupId;
     ArrayAdapter<String> adapter;
     //Timer timer = new Timer();
-    Thread thread = new Thread();
+    //Thread thread = new Thread();
+    boolean isExit = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +103,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
+                //startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
+                isExit = true;
                 finish();
             }
         });
@@ -182,7 +184,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
+        //startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
+        isExit = true;
         finish();
     }
 
@@ -209,7 +212,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                         .show();
             }
         });
-        //new RefreshComment().execute();
+
+
     }
 
     /*
@@ -487,9 +491,27 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
                 if (message.equals("Successful")) {
                     loadComments();
-                    //thread.sleep(13 * 1000);
-                    //new RetrieveComments().execute();
 
+                    if(!isExit) {
+                        new RetrieveComments().execute();
+                    }
+
+
+                    /*Runnable refreshComments = new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                //sleep(1000);
+                                new RetrieveComments().execute();
+                            } catch(Exception ex) {
+                                //to do
+                                ex.printStackTrace();
+                            }
+                        }
+                    };
+                    Thread thread = new Thread(refreshComments);
+                    thread.sleep(2000);
+                    thread.start();*/
 
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
@@ -516,7 +538,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             pDialog = new ProgressDialog(ViewMeetupsActivity.this, R.style.progress);
             pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.show();
+            //pDialog.show();
         }
 
         @Override
@@ -558,7 +580,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
 
         protected void onPostExecute(String message) {
-            pDialog.dismiss();
+            //pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(ViewMeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();

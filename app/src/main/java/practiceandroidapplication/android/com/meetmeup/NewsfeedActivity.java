@@ -355,7 +355,7 @@ public class NewsfeedActivity extends AppCompatActivity
     public void navLogOutEvent() {
         try {
             Log.d("Debugging", currentUser.getId() + "");
-            new Logout().execute(currentUser.getId() + "");
+            new Logout().execute();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -562,8 +562,8 @@ public class NewsfeedActivity extends AppCompatActivity
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("user_id", user[0]));
+                List<NameValuePair> params = new ArrayList<>();
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
 
                 Log.d("request!", "starting");
 

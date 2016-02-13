@@ -1,6 +1,7 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -21,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -29,6 +32,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,7 +64,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
 
     private static final String RETRIEVE_USER_URL = Network.forDeploymentIp + "user_retrieve.php";
+
     private static final String UPDATE_USER_URL = Network.forDeploymentIp + "user_update.php";
+    private static final String DISABLE_USER_URL = Network.forDeploymentIp + "user_disable.php";
+
     private static final String UPLOAD_IMAGE_URL = Network.forDeploymentIp + "image_upload.php";
 
     private static final String TAG_STATUS = "status";
@@ -68,7 +75,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
-    ProgressBar progressImage;
 
     EditText txtFirstname, txtLastname,
             txtCurrentLocation, txtEmailAddress, txtContactNumber;
@@ -78,6 +84,8 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     RadioButton rdMale, rdFemale;
 
     ScrollView scrollView;
+
+    Switch disableUser;
 
     Toolbar toolBar;
 
@@ -105,6 +113,9 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         initUI();
         loadNationalities();
         loadLocations();
+
+        Log.d("Current user id", currentUser.getId() + "");
+
         try {
             new RetrieveUser().execute();
         } catch (Exception ex) {
@@ -178,6 +189,34 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
         imgUser = (ImageView) findViewById(R.id.img_user);
         imgUser.setBackgroundColor(Color.parseColor("#E6E9ED"));
+
+        disableUser = (Switch) findViewById(R.id.disable_user);
+        disableUser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(UserProfileUpdateActivity.this);
+                    dlgAlert.setMessage("Are you sure to disable your account permanently?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Toast.makeText(UserProfileUpdateActivity.this,"Disabled", Toast.LENGTH_SHORT).show();
+                                    new DisableUser().execute();
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    disableUser.setChecked(false);
+                                }
+                            });
+
+                    dlgAlert.create().show();
+                }
+            }
+        });
 
         btnUpload = (Button) findViewById(R.id.btn_image);
         btnUpload.setOnClickListener(new View.OnClickListener() {
@@ -372,7 +411,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 params.add(new BasicNameValuePair("user_info", "current_user"));
                 Log.d("USER_ID (user)", currentUser.getId() + "");
@@ -545,6 +584,70 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                         Bitmap image = ((BitmapDrawable) imgUser.getDrawable()).getBitmap();
                         new UploadUserImage(image, fileName,"users").execute();
                     }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
+
+    class DisableUser extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(UserProfileUpdateActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... user) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                //params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("id", 41 + ""));
+                Log.d("User id", currentUser.getId() + "");
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        DISABLE_USER_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Login failed!", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    // do something
+                    Toast.makeText(UserProfileUpdateActivity.this, "Successful!", Toast.LENGTH_LONG).show();
+                    //System.exit(0);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

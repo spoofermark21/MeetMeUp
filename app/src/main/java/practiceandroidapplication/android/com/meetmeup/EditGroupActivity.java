@@ -100,7 +100,6 @@ public class EditGroupActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EditGroupActivity.this, GroupActivity.class));
                 finish();
             }
         });
@@ -208,7 +207,6 @@ public class EditGroupActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        startActivity(new Intent(EditGroupActivity.this, GroupActivity.class));
         finish();
     }
 

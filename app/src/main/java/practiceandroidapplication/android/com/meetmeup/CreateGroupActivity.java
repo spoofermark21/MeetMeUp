@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -91,8 +92,24 @@ public class CreateGroupActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
                 finish();
+            }
+        });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (validateForm() && !isClickSave) {
+
+                    createGroup = new Group(txtGroupName.getText().toString(),
+                            txtDetails.getText().toString(), currentUser.getId());
+
+                    new CreateGroup().execute(createGroup.getGroupName(), createGroup.getDetails(),
+                            createGroup.getCreatedBy() + "");
+                    //boolean flag to avoid multiple creation
+                    isClickSave = true;
+                }
             }
         });
 
@@ -121,6 +138,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         });
 
         btnSave = (Button) findViewById(R.id.btn_create);
+        btnSave.setVisibility(View.GONE);
         btnSave.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (validateForm() && !isClickSave) {
@@ -133,7 +151,6 @@ public class CreateGroupActivity extends AppCompatActivity {
                     //boolean flag to avoid multiple creation
                     isClickSave = true;
                 }
-
             }
         });
     }
@@ -195,7 +212,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
+        //startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
         finish();
     }
 

@@ -77,6 +77,7 @@ public class GroupsFragment extends Fragment {
 
     //Bitmap image;
 
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -251,7 +252,7 @@ public class GroupsFragment extends Fragment {
                     Log.d("GROUP_ID", parent.getTag() + "");
 
                     startActivity(meetups);
-                    getActivity().finish();
+                    //getActivity().finish();
                 }
             });
 
@@ -262,12 +263,12 @@ public class GroupsFragment extends Fragment {
 
             final LinearLayout.LayoutParams imageGroupParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             imageGroupParams1.weight = 1.0f;
-            imageGroupParams1.height = 350;
-            imageGroupParams1.width = 350;
+            imageGroupParams1.height = 200;
+            imageGroupParams1.width = 200;
             imageGroupParams1.setMargins(0, 20, 0, 10);
             imageGroupParams1.gravity = Gravity.CENTER;
 
-            final ImageView groupImage = new ImageView(getActivity());
+            /*final ImageView groupImage = new ImageView(getActivity());
             groupImage.setBackgroundColor(Color.parseColor("#E6E9ED"));
 
             if(!group.getGroupImage().equals("null") && !group.getGroupImage().equals("")) {
@@ -322,9 +323,7 @@ public class GroupsFragment extends Fragment {
                 new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
                 groupImage.setLayoutParams(imageGroupParams1);
                 groupImage.setScaleType(ImageView.ScaleType.FIT_XY);
-            }
-
-
+            }*/
 
             final LinearLayout.LayoutParams optionLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
             optionLayout.weight = 1.0f;
@@ -344,7 +343,7 @@ public class GroupsFragment extends Fragment {
             view.setTextSize(15);
             view.setAllCaps(false);
             view.setBackgroundColor(Color.parseColor("#00000000"));
-            view.setGravity(Gravity.CENTER);
+            view.setGravity(Gravity.LEFT);
             view.setTextColor(Color.BLACK);
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -357,7 +356,7 @@ public class GroupsFragment extends Fragment {
                     Log.d("GROUP_ID", parent.getTag() + "");
 
                     startActivity(meetups);
-                    getActivity().finish();
+                    //getActivity().finish();
                 }
             });
 
@@ -372,7 +371,7 @@ public class GroupsFragment extends Fragment {
 
             recordOfGroups.addView(groupName);
             recordOfGroups.addView(groupDetails);
-            recordOfGroups.addView(groupImage);
+            //recordOfGroups.addView(groupImage);
 
             recordOfGroups.addView(options);
 
@@ -387,6 +386,7 @@ public class GroupsFragment extends Fragment {
         btnSeeMore.setAllCaps(false);
         btnSeeMore.setGravity(Gravity.CENTER);
         btnSeeMore.setBackgroundColor(Color.parseColor("#00000000"));
+
         listOfGroups.addView(btnSeeMore);
     }
 

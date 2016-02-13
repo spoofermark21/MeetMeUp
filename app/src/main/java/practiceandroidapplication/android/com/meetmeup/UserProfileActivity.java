@@ -186,7 +186,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     JSONArray jUserArray = json.getJSONArray("user");
                     JSONObject jUserObject = jUserArray.getJSONObject(0);
 
-                    currentUser.setId(jUserObject.getInt("id"));
+                    //currentUser.setId(jUserObject.getInt("id"));
 
                     Log.d("Fullname (user)", jUserObject.getString("first_name")
                             + " " + jUserObject.getString("last_name"));

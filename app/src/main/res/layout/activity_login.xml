@@ -43,7 +43,7 @@
             android:maxLines="1"
             android:padding="15dp"
             android:singleLine="true"
-            android:text="ilovemark" />
+            android:text="" />
 
 
         <EditText
@@ -56,7 +56,7 @@
             android:padding="15dp"
             android:maxLines="1"
             android:singleLine="true"
-            android:text="noviemark" />
+            android:text="" />
 
 
         <!-- Login Button -->

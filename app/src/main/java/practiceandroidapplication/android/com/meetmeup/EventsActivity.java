@@ -67,7 +67,6 @@ public class EventsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -83,7 +82,6 @@ public class EventsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(EventsActivity.this, CreateEventActivity.class));
-                finish();
             }
         });
 
@@ -110,7 +108,6 @@ public class EventsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(EventsActivity.this, NewsfeedActivity.class));
         finish();
     }
 

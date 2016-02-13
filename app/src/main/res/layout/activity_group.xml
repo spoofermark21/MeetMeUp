@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="practiceandroidapplication.android.com.meetmeup.GroupActivity">
+    android:fitsSystemWindows="true"
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/view"
@@ -24,9 +23,9 @@
     </android.support.design.widget.AppBarLayout>
 
     <ScrollView
-        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp">
 
         <LinearLayout
             android:id="@+id/linear_groups"
@@ -49,5 +48,12 @@
 
     </ScrollView>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_add_white_24dp" />
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

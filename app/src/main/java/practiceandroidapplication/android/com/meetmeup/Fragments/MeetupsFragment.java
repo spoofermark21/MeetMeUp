@@ -251,7 +251,7 @@ public class MeetupsFragment extends Fragment {
                     Log.d("MEETUPS_ID", parent.getTag() + "");
 
                     startActivity(meetups);
-                    getActivity().finish();
+                    //getActivity().finish();
                 }
             });
 
@@ -303,7 +303,7 @@ public class MeetupsFragment extends Fragment {
                     Log.d("MEETUPS_ID", parent.getTag() + "");
 
                     startActivity(meetups);
-                    getActivity().finish();
+                    //getActivity().finish();
                 }
             });
 

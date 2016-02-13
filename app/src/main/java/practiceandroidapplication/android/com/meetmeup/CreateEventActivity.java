@@ -96,7 +96,7 @@ public class CreateEventActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+                //startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
                 finish();
             }
         });
@@ -270,7 +270,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+        //startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
         finish();
     }
 

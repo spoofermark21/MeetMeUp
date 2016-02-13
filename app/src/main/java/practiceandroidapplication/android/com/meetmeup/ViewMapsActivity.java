@@ -39,7 +39,6 @@ public class ViewMapsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(ViewMapsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -58,7 +57,6 @@ public class ViewMapsActivity extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        startActivity(new Intent(ViewMapsActivity.this, NewsfeedActivity.class));
         finish();
     }
 

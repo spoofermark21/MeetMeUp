@@ -77,6 +77,8 @@ public class ViewEventsActivity extends AppCompatActivity {
     String eventId;
     ArrayAdapter<String> adapter;
 
+    boolean isExit = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,8 +91,9 @@ public class ViewEventsActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ViewEventsActivity.this, NewsfeedActivity.class));
+                //startActivity(new Intent(ViewEventsActivity.this, NewsfeedActivity.class));
                 finish();
+                isExit = true;
             }
         });
 
@@ -192,6 +195,14 @@ public class ViewEventsActivity extends AppCompatActivity {
         });
         //new RefreshComment().execute();
     }
+
+    @Override
+    public void onBackPressed() {
+        //startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
+        isExit = true;
+        finish();
+    }
+
 
     /*
         thread
@@ -309,7 +320,7 @@ public class ViewEventsActivity extends AppCompatActivity {
             pDialog = new ProgressDialog(ViewEventsActivity.this, R.style.progress);
             pDialog.setCancelable(true);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.show();
+            //pDialog.show();
         }
 
         @Override
@@ -351,7 +362,7 @@ public class ViewEventsActivity extends AppCompatActivity {
 
 
         protected void onPostExecute(String message) {
-            pDialog.dismiss();
+            //pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(ViewEventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
@@ -452,6 +463,10 @@ public class ViewEventsActivity extends AppCompatActivity {
 
                 if (message.equals("Successful")) {
                     loadComments();
+                    if(!isExit) {
+                        new RetrieveComments().execute();
+                    }
+
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
                 }

@@ -116,5 +116,6 @@
     <string name="title_activity_view_maps">Map</string>
     <string name="title_activity_view_group">ViewGroupActivity</string>
     <string name="title_activity_view_members_attendees">ViewMembersAttendees</string>
+    <string name="title_activity_view_comments">ViewCommentsActivity</string>
 
 </resources>

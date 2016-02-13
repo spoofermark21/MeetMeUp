@@ -22,7 +22,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <ScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="60dp">
@@ -31,13 +31,12 @@
             android:id="@+id/linear_members"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/main_background"
             android:orientation="vertical"
-            android:layout_margin="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:layout_margin="5dp">
 
             <TextView
+                android:background="@drawable/main_background"
+                android:padding="10dp"
                 android:id="@+id/lbl_message"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

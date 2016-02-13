@@ -240,7 +240,6 @@ public class EventsFragment extends Fragment {
                     Log.d("EVENTS_ID", parent.getTag() + "");
 
                     startActivity(meetups);
-                    getActivity().finish();
                 }
             });
 
@@ -284,7 +283,6 @@ public class EventsFragment extends Fragment {
                     Log.d("EVENTS_ID", parent.getTag() + "");
 
                     startActivity(events);
-                    getActivity().finish();
                 }
             });
 
@@ -324,13 +322,12 @@ public class EventsFragment extends Fragment {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
 
-                    Intent meetups = new Intent(getActivity(), ViewEventsActivity.class);
-                    meetups.putExtra("EVENTS_ID", parent.getTag() + "");
+                    Intent events = new Intent(getActivity(), ViewEventsActivity.class);
+                    events.putExtra("EVENTS_ID", parent.getTag() + "");
 
                     Log.d("EVENTS_ID", parent.getTag() + "");
 
-                    startActivity(meetups);
-                    getActivity().finish();
+                    startActivity(events);
                 }
             });
 

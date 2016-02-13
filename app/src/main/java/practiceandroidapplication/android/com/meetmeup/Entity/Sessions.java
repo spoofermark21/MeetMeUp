@@ -20,6 +20,7 @@ public class Sessions {
     public static double currentLocationLatitude;
     public static double currentLocationLongtitude;
 
+    public static boolean isExitFragment = false;
 
     private Sessions () {}
 

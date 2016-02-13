@@ -66,7 +66,6 @@ public class MeetupsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
                 finish();
             }
         });
@@ -81,7 +80,6 @@ public class MeetupsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MeetupsActivity.this, CreateMeetupActivity.class));
-                finish();
             }
         });
 
@@ -108,7 +106,6 @@ public class MeetupsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(MeetupsActivity.this, NewsfeedActivity.class));
         finish();
     }
 
@@ -202,8 +199,6 @@ public class MeetupsActivity extends AppCompatActivity {
                     map.putExtra("LONGTITUDE", parent.getChildAt(1).getTag() + "");
 
                     startActivity(map);
-                    //finish();
-
                     Toast.makeText(MeetupsActivity.this, parent.getTag() + "! "
                             , Toast.LENGTH_SHORT).show();
                 }
@@ -216,8 +211,6 @@ public class MeetupsActivity extends AppCompatActivity {
                     Intent meetups = new Intent(MeetupsActivity.this, ViewMeetupsActivity.class);
                     meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
                     startActivity(meetups);
-
-                    finish();
                 }
             });
 
@@ -228,7 +221,6 @@ public class MeetupsActivity extends AppCompatActivity {
                     Intent meetups = new Intent(MeetupsActivity.this, EditMeetupActivity.class);
                     meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
                     startActivity(meetups);
-                    finish();
 
                     Toast.makeText(MeetupsActivity.this, parent.getTag() + "! "
                             , Toast.LENGTH_SHORT).show();
@@ -351,7 +343,7 @@ public class MeetupsActivity extends AppCompatActivity {
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-                        Meetups meetups = new Meetups(jUserObject.getInt("id"), jUserObject.getString("subject"),
+                        Meetups meetups = new Meetups(jUserObject.getInt("idrprf3 "), jUserObject.getString("subject"),
                                 jUserObject.getString("details"), jUserObject.getString("location"),
                                 jUserObject.getString("posted_date"), jUserObject.getString("key"),
                                 jUserObject.getInt("posted_by"), jUserObject.getString("posted_by_user"));

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -69,8 +70,16 @@ public class GroupActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
                 finish();
+            }
+        });
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(GroupActivity.this, CreateGroupActivity.class));
             }
         });
 
@@ -84,7 +93,7 @@ public class GroupActivity extends AppCompatActivity {
         new RetrieveGroups().execute();
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.group_menu, menu);
         return true;
@@ -96,15 +105,13 @@ public class GroupActivity extends AppCompatActivity {
 
         if(id == R.id.action_create) {
             startActivity(new Intent(GroupActivity.this, CreateGroupActivity.class));
-            finish();
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(GroupActivity.this, NewsfeedActivity.class));
         finish();
     }
 
@@ -197,11 +204,10 @@ public class GroupActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
 
-                    /*Intent meetups = new Intent(EventsActivity.this, ViewEventsActivity.class);
-                    meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
-                    startActivity(meetups);
+                    Intent group = new Intent(GroupActivity.this, ViewGroupActivity.class);
+                    group.putExtra("GROUP_ID", parent.getTag() + "");
+                    startActivity(group);
 
-                    finish();*/
                 }
             });
 
@@ -212,8 +218,6 @@ public class GroupActivity extends AppCompatActivity {
                     Intent group = new Intent(GroupActivity.this, EditGroupActivity.class);
                     group.putExtra("GROUP_ID", parent.getTag() + "");
                     startActivity(group);
-
-                    finish();
 
                     Toast.makeText(GroupActivity.this, parent.getTag() + "!", Toast.LENGTH_SHORT).show();
 
