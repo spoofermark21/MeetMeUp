@@ -34,6 +34,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 
@@ -46,7 +47,8 @@ public class ViewProfileActivity extends AppCompatActivity {
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
     TextView lblFullName,lblGender, lblNationality,
-            lblLocation, lblMobile, lblEmailAdd, lblBirthdate;
+            lblLocation, lblMobile, lblMobilelbl,lblEmailAdd, lblEmailAddlbl, lblBirthdate;
+
 
     LinearLayout linearProfile;
 
@@ -83,6 +85,9 @@ public class ViewProfileActivity extends AppCompatActivity {
         lblLocation = (TextView) findViewById(R.id.lbl_address);
         lblMobile = (TextView) findViewById(R.id.lbl_mobile);
         lblEmailAdd = (TextView) findViewById(R.id.lbl_email);
+
+        lblMobilelbl = (TextView) findViewById(R.id.lbl_mobile_lbl);
+        lblEmailAddlbl = (TextView) findViewById(R.id.lbl_email_lbl);
 
         linearProfile = (LinearLayout) findViewById(R.id.linear_profile);
 
@@ -155,7 +160,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     user.setCurrentLocation(jUserObject.getString("current_location"));
                     user.setEmailAddress(jUserObject.getString("email_address"));
                     user.setContactNumber(jUserObject.getString("contact_number"));
-                    user.setPrivacyFlag(jUserObject.getString("active_flag").charAt(0));
+                    user.setPrivacyFlag(jUserObject.getString("privacy_flag").charAt(0));
                     user.setUserImage(jUserObject.getString("user_image"));
 
                     return json.getString(TAG_RESPONSE);
@@ -190,10 +195,24 @@ public class ViewProfileActivity extends AppCompatActivity {
                     String gender = user.getGender() == 'M' ? "Male" : "Female";
 
                     lblGender.setText(gender);
+
                     lblNationality.setText(user.getNationality().getNatioNalityName());
                     lblLocation.setText(user.getCurrentLocation());
-                    lblMobile.setText(user.getContactNumber());
-                    lblEmailAdd.setText(user.getEmailAddress());
+
+
+                    // check if user enables privacy
+                    //Interactions.showError(user.getPrivacyFlag() + "", ViewProfileActivity.this);
+
+                    if(user.getPrivacyFlag() == 'Y') {
+                        lblMobile.setText(user.getContactNumber());
+                        lblEmailAdd.setText(user.getEmailAddress());
+                    } else {
+                        lblMobilelbl.setVisibility(View.GONE);
+                        lblEmailAddlbl.setVisibility(View.GONE);
+                        lblMobile.setVisibility(View.GONE);
+                        lblEmailAdd.setVisibility(View.GONE);
+                    }
+
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

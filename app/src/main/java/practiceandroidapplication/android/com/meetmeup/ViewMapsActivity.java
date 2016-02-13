@@ -88,6 +88,34 @@ public class ViewMapsActivity extends AppCompatActivity {
             googleMap.getUiSettings().setTiltGesturesEnabled(true);
             googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
 
+            // Setting a click event handler for the map
+            googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                @Override
+                public void onMapClick(LatLng latLng) {
+
+                    // Creating a marker
+                    MarkerOptions markerOptions = new MarkerOptions();
+
+                    // Setting the position for the marker
+                    markerOptions.position(latLng);
+
+                    // Setting the title for the marker.
+                    // This will be displayed on taping the marker
+                    markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+
+                    // Clears the previously touched position
+                    googleMap.clear();
+
+                    // Animating to the touched position
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                    // Placing a marker on the touched position
+                    googleMap.addMarker(markerOptions);
+                }
+            });
+
+
             // check if map is created successfully or not
             if (googleMap == null) {
                 Toast.makeText(getApplicationContext(),

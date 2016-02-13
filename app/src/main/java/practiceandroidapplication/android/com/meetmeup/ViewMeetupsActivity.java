@@ -1,12 +1,14 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -59,6 +61,8 @@ public class ViewMeetupsActivity extends AppCompatActivity {
     private static final String INSERT_COMMENT_URL = Network.forDeploymentIp + "comments_save.php";
     private static final String INSERT_NOTIFICATIONS_URL = Network.forDeploymentIp + "notication_save.php";
     private static final String INSERT_ATTENDEES_URL = Network.forDeploymentIp + "attendees_save.php";
+
+    private static final String DISABLE_COMMENT_URL = Network.forDeploymentIp + "comments_disable.php";
 
 
     private static final String TAG_STATUS = "status";
@@ -209,7 +213,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             recordOfComments.setOrientation(LinearLayout.VERTICAL);
             recordOfComments.setBackgroundResource(R.drawable.main_background);
             recordOfComments.setPadding(10, 10, 10, 5);
+            recordOfComments.setTag(comments.getId());
 
+
+            Log.d("Comment", comments.getComment());
 
             final LinearLayout.LayoutParams linearPostedBy = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             linearPostedBy.setMargins(0, 0, 0, 30);
@@ -217,11 +224,41 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             LinearLayout postedByLayout = new LinearLayout(this);
             postedByLayout.setLayoutParams(linearPostedBy);
             postedByLayout.setOrientation(LinearLayout.HORIZONTAL);
-            postedByLayout.setTag(comments.getUserName());
+            postedByLayout.setTag(comments.getUserId());
             postedByLayout.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View view) {
-                    startActivity(new Intent(ViewMeetupsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", view.getTag() + "" + ""));
-                    Log.d("USER_ID", view.getTag() + "");
+                public void onClick(View v) {
+
+                    //final LinearLayout profile = (LinearLayout) v.getParent();
+                    final String userId = v.getTag() + "";
+                    final LinearLayout comment = (LinearLayout) v.getParent();
+
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ViewMeetupsActivity.this);
+                    dlgAlert.setMessage("Options");
+                    dlgAlert.setCancelable(true);
+
+                    dlgAlert.setPositiveButton("View Profile",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(ViewMeetupsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", userId));
+                                    //Interactions.showError(userId , ViewMeetupsActivity.this);
+                                }
+                            });
+
+                    if(Integer.parseInt(userId) == currentUser.getId()) {
+                        dlgAlert.setNegativeButton("Delete comment",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String commentId = comment.getTag() + "";
+                                        //Interactions.showError(commentId, ViewMeetupsActivity.this);
+                                        linearListComments.removeView(comment);
+                                        new DisableComments(commentId).execute();
+                                    }
+                                });
+                    }
+
+
+                    dlgAlert.create().show();
+
                 }
             });
 
@@ -231,10 +268,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             LinearLayout postedByDate = new LinearLayout(this);
             postedByDate.setLayoutParams(linearDate);
             postedByDate.setOrientation(LinearLayout.VERTICAL);
-
-
-            Log.d("Comment", comments.getComment());
-            recordOfComments.setTag(comments.getId());
 
 
             final TextView commentPostedBy = new TextView(ViewMeetupsActivity.this);
@@ -251,13 +284,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
             commment.setText(comments.getComment());
             commment.setTextSize(12);
             commment.setTextColor(Color.BLACK);
-            commment.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
-
-
-                }
-            });
 
             Log.d("added", "true");
 
@@ -595,6 +621,68 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     }
 
+    class DisableComments extends AsyncTask<String, String, String> {
+
+        String commentId;
+
+        public DisableComments(String commentId) {
+            this.commentId = commentId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewMeetupsActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", commentId));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        DISABLE_COMMENT_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewMeetupsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                    Log.d("Comment", "Successful");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
     class InsertComment extends AsyncTask<String, String, String> {
 

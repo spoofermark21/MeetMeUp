@@ -399,13 +399,13 @@ public class GroupsFragment extends Fragment {
         String time = "";
 
         if(Integer.parseInt(date[0]) > 24) {
-            time = Integer.parseInt(date[0]) / 24 + " days";
+            time = Integer.parseInt(date[0]) / 24 + " d";
         } else if (Integer.parseInt(date[0]) < 24 && Integer.parseInt(date[0]) > 0) {
-            time = Integer.parseInt(date[0]) + " hrs";
+            time = Integer.parseInt(date[0]) + " h";
         } else if (Integer.parseInt(date[0]) == 0 && Integer.parseInt(date[1]) != 0) {
-            time = Integer.parseInt(date[1]) + " mins";
+            time = Integer.parseInt(date[1]) + " m";
         } else if (Integer.parseInt(date[0]) == 0 && Integer.parseInt(date[1]) == 0) {
-            time = Integer.parseInt(date[2]) + " secs";
+            time = Integer.parseInt(date[2]) + " s";
         }
 
         return time;

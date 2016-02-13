@@ -67,6 +67,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     private static final String UPDATE_USER_URL = Network.forDeploymentIp + "user_update.php";
     private static final String DISABLE_USER_URL = Network.forDeploymentIp + "user_disable.php";
+    private static final String PRIVACY_USER_URL = Network.forDeploymentIp + "user_privacy.php";
 
     private static final String UPLOAD_IMAGE_URL = Network.forDeploymentIp + "image_upload.php";
 
@@ -85,7 +86,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     ScrollView scrollView;
 
-    Switch disableUser;
+    Switch disableUser, privacyFlag;
 
     Toolbar toolBar;
 
@@ -196,7 +197,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         disableUser = (Switch) findViewById(R.id.disable_user);
         disableUser.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
+                if (isChecked) {
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(UserProfileUpdateActivity.this);
                     dlgAlert.setMessage("Are you sure to disable your account permanently?");
                     dlgAlert.setTitle("Warning!");
@@ -216,6 +217,51 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                                 }
                             });
 
+                    dlgAlert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+                        public void onCancel(DialogInterface dialog) {
+                            disableUser.setChecked(false);
+                        }
+                    });
+
+                    dlgAlert.create().show();
+
+
+                }
+            }
+        });
+
+
+
+        privacyFlag = (Switch) findViewById(R.id.privacy_flag);
+        privacyFlag.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(UserProfileUpdateActivity.this);
+                    dlgAlert.setMessage("The following will be kept private: Mobile number and Email add. Are you sure to proceed?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Toast.makeText(UserProfileUpdateActivity.this,"Disabled", Toast.LENGTH_SHORT).show();
+                                    new PrivacyEnable().execute();
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    privacyFlag.setChecked(false);
+                                }
+                            });
+
+                    dlgAlert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+                        public void onCancel(DialogInterface dialog) {
+                            privacyFlag.setChecked(false);
+                        }
+                    });
                     dlgAlert.create().show();
                 }
             }
@@ -282,6 +328,12 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         });
 
     } // end of initUI
+
+
+
+    protected void Quit() {
+        super.finish();
+    }
 
     public void save(){
         try {
@@ -493,6 +545,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     currentUser.setEmailAddress(jUserObject.getString("email_address"));
                     currentUser.setContactNumber(jUserObject.getString("contact_number"));
                     currentUser.setUserImage(jUserObject.getString("user_image"));
+                    currentUser.setPrivacyFlag(jUserObject.getString("privacy_flag").charAt(0));
 
                     currentUser.setUsername(jUserObject.getString("username"));
                     currentUser.setPassword(jUserObject.getString("password"));
@@ -540,11 +593,18 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     dateBirth.updateDate(Integer.parseInt(date[0]),
                             Integer.parseInt(date[1]), Integer.parseInt(date[2]));
 
+                    Interactions.showError(currentUser.getPrivacyFlag() + "", UserProfileUpdateActivity.this);
+
+                    if(currentUser.getPrivacyFlag() == 'Y') {
+                        privacyFlag.setChecked(true);
+                    } else {
+                        privacyFlag.setChecked(false);
+                    }
+
                     try {
                         if(!currentUser.getUserImage().equals("null") && !currentUser.getUserImage().equals("")) {
                             new DownloadUserImage(currentUser.getUserImage() + ".JPG").execute();
                         }
-
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -663,7 +723,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<>();
 
                 //params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
-                params.add(new BasicNameValuePair("id", 41 + ""));
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 Log.d("User id", currentUser.getId() + "");
 
                 Log.d("request!", "starting");
@@ -694,8 +754,10 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     // do something
-                    Toast.makeText(UserProfileUpdateActivity.this, "Successful!", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(UserProfileUpdateActivity.this, "Successful!", Toast.LENGTH_LONG).show();
                     //System.exit(0);
+                    //int p = android.os.Process.myPid();
+                    //android.os.Process.killProcess(p);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -704,7 +766,68 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     }
 
+    class PrivacyEnable extends AsyncTask<String, String, String> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(UserProfileUpdateActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... user) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                Log.d("User id", currentUser.getId() + "");
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        PRIVACY_USER_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Login failed!", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    // do something
+                    Toast.makeText(UserProfileUpdateActivity.this, "Successful!", Toast.LENGTH_LONG).show();
+                    //System.exit(0);
+                    //currentUser.setPrivacyFlag('N');
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
 
     private class UploadUserImage extends AsyncTask<String, String, String> {
 

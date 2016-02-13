@@ -149,6 +149,8 @@ public class ViewMembersAttendees extends AppCompatActivity {
             final LinearLayout.LayoutParams linearMeetups = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             linearMeetups.setMargins(0, 0, 0, 15);
 
+            Log.d("User ID", groupMember.getUserId() + "");
+
             LinearLayout recordOfMembers = new LinearLayout(this);
             recordOfMembers.setLayoutParams(linearMeetups);
             recordOfMembers.setOrientation(LinearLayout.VERTICAL);
@@ -165,13 +167,38 @@ public class ViewMembersAttendees extends AppCompatActivity {
             userLayout.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
+                    final LinearLayout profile = (LinearLayout) v.getParent();
 
-                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", parent.getTag() + ""));
-                    Log.d("USER_ID", parent.getTag() + "");
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ViewMembersAttendees.this);
+                    dlgAlert.setMessage("Options");
+                    dlgAlert.setCancelable(true);
+
+                    dlgAlert.setPositiveButton("View Profile",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(ViewMembersAttendees.this, ViewProfileActivity.class).putExtra("USER_ID", parent.getTag() + ""));
+                                    //Interactions.showError(userId , ViewMeetupsActivity.this);
+                                }
+                            });
+
+                    /*if (Integer.parseInt(userId) == currentUser.getId()) {
+                        dlgAlert.setNegativeButton("Delete comment",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String meetupId = parent.getTag() + "";
+                                        listOfMeetups.removeView(parent);
+
+                                        new LeaveMeetups(meetupId, currentUser.getId() + "").execute();
+                                    }
+                                });
+                    }*/
+
+
+                    dlgAlert.create().show();
                 }
             });
 
-            Log.d("User ID", groupMember.getUserId() + "");
+
 
             final LinearLayout.LayoutParams userImageLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             userImageLayout.weight = 1.0f;
