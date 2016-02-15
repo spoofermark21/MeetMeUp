@@ -10,7 +10,7 @@ public class Network {
     private static final String teradyne = "http://172.17.154.245/";
 
     private static final String webhosting = "http://meetmeup.site11.com/";
-    public static final String forDeploymentIp = deployment + "meetmeup/";
+    public static final String forDeploymentIp = testing + "meetmeup/";
     //public static final String forFinalDeployment = testing + "meetmeup/transactions.php";
 }
 

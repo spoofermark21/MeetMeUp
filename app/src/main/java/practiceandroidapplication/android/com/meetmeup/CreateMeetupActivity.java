@@ -11,6 +11,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -103,6 +105,31 @@ public class CreateMeetupActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateForm()) {
+                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
+
+                if (location != null && !location.equals("")) {
+                    isCreate = true;
+                    new GeocoderTask().execute(location);
+                }
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
     public void onBackPressed() {
         finish();
     }
@@ -156,7 +183,7 @@ public class CreateMeetupActivity extends AppCompatActivity {
         spnLocation = (Spinner) findViewById(R.id.spn_location);
 
         btnFind = (Button) findViewById(R.id.btn_find);
-        btnFind.setOnClickListener(new View.OnClickListener(){
+        btnFind.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v){
                 location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
@@ -187,6 +214,7 @@ public class CreateMeetupActivity extends AppCompatActivity {
         });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        fab.setVisibility(View.GONE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -41,6 +41,8 @@ public class MapsActivity extends AppCompatActivity {
 
     LatLng latLng;
 
+    String type;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,7 @@ public class MapsActivity extends AppCompatActivity {
 
         try {
             // Loading map
+            type = getIntent().getStringExtra("TYPE");
             initilizeMap();
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,17 +86,14 @@ public class MapsActivity extends AppCompatActivity {
             double latitude = 10.342887;
             double longitude = 123.960722;
 
-            // Getting reference to btn_find of the layout activity_main
             Button btn_find = (Button) findViewById(R.id.btn_find);
 
-            // Defining button click event listener for the find button
             View.OnClickListener findClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Getting reference to EditText to get the user input location
                     EditText etLocation = (EditText) findViewById(R.id.et_location);
 
-                    // Getting user input location
                     String location = etLocation.getText().toString();
 
                     if(location!=null && !location.equals("")){
@@ -102,18 +102,12 @@ public class MapsActivity extends AppCompatActivity {
                 }
             };
 
-            // Setting button click event listener for the find button
             btn_find.setOnClickListener(findClickListener);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
                     new LatLng(latitude, longitude)).zoom(12).build();
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-            /*MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Meetmeup developer home");
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-            googleMap.addMarker(marker);*/
 
             googleMap.setMyLocationEnabled(true);
             googleMap.getUiSettings().setZoomControlsEnabled(true);
@@ -123,6 +117,29 @@ public class MapsActivity extends AppCompatActivity {
             googleMap.getUiSettings().setRotateGesturesEnabled(true);
             googleMap.getUiSettings().setTiltGesturesEnabled(true);
             googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+
+
+            //not allowed in viewing mode
+            if(!type.equals("viewing")) {
+                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+
+                        MarkerOptions markerOptions = new MarkerOptions();
+
+                        markerOptions.position(latLng);
+
+                        //markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+                        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(R.drawable.meetmeup));
+
+                        googleMap.clear();
+
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                        googleMap.addMarker(markerOptions);
+                    }
+                });
+            }
 
             // check if map is created successfully or not
             if (googleMap == null) {

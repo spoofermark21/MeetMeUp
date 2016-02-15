@@ -106,6 +106,7 @@ public class ViewMembersAttendees extends AppCompatActivity {
                     // do event
                     type = "E";
                     postId = getIntent().getStringExtra("POST_ID");
+
                     new RetrieveAttendees().execute();
                 }
             }
@@ -188,11 +189,10 @@ public class ViewMembersAttendees extends AppCompatActivity {
                             });
 
                     if (Integer.parseInt(postedBy) == currentUser.getId()) {
-                        dlgAlert.setNegativeButton("Delete comment",
+                        dlgAlert.setNegativeButton("Delete member",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        String postId = post;
-                                        new LeaveGroups(postId, parent.getTag() + "").execute();
+                                        new LeaveGroups(groupId, parent.getTag() + "").execute();
                                         listOfMembers.removeView(parent);
                                     }
                                 });
@@ -306,10 +306,12 @@ public class ViewMembersAttendees extends AppCompatActivity {
             userLayout.setLayoutParams(linearPostedBy);
             userLayout.setOrientation(LinearLayout.HORIZONTAL);
             userLayout.setTag(attendees.getPostId());
+
+            Log.d("POST ID", attendees.getPostId() + "");
+
             userLayout.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
-                    final String post = v.getTag() + "";
 
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ViewMembersAttendees.this);
                     dlgAlert.setMessage("Options");
@@ -326,7 +328,6 @@ public class ViewMembersAttendees extends AppCompatActivity {
                         dlgAlert.setNegativeButton("Remove attendees",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        String postId = post;
                                         new LeaveMeetups(postId, parent.getTag() + "").execute();
                                         Interactions.showError(postId + " " +
                                                 parent.getTag() + "", ViewMembersAttendees.this);
@@ -339,7 +340,6 @@ public class ViewMembersAttendees extends AppCompatActivity {
                         dlgAlert.setNegativeButton("Remove attendees",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        String postId = post;
                                         new LeaveEvents(postId, parent.getTag() + "").execute();
                                         listOfMembers.removeView(parent);
                                     }
@@ -365,6 +365,7 @@ public class ViewMembersAttendees extends AppCompatActivity {
             userName.setText(attendees.getUserName());
             userName.setTextColor(Color.BLACK);
             userName.setTextSize(17);
+            userName.setTag(attendees.getPostId());
 
 
             if (!attendees.getUserImage().equals("null") && !attendees.getUserImage().equals("")) {

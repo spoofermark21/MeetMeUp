@@ -103,7 +103,6 @@ public class EventsActivity extends AppCompatActivity {
 
         if (id == R.id.action_create) {
             startActivity(new Intent(EventsActivity.this, CreateEventActivity.class));
-            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -132,11 +131,13 @@ public class EventsActivity extends AppCompatActivity {
             eventName.setText(event.getEventName());
             eventName.setTextSize(20);
             eventName.setTextColor(Color.BLACK);
+            eventName.setTag(event.getLattitude());
 
             final TextView eventDetails = new TextView(this);
             eventDetails.setText("Details: " + event.getDetails());
             eventDetails.setTextSize(15);
             eventDetails.setTextColor(Color.BLACK);
+            eventDetails.setTag(event.getLongtitude());
 
             final TextView eventKey = new TextView(this);
             eventKey.setText("Key: " + event.getKey());
@@ -207,6 +208,32 @@ public class EventsActivity extends AppCompatActivity {
             leave.setGravity(Gravity.CENTER);
             leave.setBackgroundColor(Color.TRANSPARENT);
 
+
+            final TextView map = new TextView(this);
+            map.setLayoutParams(btnLayout);
+            map.setPadding(10, 10, 0, 10);
+            map.setText("map");
+            map.setTextSize(15);
+            map.setGravity(Gravity.CENTER);
+            map.setBackgroundColor(Color.TRANSPARENT);
+
+            map.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+
+                    Log.d("Location", parent.getChildAt(0) + " " + parent.getChildAt(1));
+
+                    Intent map = new Intent(EventsActivity.this, ViewMapsActivity.class);
+                    map.putExtra("LATTITUDE", parent.getChildAt(0).getTag() + "");
+                    map.putExtra("LONGTITUDE", parent.getChildAt(1).getTag() + "");
+
+                    startActivity(map);
+                    /*Toast.makeText(EventsActivity.this, parent.getTag() + "! "
+                            , Toast.LENGTH_SHORT).show();*/
+                }
+            });
+
+
             view.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent().getParent();
@@ -214,8 +241,6 @@ public class EventsActivity extends AppCompatActivity {
                     Intent event = new Intent(EventsActivity.this, ViewEventsActivity.class);
                     event.putExtra("EVENTS_ID", parent.getTag() + "");
                     startActivity(event);
-
-                    finish();
                 }
             });
 
@@ -232,7 +257,6 @@ public class EventsActivity extends AppCompatActivity {
                     Intent event = new Intent(EventsActivity.this, EditEventsActivity.class);
                     event.putExtra("EVENT_ID", eventId);
                     startActivity(event);
-                    finish();
 
                     Toast.makeText(EventsActivity.this, name.getText().toString() + "! "
                             + key.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -320,6 +344,7 @@ public class EventsActivity extends AppCompatActivity {
                 }
             });
 
+            options.addView(map);
             options.addView(view);
 
             recordOfEvents.addView(eventName);
@@ -394,10 +419,15 @@ public class EventsActivity extends AppCompatActivity {
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-                        currentEvents.add(new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
+                        Events addEvent = new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
                                 jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key"),
                                 jUserObject.getString("start_date"), jUserObject.getString("end_date"), jUserObject.getInt("posted_by"),
-                                jUserObject.getString("posted_by_user")));
+                                jUserObject.getString("posted_by_user"));
+
+                        addEvent.setLattitude(jUserObject.getDouble("lattitude"));
+                        addEvent.setLongtitude(jUserObject.getDouble("longtitude"));
+
+                        currentEvents.add(addEvent);
 
 
                         Log.d("ID:", jUserObject.getInt("id") + "");

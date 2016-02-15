@@ -342,10 +342,10 @@ public class NewsfeedActivity extends AppCompatActivity
     }
 
     public void navLocation() {
-        startActivity(new Intent(NewsfeedActivity.this, MapsActivity.class));
-        /*Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345"));
-        startActivity(intent);*/
+        Intent intent =new Intent(NewsfeedActivity.this, MapsActivity.class);
+        intent.putExtra("TYPE", "viewing");
+
+        startActivity(intent);
     }
 
     public void navNotications() {
