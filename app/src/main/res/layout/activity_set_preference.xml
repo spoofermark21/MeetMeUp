@@ -71,6 +71,16 @@
                 android:singleLine="true"
                 android:textSize="15sp" />
 
+            <Button
+                android:id="@+id/btn_set_preference"
+                android:padding="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="Set preferred nationalities"
+                android:textColor="@color/colorPrimary"
+                android:background="@color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

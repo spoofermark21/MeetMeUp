@@ -76,15 +76,6 @@ public class GroupActivity extends AppCompatActivity {
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setVisibility(View.GONE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(GroupActivity.this, CreateGroupActivity.class));
-            }
-        });
-
         //listGroup = (ListView) findViewById(R.id.list_group);
         listOfGroups = (LinearLayout) findViewById(R.id.linear_groups);
         listOfGroups.setVisibility(View.INVISIBLE);
@@ -107,6 +98,7 @@ public class GroupActivity extends AppCompatActivity {
 
         if(id == R.id.action_create) {
             startActivity(new Intent(GroupActivity.this, CreateGroupActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -203,6 +195,7 @@ public class GroupActivity extends AppCompatActivity {
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
+            delete.setTextColor(Color.parseColor("#D46A6A"));
 
             final TextView leave = new TextView(this);
             leave.setLayoutParams(btnLayout);
@@ -211,6 +204,7 @@ public class GroupActivity extends AppCompatActivity {
             leave.setTextSize(15);
             leave.setGravity(Gravity.CENTER);
             leave.setBackgroundColor(Color.TRANSPARENT);
+            leave.setTextColor(Color.parseColor("#D46A6A"));
 
 
             view.setOnClickListener(new View.OnClickListener() {

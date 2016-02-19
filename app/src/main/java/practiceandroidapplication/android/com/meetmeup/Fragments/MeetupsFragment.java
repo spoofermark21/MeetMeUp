@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,6 +34,7 @@ import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -67,6 +70,7 @@ public class MeetupsFragment extends Fragment {
     LinearLayout listOfFeeds;
 
     //Button btnMeetups;
+    Button btnSearch;
     EditText txtSearch;
 
     List<Meetups> currentMeetups = new ArrayList<>();
@@ -93,7 +97,15 @@ public class MeetupsFragment extends Fragment {
         lblMessage.setVisibility(View.GONE);
 
         txtSearch = (EditText) getActivity().findViewById(R.id.txt_search);
-        txtSearch.setVisibility(View.GONE);
+
+        btnSearch = (Button) getActivity().findViewById(R.id.btn_search);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!txtSearch.getText().toString().trim().equals("")) {
+                    new RetrieveMeetups(txtSearch.getText().toString()).execute();
+                }
+            }
+        });
 
         txtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -110,7 +122,22 @@ public class MeetupsFragment extends Fragment {
                 Log.e("TextWatcherTest", "afterTextChanged:\t" + s.toString());
             }
         });
-        new RetrieveMeetups().execute();
+
+
+        //refresh thread
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new RetrieveMeetups("").execute();
+            }
+        });
+
+        //default
+        try {
+            new RetrieveMeetups("").execute();
+        } catch (Exception ex) {}
+
     }
 
 
@@ -172,6 +199,8 @@ public class MeetupsFragment extends Fragment {
 
             final ImageView meetupPostedByImage = new ImageView(getActivity());
             meetupPostedByImage.setBackgroundColor(Color.parseColor("#E6E9ED"));
+            meetupPostedByImage.setLayoutParams(imageMeetupsParams);
+            meetupPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
 
             final TextView meetupPostedBy = new TextView(getActivity());
             meetupPostedBy.setText(meetups.getPostedByName());
@@ -227,9 +256,20 @@ public class MeetupsFragment extends Fragment {
 
                 }
 
-                new DownloadMeetupsImage(meetups.getPostedByNameImage() + ".JPG").execute();
-                meetupPostedByImage.setLayoutParams(imageMeetupsParams);
-                meetupPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                final String image = meetups.getPostedByNameImage();
+                new Thread() {
+                    public void run() {
+                        try {
+                            sleep(600);
+                            new DownloadMeetupsImage(image + ".JPG").execute();
+                        } catch (Exception ex) {
+                        }
+
+                    }
+                }.start();
+            } else {
+                meetupPostedByImage.setImageResource(R.drawable.user_u);
             }
 
 
@@ -347,9 +387,7 @@ public class MeetupsFragment extends Fragment {
 
             recordOfMeetups.addView(meetupSubject);
             recordOfMeetups.addView(meetupDetails);
-            //recordOfMeetups.addView(meetupPostedDate);
             recordOfMeetups.addView(meetupLocation);
-            //recordOfMeetups.addView(border);
             recordOfMeetups.addView(options);
 
             listOfMeetups.addView(recordOfMeetups);
@@ -425,6 +463,7 @@ public class MeetupsFragment extends Fragment {
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("filter", "newsfeed"));
                 params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("search", searchParameter));
 
                 Log.d("request!", "starting");
 

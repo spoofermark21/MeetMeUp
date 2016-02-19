@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,9 +28,12 @@ import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
+import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class EditEventsActivity extends AppCompatActivity {
@@ -94,6 +99,49 @@ public class EditEventsActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateForm()) {
+                //events = new Events(txtEventName.getText().toString(), txtDetails.getText().toString(),
+                //        txtLocation.getText().toString());
+                try {
+                    events.setEventName(txtEventName.getText().toString());
+                    events.setDetails(txtDetails.getText().toString());
+                    events.setLocation(txtLocation.getText().toString());
+
+                    events.setStartDate(startDate.getYear() + "-" + (startDate.getMonth() + 1)
+                            + "-" + startDate.getDayOfMonth());
+
+                    events.setEndDate(endDate.getYear() + "-" + (startDate.getMonth() + 1)
+                            + "-" + endDate.getDayOfMonth());
+
+                    Log.d("Date", events.getStartDate() + " " + events.getEndDate() + 1);
+
+                    events.setEventType(spnEventType.getSelectedItem().toString().charAt(0));
+
+                    new UpdateEvent().execute();
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                //new UpdateEvent().execute();
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     /*
         functions
      */
@@ -109,38 +157,13 @@ public class EditEventsActivity extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollView.setVisibility(View.INVISIBLE);
 
-        btnUpdate = (Button) findViewById(R.id.btn_create);
+        /*btnUpdate = (Button) findViewById(R.id.btn_create);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (validateForm()) {
-                    //events = new Events(txtEventName.getText().toString(), txtDetails.getText().toString(),
-                    //        txtLocation.getText().toString());
-                    try {
-                        events.setEventName(txtEventName.getText().toString());
-                        events.setDetails(txtDetails.getText().toString());
-                        events.setLocation(txtLocation.getText().toString());
-                        events.setStartDate(startDate.getYear() + "-" + startDate.getMonth()
-                                + "-" + startDate.getDayOfMonth());
-
-                        events.setEndDate(endDate.getYear() + "-" + endDate.getMonth() + 1
-                                + "-" + endDate.getDayOfMonth());
-
-                        Log.d("Date", events.getStartDate() + " " + events.getEndDate() + 1);
-
-                        events.setEventType(spnEventType.getSelectedItem().toString().charAt(0));
-
-                        new UpdateEvent().execute();
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                    //new UpdateEvent().execute();
-                }
 
             }
         });
-        /*btnDisable = (Button) findViewById(R.id.btn_disable);
+        btnDisable = (Button) findViewById(R.id.btn_disable);
         btnDisable.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
 
@@ -197,8 +220,8 @@ public class EditEventsActivity extends AppCompatActivity {
 
     public int selectEventType() {
         int index = 0;
-        for(String eventString : eventType) {
-            if(eventString.charAt(0) == events.getEventType()) {
+        for (String eventString : eventType) {
+            if (eventString.charAt(0) == events.getEventType()) {
                 break;
             }
             index += 1;
@@ -266,7 +289,6 @@ public class EditEventsActivity extends AppCompatActivity {
                     events.setEndDate(jUserObject.getString("end_date"));
 
 
-
                     events.setEventType(jUserObject.getString("event_type").charAt(0));
                     events.setKey(jUserObject.getString("key"));
 
@@ -299,13 +321,13 @@ public class EditEventsActivity extends AppCompatActivity {
                     String dateStart[] = start.split("-", 3);
 
                     startDate.updateDate(Integer.parseInt(dateStart[0]),
-                            Integer.parseInt(dateStart[1]), Integer.parseInt(dateStart[2]));
+                            Integer.parseInt(dateStart[1]) - 1, Integer.parseInt(dateStart[2]));
 
                     String end = new String(events.getEndDate());
                     String dateEnd[] = end.split("-", 3);
 
                     endDate.updateDate(Integer.parseInt(dateEnd[0]),
-                            Integer.parseInt(dateEnd[1]), Integer.parseInt(dateEnd[2]));
+                            Integer.parseInt(dateEnd[1]) - 1, Integer.parseInt(dateEnd[2]));
 
                     //String btnDisableText = events.getEventType() == 'A' ? "Disable" : "Enable";
                     //btnDisable.setText(btnDisableText);

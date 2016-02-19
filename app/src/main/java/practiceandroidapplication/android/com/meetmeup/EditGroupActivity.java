@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,7 +42,9 @@ import java.util.List;
 import java.util.Random;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
+import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
@@ -113,6 +117,29 @@ public class EditGroupActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateForm()) {
+                Group updateGroup = new Group(txtGroupName.getText().toString(),
+                        txtDetails.getText().toString(), currentUser.getId());
+
+                new UpdateGroup().execute(updateGroup.getGroupName(), updateGroup.getDetails(),
+                        currentGroupId);
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void initUI() {
         txtGroupName = (EditText) findViewById(R.id.txt_group_name);
         txtDetails = (EditText) findViewById(R.id.txt_details);
@@ -135,20 +162,6 @@ public class EditGroupActivity extends AppCompatActivity {
             }
         });
 
-        btnUpdate = (Button) findViewById(R.id.btn_update);
-
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (validateForm()) {
-                    Group updateGroup = new Group(txtGroupName.getText().toString(),
-                            txtDetails.getText().toString(), currentUser.getId());
-
-                    new UpdateGroup().execute(updateGroup.getGroupName(), updateGroup.getDetails(),
-                            currentGroupId);
-                }
-
-            }
-        });
     }
 
     public boolean validateForm() {

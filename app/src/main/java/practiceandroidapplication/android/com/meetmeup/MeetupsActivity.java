@@ -190,6 +190,7 @@ public class MeetupsActivity extends AppCompatActivity {
             leave.setTextSize(15);
             leave.setGravity(Gravity.CENTER);
             leave.setBackgroundColor(Color.TRANSPARENT);
+            leave.setTextColor(Color.parseColor("#D46A6A"));
 
 
             final TextView edit = new TextView(this);
@@ -208,6 +209,7 @@ public class MeetupsActivity extends AppCompatActivity {
             delete.setTextSize(15);
             delete.setGravity(Gravity.CENTER);
             delete.setBackgroundColor(Color.TRANSPARENT);
+            delete.setTextColor(Color.parseColor("#D46A6A"));
 
             map.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -476,7 +478,6 @@ public class MeetupsActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                Log.d("KEY", meetupInfo[0]);
                 List<NameValuePair> params = new ArrayList<>();
 
                 params.add(new BasicNameValuePair("id", meetupId));

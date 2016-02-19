@@ -59,7 +59,7 @@ public class SetPreferenceActivity extends AppCompatActivity {
     Spinner spnGender;
 
     Toolbar toolBar;
-    Button btnSave;
+    Button btnSave, btnSetPreference;
 
     EditText txtMinAge, txtMaxAge, txtLocation;
 
@@ -69,6 +69,8 @@ public class SetPreferenceActivity extends AppCompatActivity {
     Preference preference = new Preference();
     User currentUser = Sessions.getSessionsInstance().currentUser;
     Preference currentPreference = Sessions.getSessionsInstance().currentPreference;
+
+    boolean hasSetNationalities = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +114,43 @@ public class SetPreferenceActivity extends AppCompatActivity {
         btnSave = (Button) findViewById(R.id.btn_pref);
     }
 
+
+    public void checkNationalities() {
+        final ArrayList selectedNationalities = new ArrayList();
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select preferred nationalities")
+                .setMultiChoiceItems(ListNationalities.loadNationalitesSequence(), null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                        if (isChecked) {
+                            selectedNationalities.add(indexSelected);
+                        } else if (selectedNationalities.contains(indexSelected)) {
+                            selectedNationalities.remove(Integer.valueOf(indexSelected));
+                        }
+                        //to be finished @ after school
+                        //preferredNationalities = String.join(",",selectedNationalities);
+
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        hasSetNationalities = true;
+                        //location = "("
+                        for(int i=0; i < selectedNationalities.size(); i++) {
+                            //location += selectedNationalities.get(i).toString();
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        selectedNationalities.clear();
+                        hasSetNationalities = false;
+                    }
+                }).create();
+        dialog.show();
+    }
+
     public void loadGender() {
         List<String> listGender = new ArrayList<>();
 
@@ -141,6 +180,13 @@ public class SetPreferenceActivity extends AppCompatActivity {
                             preference.getGender() + "", preference.getLocation());
                 }
 
+            }
+        });
+
+        btnSetPreference = (Button)findViewById(R.id.btn_set_preference);
+        btnSetPreference.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                checkNationalities();
             }
         });
     }

@@ -136,15 +136,6 @@
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"></DatePicker>
 
-            <Button
-                android:id="@+id/btn_create"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
-                android:background="@drawable/button_background"
-                android:text="Update"
-                android:textColor="@color/white" />
 
             <!--
             <Button

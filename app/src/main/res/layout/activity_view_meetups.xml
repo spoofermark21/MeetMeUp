@@ -195,7 +195,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_margin="5dp"
-                                android:layout_weight="0.50"
+                                android:layout_weight="0.30"
                                 android:background="@color/transparent"
                                 android:text="View profile"
                                 android:textAllCaps="false"
@@ -206,9 +206,20 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_margin="5dp"
-                                android:layout_weight="0.50"
+                                android:layout_weight="0.30"
                                 android:background="@color/transparent"
                                 android:text="View members"
+                                android:textAllCaps="false"
+                                android:textColor="@color/colorPrimaryDark" />
+
+                            <Button
+                                android:id="@+id/btn_view_map"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:layout_weight="0.30"
+                                android:background="@color/transparent"
+                                android:text="View map"
                                 android:textAllCaps="false"
                                 android:textColor="@color/colorPrimaryDark" />
 

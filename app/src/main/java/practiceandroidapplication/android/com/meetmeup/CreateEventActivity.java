@@ -1,35 +1,26 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.BitmapFactory;
-import android.location.Address;
-import android.location.Geocoder;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -37,19 +28,16 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
-import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
-import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
-import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
-import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -73,7 +61,7 @@ public class CreateEventActivity extends AppCompatActivity {
     Spinner spnEventType, spnLocation;
     DatePicker startDate, endDate;
 
-    Button btnCreate, btnFind;
+    Button btnCreate, btnSetMapLocation;
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
@@ -81,6 +69,7 @@ public class CreateEventActivity extends AppCompatActivity {
     String location;
 
     boolean isCreate = false;
+    boolean isSet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +85,7 @@ public class CreateEventActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+                startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
                 finish();
             }
         });
@@ -104,53 +93,82 @@ public class CreateEventActivity extends AppCompatActivity {
         initUI();
         loadEventType();
         loadLocations();
-
-        try {
-            // Loading map
-            initilizeMap();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        //set cebu as default
+        spnLocation.setSelection(16);
     }
 
-    /**
-     * function to load map. If map is not created it will create it for you
-     * */
-    private void initilizeMap() {
-        if (googleMap == null) {
-            googleMap = ((MapFragment) getFragmentManager().findFragmentById(
-                    R.id.map)).getMap();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
 
-            double latitude = 10.342887;
-            double longitude = 123.960722;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
-            CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                    new LatLng(latitude, longitude)).zoom(12).build();
+        if (id == R.id.action_save) {
+            if (validateForm()) {
+                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                Interactions.showError("Lat " + Sessions.currentLocationLatitude + " Long " +
+                        Sessions.currentLocationLongtitude, CreateEventActivity.this);
 
-            /*MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Meetmeup developer home");
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                if (Sessions.currentLocationLatitude != 0 && Sessions.currentLocationLongtitude != 0) {
+                    if (validateForm()) {
+                        try {
+                            location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
-            googleMap.addMarker(marker);*/
+                            events.setEventName(txtEventName.getText().toString());
+                            events.setDetails(txtDetails.getText().toString());
+                            events.setLocation(location);
 
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setZoomGesturesEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            googleMap.getUiSettings().setRotateGesturesEnabled(true);
-            googleMap.getUiSettings().setTiltGesturesEnabled(true);
-            googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
+                            events.setStartDate(startDate.getYear() + "-" + (startDate.getMonth() + 1)
+                                    + "-" + startDate.getDayOfMonth());
+                            events.setEndDate(endDate.getYear() + "-" + (endDate.getMonth() + 1)
+                                    + "-" + endDate.getDayOfMonth());
 
-            // check if map is created successfully or not
-            if (googleMap == null) {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! unable to create maps", Toast.LENGTH_SHORT)
-                        .show();
+                            events.setEventType(spnEventType.getSelectedItem().toString().charAt(0));
+
+                            //events.setLattitude(address.getLatitude());
+                            //events.setLongtitude(address.getLongitude());
+
+                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(CreateEventActivity.this);
+                            dlgAlert.setMessage("Create as");
+                            dlgAlert.setCancelable(true);
+
+                            dlgAlert.setPositiveButton("Your account",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            isSet = true;
+                                        }
+                                    });
+
+                            dlgAlert.setNegativeButton("Your group",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            isSet = true;
+                                        }
+                                    });
+
+                            dlgAlert.create().show();
+
+
+                            new CreateEvent().execute();
+
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+                        //new CreateEvent().execute();
+                    }
+                } else {
+                    Interactions.showError("Please set a map location.", CreateEventActivity.this);
+                }
             }
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void initUI() {
@@ -161,72 +179,45 @@ public class CreateEventActivity extends AppCompatActivity {
         spnLocation = (Spinner) findViewById(R.id.spn_location);
 
         startDate = (DatePicker) findViewById(R.id.start_date);
+        startDate.setMinDate(System.currentTimeMillis() - 1000);
+
         endDate = (DatePicker) findViewById(R.id.end_date);
+        endDate.setMinDate(System.currentTimeMillis() - 1000);
 
-        btnFind = (Button) findViewById(R.id.btn_find);
-        btnFind.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
+        btnSetMapLocation = (Button) findViewById(R.id.btn_set_map);
 
-                if (location != null && !location.equals("")) {
-                    isCreate = false;
-                    new GeocoderTask().execute(location);
-                }
-            }
-        });
+        btnSetMapLocation.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
 
+                        if (!txtLocation.getText().toString().trim().equals("")) {
+                            Intent intent = new Intent(CreateEventActivity.this, MapsActivity.class);
+                            intent.putExtra("TYPE", "creation");
 
-        btnCreate = (Button) findViewById(R.id.btn_create);
-        btnCreate.setVisibility(View.GONE);
-        btnCreate.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (validateForm()) {
-                    //events = new Events(txtEventName.getText().toString(), txtDetails.getText().toString(),
-                    //        txtLocation.getText().toString());
-                    try {
-                        location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
-
-                        if (location != null && !location.equals("")) {
-                            isCreate = true;
-                            new GeocoderTask().execute(location);
+                            if (!spnLocation.getSelectedItem().toString().contains("Cebu")) {
+                                intent.putExtra("LOCATION", txtLocation.getText().toString() + ", "
+                                        + spnLocation.getSelectedItem().toString() + ", Cebu");
+                            } else {
+                                intent.putExtra("LOCATION", txtLocation.getText().toString()
+                                        + ", " + spnLocation.getSelectedItem().toString());
+                            }
+                            startActivity(intent);
+                            txtLocation.setError(null);
+                        } else {
+                            txtLocation.setError("Please set a location first");
                         }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
 
-                    //new CreateEvent().execute();
-                }
 
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
-                if (validateForm()) {
-                    //events = new Events(txtEventName.getText().toString(), txtDetails.getText().toString(),
-                    //        txtLocation.getText().toString());
-                    try {
-                        location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
-
-                        if (location != null && !location.equals("")) {
-                            isCreate = true;
-                            new GeocoderTask().execute(location);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
                     }
                 }
-            }
-        });
+
+        );
+
     }
 
-    public void loadEventType(){
+    public void loadEventType() {
         ArrayAdapter<String> adapter;
-        String[] eventType = {"Generic","Traditional","Travel", "Personal"};
+        String[] eventType = {"Generic", "Traditional", "Travel", "Personal"};
 
         adapter = new ArrayAdapter<>(getApplicationContext(),
                 R.layout.spinner_layout, eventType);
@@ -243,23 +234,22 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
 
-
-    public boolean validateForm(){
+    public boolean validateForm() {
         boolean isReadyToSave = true;
 
-        if(txtEventName.getText().toString().equals("")) {
+        if (txtEventName.getText().toString().equals("")) {
             txtEventName.setError("Event name is required.");
             isReadyToSave = false;
         } else
             txtEventName.setError(null);
 
-        if(txtLocation.getText().toString().equals("")) {
+        if (txtLocation.getText().toString().equals("")) {
             txtLocation.setError("Location is required.");
             isReadyToSave = false;
         } else
             txtLocation.setError(null);
 
-        if(txtDetails.getText().toString().equals("")) {
+        if (txtDetails.getText().toString().equals("")) {
             txtDetails.setError("Details is required.");
             isReadyToSave = false;
         } else
@@ -270,7 +260,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
 
     public void onBackPressed() {
-        //startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
+        startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
         finish();
     }
 
@@ -278,97 +268,6 @@ public class CreateEventActivity extends AppCompatActivity {
         thread
      */
 
-
-    private class GeocoderTask extends AsyncTask<String, Void, List<Address>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(CreateEventActivity.this, R.style.progress);
-            pDialog.setCancelable(true);
-            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.setMessage("Searching location...");
-            pDialog.show();
-        }
-
-        @Override
-        protected List<Address> doInBackground(String... locationName) {
-            Geocoder geocoder = new Geocoder(getBaseContext());
-            List<Address> addresses = null;
-
-            try {
-                // Getting a maximum of 3 Address that matches the input text
-                addresses = geocoder.getFromLocationName(locationName[0], 3);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return addresses;
-        }
-
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-            pDialog.dismiss();
-            if (addresses == null || addresses.size() == 0) {
-                Toast.makeText(CreateEventActivity.this, "No Location found", Toast.LENGTH_SHORT).show();
-            } else {
-
-                try {
-
-                    googleMap.clear();
-
-                    Address address = addresses.get(0);
-
-                    latLng = new LatLng(address.getLatitude(), address.getLongitude());
-
-                    String addressText = String.format("%s %s",
-                            address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-                            address.getCountryName());
-
-                    CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                            new LatLng(address.getLatitude(),
-                                    address.getLongitude())).zoom(17).build();
-
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                    /*MarkerOptions marker = new MarkerOptions().position(new LatLng(address.getLatitude(),
-                            address.getLongitude()));
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-                    googleMap.addMarker(marker);*/
-
-                    markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    markerOptions.title(addressText);
-
-                    googleMap.addMarker(markerOptions);
-
-                    // if btn is click trigger create meetups
-                    if(isCreate) {
-                        events.setEventName(txtEventName.getText().toString());
-                        events.setDetails(txtDetails.getText().toString());
-                        events.setLocation(location);
-
-                        events.setStartDate(startDate.getYear() + "-" + startDate.getMonth()
-                                + "-" + startDate.getDayOfMonth());
-                        events.setEndDate(endDate.getYear() + "-" + endDate.getMonth()
-                                + "-" + endDate.getDayOfMonth());
-
-                        events.setEventType(spnEventType.getSelectedItem().toString().charAt(0));
-
-                        events.setLattitude(address.getLatitude());
-                        events.setLongtitude(address.getLongitude());
-
-                        new CreateEvent().execute();
-                    }
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                } // end of try catch
-
-            }
-
-        }
-    }
 
     class CreateEvent extends AsyncTask<String, String, String> {
         @Override
@@ -396,12 +295,12 @@ public class CreateEventActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("event_name", events.getEventName()));
                 params.add(new BasicNameValuePair("details", events.getDetails()));
                 params.add(new BasicNameValuePair("location", events.getLocation()));
-                params.add(new BasicNameValuePair("event_type", events.getEventType()+""));
+                params.add(new BasicNameValuePair("event_type", events.getEventType() + ""));
                 params.add(new BasicNameValuePair("start_date", events.getStartDate()));
                 params.add(new BasicNameValuePair("end_date", events.getEndDate()));
 
-                params.add(new BasicNameValuePair("lattitude", events.getLattitude() + ""));
-                params.add(new BasicNameValuePair("longtitude", events.getLongtitude() + ""));
+                params.add(new BasicNameValuePair("lattitude", Sessions.currentLocationLatitude + ""));
+                params.add(new BasicNameValuePair("longtitude", Sessions.currentLocationLongtitude + ""));
 
 
                 Log.d("request!", "starting");
@@ -418,6 +317,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
                     return json.getString(TAG_RESPONSE);
                 } else {
+                    isCreate = false;
                     Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
                     return json.getString(TAG_RESPONSE);
                 }
@@ -437,7 +337,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     new Thread() {
                         public void run() {
                             try {
-                                sleep(1000);
+                                sleep(100);
                                 startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
                                 finish();
                             } catch (Exception ex) {

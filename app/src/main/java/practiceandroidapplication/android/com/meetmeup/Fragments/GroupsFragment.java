@@ -117,7 +117,7 @@ public class GroupsFragment extends Fragment {
 
     /* thread */
 
-    public void retrieve () {
+    public void retrieve() {
         new RetrieveGroups().execute();
     }
 
@@ -171,13 +171,15 @@ public class GroupsFragment extends Fragment {
 
             final ImageView groupPostedByImage = new ImageView(getActivity());
             groupPostedByImage.setBackgroundColor(Color.parseColor("#E6E9ED"));
+            groupPostedByImage.setLayoutParams(imageGroupParams);
+            groupPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
 
             final TextView groupPostedBy = new TextView(getActivity());
             groupPostedBy.setText(group.getCreatedByName());
             groupPostedBy.setTextSize(17);
             groupPostedBy.setTextColor(Color.BLACK);
 
-            if(!group.getCreatedByNameImage().equals("null") && !group.getCreatedByNameImage().equals("")) {
+            if (!group.getCreatedByNameImage().equals("null") && !group.getCreatedByNameImage().equals("")) {
 
                 class DownloadGroupImage extends AsyncTask<Void, Void, Bitmap> {
 
@@ -215,7 +217,7 @@ public class GroupsFragment extends Fragment {
 
                     protected void onPostExecute(Bitmap bitmap) {
                         try {
-                            if(bitmap!=null) {
+                            if (bitmap != null) {
                                 Log.d("Image", "Success");
                                 groupPostedByImage.setImageBitmap(bitmap);
                             }
@@ -226,11 +228,21 @@ public class GroupsFragment extends Fragment {
 
                 }
 
-                new DownloadGroupImage(group.getCreatedByNameImage() + ".JPG").execute();
-                groupPostedByImage.setLayoutParams(imageGroupParams);
-                groupPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
-            }
+                final String image = group.getCreatedByNameImage();
+                new Thread() {
+                    public void run() {
+                        try {
+                            sleep(600);
+                            new DownloadGroupImage(image + ".JPG").execute();
+                        } catch (Exception ex) {
+                        }
 
+                    }
+                }.start();
+
+            } else {
+                groupPostedByImage.setImageResource(R.drawable.user_u);
+            }
 
 
             final TextView groupPostedDate = new TextView(getActivity());
@@ -398,7 +410,7 @@ public class GroupsFragment extends Fragment {
         String date[] = Str.split(":", 3);
         String time = "";
 
-        if(Integer.parseInt(date[0]) > 24) {
+        if (Integer.parseInt(date[0]) > 24) {
             time = Integer.parseInt(date[0]) / 24 + " d";
         } else if (Integer.parseInt(date[0]) < 24 && Integer.parseInt(date[0]) > 0) {
             time = Integer.parseInt(date[0]) + " h";
@@ -416,7 +428,7 @@ public class GroupsFragment extends Fragment {
      */
 
     public void loadGroupImage() {
-        for(Group group : currentGroups) {
+        for (Group group : currentGroups) {
             //new DownloadUserImage(group.getGroupImage() + ".JPG");
         }
 

@@ -29,6 +29,8 @@ public class ListNationalities {
         return listNationalities;
     }
 
+    final CharSequence[] items = {" Easy "," Medium "," Hard "," Very Hard "};
+
     public static List<String> loadNationalities() {
         ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
         List<String> list = new ArrayList<>();
@@ -40,5 +42,18 @@ public class ListNationalities {
 
         return list;
     }
+
+    public static CharSequence[] loadNationalitesSequence() {
+        ListNationalities listNationalities = ListNationalities.getInstanceListNationalities();
+        List<String> list = new ArrayList<>();
+
+        for (Nationality natiolity : listNationalities.nationalities) {
+            Log.d(natiolity.getId() + "", natiolity.getNationality());
+            list.add(natiolity.getNationality());
+        }
+
+        return list.toArray(new CharSequence[list.size()]);
+    }
+
 
 }

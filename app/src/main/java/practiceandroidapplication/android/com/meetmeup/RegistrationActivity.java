@@ -1,9 +1,11 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Location;
 import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
@@ -80,6 +83,69 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //load locations options
         loadLocations();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            try {
+
+                if(formValidation()) {
+
+                    //for debugging purposes...
+                    Log.d("Birthdate", dateBirth.getYear() + "-" +
+                            dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+
+
+                    User user = new User();
+                    user.setFirstName(txtFirstname.getText().toString());
+                    user.setLastName(txtLastname.getText().toString());
+                    //Log.d("Location (register)", txtCurrentLocation.getText().toString());
+                    //user.setCurrentLocation(txtCurrentLocation.getText().toString());
+                    user.setLocation(new Location(spnLocation.getSelectedItemPosition() + 1,
+                            spnLocation.getSelectedItem().toString()));
+
+                    user.setCurrentLocation(spnLocation.getSelectedItem().toString());
+                    user.setEmailAddress(txtEmailAddress.getText().toString());
+                    user.setContactNumber(txtContactNumber.getText().toString());
+                    user.setUsername(txtUsername.getText().toString());
+                    user.setPassword(txtPassword.getText().toString());
+                    user.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
+                            spnNationality.getSelectedItem().toString()));
+
+                    final RadioButton selectedGender = (RadioButton)
+                            findViewById(rdGender.getCheckedRadioButtonId());
+
+                    user.setGender(selectedGender.getText().toString().charAt(0));
+
+                    //for testing
+                    Log.d("Gender", user.getGender() + "");
+
+                    user.setBirthDate(dateBirth.getYear() + "-" +
+                            dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+
+                    new RegisterUser().execute(user.getUsername(),
+                            user.getPassword(), user.getFirstName(),
+                            user.getLastName(), user.getBirthDate(),
+                            user.getNationality().getId() + "", user.getGender() + "", user.getLocation().getId() + "",
+                            user.getEmailAddress(), user.getContactNumber(), "");
+                }
+
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /*
@@ -143,7 +209,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         Log.d("Gender", user.getGender() + "");
 
                         user.setBirthDate(dateBirth.getYear() + "-" +
-                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+                                (dateBirth.getMonth() + 1) +  "-" + dateBirth.getDayOfMonth());
 
                         new RegisterUser().execute(user.getUsername(),
                                 user.getPassword(), user.getFirstName(),
@@ -159,60 +225,6 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         }); // end of register onclick event
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-
-                    if(formValidation()) {
-
-                        //for debugging purposes...
-                        Log.d("Birthdate", dateBirth.getYear() + "-" +
-                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
-
-
-                        User user = new User();
-                        user.setFirstName(txtFirstname.getText().toString());
-                        user.setLastName(txtLastname.getText().toString());
-                        //Log.d("Location (register)", txtCurrentLocation.getText().toString());
-                        //user.setCurrentLocation(txtCurrentLocation.getText().toString());
-                        user.setLocation(new Location(spnLocation.getSelectedItemPosition() + 1,
-                                spnLocation.getSelectedItem().toString()));
-
-                        user.setCurrentLocation(spnLocation.getSelectedItem().toString());
-                        user.setEmailAddress(txtEmailAddress.getText().toString());
-                        user.setContactNumber(txtContactNumber.getText().toString());
-                        user.setUsername(txtUsername.getText().toString());
-                        user.setPassword(txtPassword.getText().toString());
-                        user.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
-                                spnNationality.getSelectedItem().toString()));
-
-                        final RadioButton selectedGender = (RadioButton)
-                                findViewById(rdGender.getCheckedRadioButtonId());
-
-                        user.setGender(selectedGender.getText().toString().charAt(0));
-
-                        //for testing
-                        Log.d("Gender", user.getGender() + "");
-
-                        user.setBirthDate(dateBirth.getYear() + "-" +
-                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
-
-                        new RegisterUser().execute(user.getUsername(),
-                                user.getPassword(), user.getFirstName(),
-                                user.getLastName(), user.getBirthDate(),
-                                user.getNationality().getId() + "", user.getGender() + "", user.getLocation().getId() + "",
-                                user.getEmailAddress(), user.getContactNumber(), "");
-                    }
-
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-        });
     }
 
     public void loadNationalities(){

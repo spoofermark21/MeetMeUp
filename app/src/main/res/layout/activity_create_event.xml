@@ -96,58 +96,45 @@
                 android:textSize="15sp" />
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <EditText
-                    android:layout_marginRight="10dp"
                     android:id="@+id/txt_location"
                     android:layout_width="0dp"
-                    android:layout_weight=".60"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight=".60"
                     android:background="@drawable/edit_text"
                     android:hint="Specific location"
                     android:inputType="text"
                     android:padding="15dp"
                     android:singleLine="true"
-                    android:textSize="15sp"  />
+                    android:textSize="15sp" />
 
                 <Spinner
                     android:id="@+id/spn_location"
                     android:layout_width="0dp"
-                    android:layout_weight=".40"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:padding="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/edit_text" />
+                    android:layout_marginBottom="10dip"
+                    android:layout_weight=".40"
+                    android:background="@drawable/edit_text"
+                    android:padding="10dp" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="300dp">
-
-                <Button
-                    android:layout_gravity="left"
-                    android:background="@drawable/button_background"
-                    android:text="Find"
-                    android:layout_marginBottom="10dp"
-                    android:id="@+id/btn_find"
-                    android:textColor="@color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <fragment
-                    android:id="@+id/map"
-                    android:name="com.google.android.gms.maps.MapFragment"
-                    android:layout_width="fill_parent"
-                    android:layout_height="250dp"/>
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/btn_set_map"
+                android:padding="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="Set map"
+                android:textColor="@color/colorPrimaryDark"
+                android:background="@color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <!-- <EditText
                 android:id="@+id/txt_location"
@@ -193,25 +180,17 @@
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"></DatePicker>
 
-            <Button
-                android:id="@+id/btn_create"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/button_background"
-                android:text="Create"
-                android:textColor="@color/white" />
 
         </LinearLayout>
 
     </ScrollView>
 
-    <android.support.design.widget.FloatingActionButton
+    <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_save_white_24dp" />
+        android:src="@drawable/ic_save_white_24dp" />-->
 
 </android.support.design.widget.CoordinatorLayout>

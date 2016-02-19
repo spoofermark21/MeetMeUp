@@ -1,8 +1,12 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -47,6 +51,7 @@ public class ViewEventsActivity extends AppCompatActivity {
     private static final String INSERT_COMMENT_URL = Network.forDeploymentIp + "comments_save.php";
     private static final String INSERT_NOTIFICATIONS_URL = Network.forDeploymentIp + "notication_save.php";
     private static final String INSERT_ATTENDEES_URL = Network.forDeploymentIp + "attendees_save.php";
+    private static final String DISABLE_COMMENT_URL = Network.forDeploymentIp + "comments_disable.php";
 
 
     private static final String TAG_STATUS = "status";
@@ -60,25 +65,29 @@ public class ViewEventsActivity extends AppCompatActivity {
     TextView lblEventName, lblPostedDate, lblDetails, lblLocation,
             lblPostedBy, lblComments, lblEventDate;
 
-    ListView listComments;
-    LinearLayout linearComments;
+    //ListView listComments;
+    LinearLayout linearComments, linearListComments;
 
     EditText txtComment;
 
-    Button btnJoin, btnComment, btnProfile, btnViewMembers;
+    Button btnJoin, btnComment, btnProfile, btnViewMembers, btnViewMap;
 
     ScrollView scrollView;
 
     Events event;
-    Attendees attendees;
+    //Attendees attendees;
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     String eventId;
     ArrayAdapter<String> adapter;
+    List<Comments> listOfComments = new ArrayList<>();
 
     boolean isExit = false;
 
+    private final static int INTERVAL = 2000 * 1;
+
+    Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,14 +100,13 @@ public class ViewEventsActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(ViewEventsActivity.this, NewsfeedActivity.class));
+                stopRepeatingTask();
                 finish();
                 isExit = true;
             }
         });
 
         eventId = getIntent().getStringExtra("EVENTS_ID");
-
         initUI();
 
         new RetrieveEvent().execute();
@@ -121,8 +129,11 @@ public class ViewEventsActivity extends AppCompatActivity {
         lblComments = (TextView) findViewById(R.id.lbl_comments);
         lblComments.setVisibility(View.GONE);
 
-        listComments = (ListView) findViewById(R.id.list_comments);
-        listComments.setVisibility(View.GONE);
+        linearListComments = (LinearLayout) findViewById(R.id.list_comments);
+        linearListComments.setVisibility(View.GONE);
+
+        //listComments = (ListView) findViewById(R.id.list_comments);
+        //listComments.setVisibility(View.GONE);
 
         linearComments = (LinearLayout) findViewById(R.id.linear_comments);
         linearComments.setVisibility(View.GONE);
@@ -166,6 +177,17 @@ public class ViewEventsActivity extends AppCompatActivity {
                 startActivity(viewMembers);
             }
         });
+
+        btnViewMap = (Button) findViewById(R.id.btn_view_map);
+        btnViewMap.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                Intent map = new Intent(ViewEventsActivity.this, ViewMapsActivity.class);
+                map.putExtra("LATTITUDE", event.getLattitude()  + "");
+                map.putExtra("LONGTITUDE", event.getLongtitude() + "");
+
+                startActivity(map);
+            }
+        });
     }
 
     private boolean isReadyToComment() {
@@ -182,7 +204,104 @@ public class ViewEventsActivity extends AppCompatActivity {
         return comment;
     }
 
-    private void loadComments() {
+    public void displayComments() {
+
+        linearListComments.removeAllViews();
+
+        for (Comments comments : listOfComments) {
+            final LinearLayout.LayoutParams layoutComments = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutComments.setMargins(0, 0, 0, 10);
+
+            LinearLayout recordOfComments = new LinearLayout(this);
+            recordOfComments.setLayoutParams(layoutComments);
+            recordOfComments.setOrientation(LinearLayout.VERTICAL);
+            recordOfComments.setBackgroundResource(R.drawable.main_background);
+            recordOfComments.setPadding(10, 10, 10, 5);
+            recordOfComments.setTag(comments.getId());
+
+            Log.d("Comment", comments.getComment());
+
+            final LinearLayout.LayoutParams linearPostedBy = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            linearPostedBy.setMargins(0, 0, 0, 30);
+
+            LinearLayout postedByLayout = new LinearLayout(this);
+            postedByLayout.setLayoutParams(linearPostedBy);
+            postedByLayout.setOrientation(LinearLayout.HORIZONTAL);
+            postedByLayout.setTag(comments.getUserId());
+            postedByLayout.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+
+                    //final LinearLayout profile = (LinearLayout) v.getParent();
+                    final String userId = v.getTag() + "";
+                    final LinearLayout comment = (LinearLayout) v.getParent();
+
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ViewEventsActivity.this);
+                    dlgAlert.setMessage("Options");
+                    dlgAlert.setCancelable(true);
+
+                    dlgAlert.setPositiveButton("View Profile",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(ViewEventsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", userId));
+                                    //Interactions.showError(userId , ViewMeetupsActivity.this);
+                                }
+                            });
+
+                    if(Integer.parseInt(userId) == currentUser.getId()) {
+                        dlgAlert.setNegativeButton("Delete comment",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        String commentId = comment.getTag() + "";
+                                        //Interactions.showError(commentId, ViewMeetupsActivity.this);
+                                        linearListComments.removeView(comment);
+                                        new DisableComments(commentId).execute();
+                                    }
+                                });
+                    }
+
+
+                    dlgAlert.create().show();
+
+                }
+            });
+
+            final LinearLayout.LayoutParams linearDate = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            linearDate.setMargins(0, 0, 0, 30);
+
+            LinearLayout postedByDate = new LinearLayout(this);
+            postedByDate.setLayoutParams(linearDate);
+            postedByDate.setOrientation(LinearLayout.VERTICAL);
+
+
+            final TextView commentPostedBy = new TextView(ViewEventsActivity.this);
+            commentPostedBy.setText(comments.getUserName() + " ");
+            commentPostedBy.setTextSize(15);
+            commentPostedBy.setTextColor(Color.BLACK);
+
+
+            final TextView commentPostedDate = new TextView(this);
+            commentPostedDate.setText(" @" + comments.getCommentDate() + "");
+            commentPostedDate.setTextSize(12);
+
+            final TextView commment = new TextView(this);
+            commment.setText(comments.getComment());
+            commment.setTextSize(12);
+            commment.setTextColor(Color.BLACK);
+
+            Log.d("added", "true");
+
+            postedByLayout.addView(commentPostedBy);
+            postedByLayout.addView(commentPostedDate);
+            recordOfComments.addView(postedByLayout);
+
+            recordOfComments.addView(commment);
+
+            linearListComments.addView(recordOfComments);
+        }
+        listOfComments.clear();
+    }
+
+    /*private void loadComments() {
 
         adapter = new ArrayAdapter<>(ViewEventsActivity.this,
                 android.R.layout.simple_list_item_1, event.listOfComments());
@@ -205,13 +324,27 @@ public class ViewEventsActivity extends AppCompatActivity {
                         .show();
             }
         });
-        //new RefreshComment().execute();
+    }*/
+
+    Runnable mHandlerTask = new Runnable() {
+        @Override
+        public void run() {
+            new RetrieveComments().execute();
+            mHandler.postDelayed(mHandlerTask, INTERVAL);
+        }
+    };
+
+    void startRepeatingTask() {
+        mHandlerTask.run();
+    }
+
+    void stopRepeatingTask() {
+        mHandler.removeCallbacks(mHandlerTask);
     }
 
     @Override
     public void onBackPressed() {
-        //startActivity(new Intent(ViewMeetupsActivity.this, NewsfeedActivity.class));
-        isExit = true;
+        stopRepeatingTask();
         finish();
     }
 
@@ -272,6 +405,9 @@ public class ViewEventsActivity extends AppCompatActivity {
                     event.setPostedBy(jUserObject.getInt("posted_by"));
                     event.setPostedByName(jUserObject.getString("posted_by_user"));
 
+                    //set location
+                    event.setLattitude(jUserObject.getDouble("lattitude"));
+                    event.setLongtitude(jUserObject.getDouble("longtitude"));
 
                     return json.getString(TAG_RESPONSE);
                 } else {
@@ -300,16 +436,81 @@ public class ViewEventsActivity extends AppCompatActivity {
                         lblLocation.setText(event.getLocation());
                         lblPostedBy.setText(event.getPostedByName());
 
-                        Log.d("Event date", event.getStartDate() + " - "  + event.getEndDate());
-                        lblEventDate.setText(event.getStartDate() + " - "  + event.getEndDate());
+                        Log.d("Event date", event.getStartDate() + " - " + event.getEndDate());
+                        lblEventDate.setText(event.getStartDate() + " - " + event.getEndDate());
 
-                        new RetrieveComments().execute();
+                        //check every 2 seconds comments
+                        startRepeatingTask();
+                        //new RetrieveComments().execute();
 
                     } else {
                         //if not join comments will be disable
                         new RetrieveAttendees().execute();
                     }
 
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    class DisableComments extends AsyncTask<String, String, String> {
+
+        String commentId;
+
+        public DisableComments(String commentId) {
+            this.commentId = commentId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewEventsActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", commentId));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        DISABLE_COMMENT_URL, "POST", params);
+
+                Log.d("Updating...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Update failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            try {
+                if (message.equals("Successful")) {
+                    Toast.makeText(ViewEventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+                    Log.d("Comment", "Successful");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -436,12 +637,11 @@ public class ViewEventsActivity extends AppCompatActivity {
 
                     JSONArray jsonArray = jsonObject.getJSONArray("comments");
 
-                    List<Comments> comments = new ArrayList<>();
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
-                        comments.add(new Comments(jsonObject1.getInt("id"), jsonObject1.getInt("post_id"),
+                        listOfComments.add(new Comments(jsonObject1.getInt("id"), jsonObject1.getInt("post_id"),
                                 jsonObject1.getString("post_type").charAt(0), jsonObject1.getInt("user_id"),
                                 jsonObject1.getString("comment"), jsonObject1.getString("comment_date"),
                                 jsonObject1.getString("user")));
@@ -449,9 +649,7 @@ public class ViewEventsActivity extends AppCompatActivity {
                         Log.d("ID:", jsonObject1.getInt("id") + "");
                     }
 
-                    event.setComments(comments);
-                    //clear comments
-                    //comments.clear();
+                    //event.setComments(comments);
 
                     return jsonObject.getString(TAG_RESPONSE);
                 } else {
@@ -470,14 +668,11 @@ public class ViewEventsActivity extends AppCompatActivity {
                 lblComments.setText("Comments");
                 lblComments.setVisibility(View.VISIBLE);
                 linearComments.setVisibility(View.VISIBLE);
-                listComments.setVisibility(View.VISIBLE);
+                linearListComments.setVisibility(View.VISIBLE);
+                //listComments.setVisibility(View.VISIBLE);
 
                 if (message.equals("Successful")) {
-                    loadComments();
-                    if(!isExit) {
-                        new RetrieveComments().execute();
-                    }
-
+                    displayComments();
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
                 }
@@ -567,7 +762,7 @@ public class ViewEventsActivity extends AppCompatActivity {
 
                 } else if (message.equals("Successful")) {
                     //check if there is comments
-                    new RetrieveComments().execute();
+                    startRepeatingTask();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

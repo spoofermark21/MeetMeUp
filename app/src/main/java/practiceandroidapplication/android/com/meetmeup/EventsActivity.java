@@ -79,15 +79,6 @@ public class EventsActivity extends AppCompatActivity {
         lblMessage = (TextView) findViewById(R.id.lbl_message);
         lblMessage.setVisibility(View.INVISIBLE);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setVisibility(View.GONE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(EventsActivity.this, CreateEventActivity.class));
-            }
-        });
-
         new RetrieveEvents().execute();
     }
 
@@ -103,6 +94,7 @@ public class EventsActivity extends AppCompatActivity {
 
         if (id == R.id.action_create) {
             startActivity(new Intent(EventsActivity.this, CreateEventActivity.class));
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -199,6 +191,7 @@ public class EventsActivity extends AppCompatActivity {
             delete.setText("delete");
             delete.setTextSize(15);
             delete.setBackgroundColor(Color.TRANSPARENT);
+            delete.setTextColor(Color.parseColor("#D46A6A"));
 
             final TextView leave = new TextView(this);
             leave.setLayoutParams(btnLayout);
@@ -207,6 +200,7 @@ public class EventsActivity extends AppCompatActivity {
             leave.setTextSize(15);
             leave.setGravity(Gravity.CENTER);
             leave.setBackgroundColor(Color.TRANSPARENT);
+            leave.setTextColor(Color.parseColor("#D46A6A"));
 
 
             final TextView map = new TextView(this);

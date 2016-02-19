@@ -81,7 +81,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
 
     EditText txtComment;
 
-    Button btnJoin, btnComment, btnProfile, btnViewMembers;
+    Button btnJoin, btnComment, btnProfile, btnViewMembers, btnViewMap;
 
     ScrollView scrollView;
 
@@ -94,7 +94,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     List<Comments> listOfComments = new ArrayList<>();
 
-    private final static int INTERVAL = 1000 * 1;
+    private final static int INTERVAL = 2000 * 1;
 
     Handler mHandler = new Handler();
 
@@ -147,10 +147,10 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         linearListComments = (LinearLayout) findViewById(R.id.list_comments);
         linearListComments.setVisibility(View.GONE);
 
+        txtComment = (EditText) findViewById(R.id.txt_comment);
+
         btnJoin = (Button) findViewById(R.id.btn_join);
         btnJoin.setVisibility(View.GONE);
-
-        txtComment = (EditText) findViewById(R.id.txt_comment);
 
         btnComment = (Button) findViewById(R.id.btn_comment);
         btnComment.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +164,17 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     txtComment.setError("This is a required field.");
                 }
 
+            }
+        });
+
+        btnViewMap = (Button) findViewById(R.id.btn_view_map);
+        btnViewMap.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                Intent map = new Intent(ViewMeetupsActivity.this, ViewMapsActivity.class);
+                map.putExtra("LATTITUDE", meetups.getLattitude() + "");
+                map.putExtra("LONGTITUDE", meetups.getLongtitude() + "");
+
+                startActivity(map);
             }
         });
 
@@ -325,10 +336,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
         };
     }*/
 
-
-    //check comment every 5 seconds
-
-
+    //check comment every 2 seconds
     Runnable mHandlerTask = new Runnable() {
         @Override
         public void run() {
@@ -344,7 +352,6 @@ public class ViewMeetupsActivity extends AppCompatActivity {
     void stopRepeatingTask() {
         mHandler.removeCallbacks(mHandlerTask);
     }
-
 
     /*
         thread
@@ -405,6 +412,9 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     meetups.setId(jUserObject.getInt("id"));
                     meetups.setPostedDate(jUserObject.getString("posted_date"));
                     meetups.setPostedByName(jUserObject.getString("posted_by_user"));
+
+                    meetups.setLattitude(jUserObject.getString("lattitude"));
+                    meetups.setLongtitude(jUserObject.getString("longtitude"));
 
                     Log.d("ID:", jUserObject.getInt("id") + "");
 

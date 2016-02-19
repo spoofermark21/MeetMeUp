@@ -3,6 +3,7 @@ package practiceandroidapplication.android.com.meetmeup;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.opengl.GLException;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
+import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 
@@ -39,9 +42,13 @@ public class MapsActivity extends AppCompatActivity {
     private GoogleMap googleMap;
     MarkerOptions markerOptions;
 
+    Button btnFind;
+    EditText etLocation;
+
     LatLng latLng;
 
     String type;
+    String location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,57 +62,113 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MapsActivity.this, NewsfeedActivity.class));
+                Sessions.currentLocationLatitude = 0;
+                Sessions.currentLocationLongtitude = 0;
                 finish();
             }
         });
 
+        type = getIntent().getStringExtra("TYPE");
+        //reset the sessions
+        Sessions.currentLocationLatitude = 0;
+        Sessions.currentLocationLongtitude = 0;
+
         try {
+            btnFind = (Button) findViewById(R.id.btn_find);
+            etLocation = (EditText) findViewById(R.id.et_location);
+
+            btnFind.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+
+                    String location = etLocation.getText().toString();
+
+                    if (location != null && !location.equals("")) {
+                        new GeocoderTask().execute(location);
+                    }
+                }
+            });
+
             // Loading map
-            type = getIntent().getStringExtra("TYPE");
             initilizeMap();
+
+            if (type.equals("creation")) {
+                location = getIntent().getStringExtra("LOCATION");
+                etLocation.setText(location);
+                new GeocoderTask().execute(location);
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        MenuItem item = menu.findItem(R.id.action_save);
+
+        if (!type.equals("creation")) {
+            item.setVisible(false);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void onBackPressed() {
-        startActivity(new Intent(MapsActivity.this, NewsfeedActivity.class));
+        Sessions.currentLocationLatitude = 0;
+        Sessions.currentLocationLongtitude = 0;
         finish();
     }
 
-    /**
-     * function to load map. If map is not created it will create it for you
-     * */
     private void initilizeMap() {
         if (googleMap == null) {
             googleMap = ((MapFragment) getFragmentManager().findFragmentById(
                     R.id.map)).getMap();
 
+            if (type.equals("creation")) {
+                //not allowed in viewing mode
+                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+
+                        googleMap.clear();
+                        //own code
+                        Sessions.currentLocationLatitude = latLng.latitude;
+                        Sessions.currentLocationLongtitude = latLng.longitude;
+
+                        CameraPosition cameraPosition1 = new CameraPosition.Builder().target(
+                                new LatLng(latLng.latitude, latLng.longitude)).zoom(17).build();
+
+                        //googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+                        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition1));
+
+                        MarkerOptions markerOptions = new MarkerOptions();
+                        markerOptions.position(latLng);
+                        googleMap.addMarker(markerOptions);
+
+                    }
+                });
+            }
             double latitude = 10.342887;
             double longitude = 123.960722;
 
-            Button btn_find = (Button) findViewById(R.id.btn_find);
-
-            View.OnClickListener findClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Getting reference to EditText to get the user input location
-                    EditText etLocation = (EditText) findViewById(R.id.et_location);
-
-                    String location = etLocation.getText().toString();
-
-                    if(location!=null && !location.equals("")){
-                        new GeocoderTask().execute(location);
-                    }
-                }
-            };
-
-            btn_find.setOnClickListener(findClickListener);
-
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                    new LatLng(latitude, longitude)).zoom(12).build();
+                    new LatLng(latitude, longitude)).zoom(10).build();
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
@@ -117,29 +180,6 @@ public class MapsActivity extends AppCompatActivity {
             googleMap.getUiSettings().setRotateGesturesEnabled(true);
             googleMap.getUiSettings().setTiltGesturesEnabled(true);
             googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-
-
-            //not allowed in viewing mode
-            if(!type.equals("viewing")) {
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-                    @Override
-                    public void onMapClick(LatLng latLng) {
-
-                        MarkerOptions markerOptions = new MarkerOptions();
-
-                        markerOptions.position(latLng);
-
-                        //markerOptions.title(latLng.latitude + " : " + latLng.longitude);
-                        //markerOptions.icon(BitmapDescriptorFactory.defaultMarker(R.drawable.meetmeup));
-
-                        googleMap.clear();
-
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                        googleMap.addMarker(markerOptions);
-                    }
-                });
-            }
 
             // check if map is created successfully or not
             if (googleMap == null) {
@@ -171,15 +211,14 @@ public class MapsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<Address> addresses) {
 
-            if(addresses==null || addresses.size()==0){
+            if (addresses == null || addresses.size() == 0) {
                 Toast.makeText(getBaseContext(), "No Location found", Toast.LENGTH_SHORT).show();
+                Sessions.currentLocationLatitude = 0;
+                Sessions.currentLocationLongtitude = 0;
             }
-
-            // Clears all the existing markers on the map
             googleMap.clear();
 
-            // Adding Markers on Google Map for each matching address
-            for(int i=0;i<addresses.size();i++){
+            for (int i = 0; i < addresses.size(); i++) {
 
                 Address address = addresses.get(i);
 
@@ -190,16 +229,17 @@ public class MapsActivity extends AppCompatActivity {
                 Sessions.currentLocationLatitude = address.getLatitude();
                 Sessions.currentLocationLongtitude = address.getLongitude();
 
-                /*Interactions.showError("Lat:" + Sessions.currentLocationLatitude
-                + "Lon:" + Sessions.currentLocationLongtitude, MapsActivity.this);*/
-
-
                 String addressText = String.format("%s %s",
                         address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
                         address.getCountryName());
 
                 /*Interactions.showError("Admin area " + address.getAdminArea() + " Feature name " +
                         address.getFeatureName() +  " Locality " + address.getLocality(), MapsActivity.this);*/
+
+                CameraPosition cameraPosition1 = new CameraPosition.Builder().target(
+                        new LatLng(latLng.latitude, latLng.longitude)).zoom(17).build();
+
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition1));
 
                 markerOptions = new MarkerOptions();
                 markerOptions.position(latLng);
@@ -208,7 +248,7 @@ public class MapsActivity extends AppCompatActivity {
                 googleMap.addMarker(markerOptions);
 
                 // Locate the first location
-                if(i==0)
+                if (i == 0)
                     googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
             }
         }

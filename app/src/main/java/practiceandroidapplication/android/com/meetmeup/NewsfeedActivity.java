@@ -8,13 +8,19 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
@@ -87,6 +93,9 @@ public class NewsfeedActivity extends AppCompatActivity
 
     LinearLayout listOfFeeds;
 
+    Handler mHandler = new Handler();
+    private final static int INTERVAL = 1000 * 1;
+
     Fragment meetups = new MeetupsFragment();
     Fragment events = new EventsFragment();
     Fragment groups = new GroupsFragment();
@@ -94,6 +103,8 @@ public class NewsfeedActivity extends AppCompatActivity
     FragmentManager fragmentManager = getFragmentManager();
 
     private char currentFragmentSelected = 'A';
+
+    Thread thread = new Thread();
 
     @SuppressLint("NewApi")
     @Override
@@ -137,10 +148,68 @@ public class NewsfeedActivity extends AppCompatActivity
 
 
         btnMeetups.setTextColor(Color.DKGRAY);
-        /*btnMeetups.setBackgroundResource(R.color.gray);
-        btnEvents.setBackgroundResource(R.color.transparent);
-        btnGroups.setBackgroundResource(R.color.transparent);*/
+
+        try {
+            checkConnectivity();
+        } catch (Exception ex) {
+            // do something
+        }
+
     }
+
+    /*public class WifiReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ConnectivityManager conMan = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = conMan.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.getType() == ConnectivityManager.TYPE_WIFI)
+                Log.d("WifiReceiver", "Have Wifi Connection");
+            else
+                Log.d("WifiReceiver", "Don't have Wifi Connection");
+        }
+    }*/
+
+    Runnable mHandlerTask = new Runnable() {
+        @Override
+        public void run() {
+
+            if(isConnectedToInternet()) {
+                //Log.d("Connected","true");
+                //thread.start();
+            } else {
+                //Log.d("Connected", "false");
+                //Toast.makeText(NewsfeedActivity.this, "Please turn on your internet connection", Toast.LENGTH_LONG).show();
+            }
+
+            mHandler.postDelayed(mHandlerTask, INTERVAL);
+        }
+    };
+
+    void checkConnectivity() {
+        mHandlerTask.run();
+    }
+
+    void stopCheckConnectivity() {
+        mHandler.removeCallbacks(mHandlerTask);
+    }
+
+    /*public class WifiReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            NetworkInfo info = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
+            if(info != null && info.isConnected()) {
+                // Do your work.
+
+                // e.g. To check the Network Name or other info:
+                WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+                WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                String ssid = wifiInfo.getSSID();
+            }
+        }
+    }*/
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -310,13 +379,13 @@ public class NewsfeedActivity extends AppCompatActivity
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(NewsfeedActivity.this,"Refreshing", Toast.LENGTH_SHORT).show();
+                Toast.makeText(NewsfeedActivity.this, "Refreshing", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
     }
 
@@ -342,7 +411,7 @@ public class NewsfeedActivity extends AppCompatActivity
     }
 
     public void navLocation() {
-        Intent intent =new Intent(NewsfeedActivity.this, MapsActivity.class);
+        Intent intent = new Intent(NewsfeedActivity.this, MapsActivity.class);
         intent.putExtra("TYPE", "viewing");
 
         startActivity(intent);
@@ -454,6 +523,16 @@ public class NewsfeedActivity extends AppCompatActivity
     }
 
 
+    //check internet connection
+    public boolean isConnectedToInternet() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED;
+    }
+
+
     /*
         thread
      */
@@ -503,7 +582,7 @@ public class NewsfeedActivity extends AppCompatActivity
         protected void onPostExecute(String message) {
             try {
 
-                if(message.equals("New notifications.")) {
+                if (message.equals("New notifications.")) {
 
                     Toast.makeText(NewsfeedActivity.this, "You have new notifications", Toast.LENGTH_SHORT).show();
 

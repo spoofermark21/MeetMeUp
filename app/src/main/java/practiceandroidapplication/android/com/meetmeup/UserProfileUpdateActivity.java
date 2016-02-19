@@ -102,6 +102,8 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
     String encodedImage, fileName, imgDecodableString;
 
     boolean isNewImage = false;
+    boolean hasSetNationalities = false;
+    String location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +150,42 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         functions
      */
 
+    public void checkNationalities() {
+        final ArrayList selectedNationalities = new ArrayList();
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select preferred nationalities")
+                .setMultiChoiceItems(ListNationalities.loadNationalitesSequence(), null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                        if (isChecked) {
+                            selectedNationalities.add(indexSelected);
+                        } else if (selectedNationalities.contains(indexSelected)) {
+                            selectedNationalities.remove(Integer.valueOf(indexSelected));
+                        }
+                        //to be finished @ after school
+                        //preferredNationalities = String.join(",",selectedNationalities);
+
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        hasSetNationalities = true;
+                        //location = "("
+                        for(int i=0; i < selectedNationalities.size(); i++) {
+                            location += selectedNationalities.get(i).toString();
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        selectedNationalities.clear();
+                        hasSetNationalities = false;
+                    }
+                }).create();
+        dialog.show();
+    }
+
     public void loadNationalities() {
         ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter<>(getApplicationContext(),
@@ -176,7 +214,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
         rdGender = (RadioGroup) findViewById(R.id.rd_gender);
         rdMale = (RadioButton) findViewById(R.id.rd_male);
         rdFemale = (RadioButton) findViewById(R.id.rd_female);
-        btnUpdate = (Button) findViewById(R.id.btn_update);
         spnNationality = (Spinner) findViewById(R.id.spn_natio);
 
         //show some toolbar button
@@ -277,55 +314,6 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
             }
         });
 
-        btnUpdate.setVisibility(View.GONE);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setVisibility(View.GONE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-
-                    if (formValidation()) {
-
-                        //for debugging purposes...
-                        Log.d("Birthdate", dateBirth.getYear() + "-" +
-                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
-
-                        updateUser.setFirstName(txtFirstname.getText().toString());
-                        updateUser.setLastName(txtLastname.getText().toString());
-                        //updateUser.setCurrentLocation(txtCurrentLocation.getText().toString());
-                        //updateUser.setCurrentLocation(spnLocation.getSelectedItem().toString());
-                        updateUser.setLocation(new Location(spnLocation.getSelectedItemPosition() + 1));
-
-                        updateUser.setEmailAddress(txtEmailAddress.getText().toString());
-                        updateUser.setContactNumber(txtContactNumber.getText().toString());
-                        updateUser.setNationality(new Nationality(spnNationality.getSelectedItemPosition() + 1,
-                                spnNationality.getSelectedItem().toString()));
-
-                        final RadioButton selectedGender = (RadioButton)
-                                findViewById(rdGender.getCheckedRadioButtonId());
-
-                        updateUser.setGender(selectedGender.getText().toString().charAt(0));
-
-                        //for testing
-                        Log.d("Gender", updateUser.getGender() + "");
-
-                        updateUser.setBirthDate(dateBirth.getYear() + "-" +
-                                dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
-
-                        new UpdateUser().execute(updateUser.getFirstName(),
-                                updateUser.getLastName(), updateUser.getBirthDate(),
-                                updateUser.getNationality().getId() + "", updateUser.getGender() + "", updateUser.getLocation().getId() + "",
-                                updateUser.getEmailAddress(), updateUser.getContactNumber());
-                    }
-
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
 
     } // end of initUI
 
@@ -364,7 +352,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 Log.d("Gender", updateUser.getGender() + "");
 
                 updateUser.setBirthDate(dateBirth.getYear() + "-" +
-                        dateBirth.getMonth() + "-" + dateBirth.getDayOfMonth());
+                        (dateBirth.getMonth() + 1) + "-" + dateBirth.getDayOfMonth());
 
                 new UpdateUser().execute(updateUser.getFirstName(),
                         updateUser.getLastName(), updateUser.getBirthDate(),
@@ -591,9 +579,9 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     String date[] = Str.split("-", 3);
 
                     dateBirth.updateDate(Integer.parseInt(date[0]),
-                            Integer.parseInt(date[1]), Integer.parseInt(date[2]));
+                            Integer.parseInt(date[1]) - 1, Integer.parseInt(date[2]));
 
-                    Interactions.showError(currentUser.getPrivacyFlag() + "", UserProfileUpdateActivity.this);
+                    //.showError(currentUser.getPrivacyFlag() + "", UserProfileUpdateActivity.this);
 
                     if(currentUser.getPrivacyFlag() == 'Y') {
                         privacyFlag.setChecked(true);

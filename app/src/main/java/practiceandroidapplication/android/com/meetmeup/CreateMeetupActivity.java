@@ -1,6 +1,7 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -8,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,6 +42,7 @@ import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
+import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
@@ -54,10 +57,6 @@ public class CreateMeetupActivity extends AppCompatActivity {
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
-    private GoogleMap googleMap;
-    MarkerOptions markerOptions;
-
-    LatLng latLng;
 
     JSONParser jsonParser = new JSONParser();
     ProgressDialog pDialog;
@@ -67,17 +66,15 @@ public class CreateMeetupActivity extends AppCompatActivity {
 
     Spinner spnGender, spnLocation;
 
-    Button btnCreate, btnFind;
+    Button btnSetMapLocation, btnSetPreferredNationalities;
+    String preferredNationalities;
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     Meetups meetups;
-
-    String meetupId;
     String location;
 
-    boolean isCreate = false;
-
+    private boolean hasSetNationalities = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,13 +92,9 @@ public class CreateMeetupActivity extends AppCompatActivity {
         });
 
         initUI();
+        Sessions.currentLocationLatitude = 0;
+        Sessions.currentLocationLongtitude = 0;
 
-        try {
-            // Loading map
-            initilizeMap();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -116,11 +109,32 @@ public class CreateMeetupActivity extends AppCompatActivity {
 
         if (id == R.id.action_save) {
             if (validateForm()) {
+
                 location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
-                if (location != null && !location.equals("")) {
-                    isCreate = true;
-                    new GeocoderTask().execute(location);
+                //for debugging
+                /*Interactions.showError("Lat " + Sessions.currentLocationLatitude + " Long " +
+                Sessions.currentLocationLongtitude, CreateMeetupActivity.this);*/
+
+                if(Sessions.currentLocationLatitude != 0 && Sessions.currentLocationLongtitude != 0) {
+
+                    char gender = spnGender.getSelectedItem().toString().charAt(0);
+                    meetups = new Meetups(txtSubjects.getText().toString(),
+                            txtDetails.getText().toString(),
+                            currentUser.getId(),
+                            location,
+                            //txtLocation.getText().toString(),
+                            new Preference(Integer.parseInt(txtStartAge.getText().toString()),
+                                    Integer.parseInt(txtEndAge.getText().toString()), gender));
+
+                    /*if(!hasSetNationalities) {
+                        Interactions.showError("No preferred nationalities set. This meetup will be visible to all",
+                                CreateMeetupActivity.this);
+                    }*/
+                    new CreateMeetups().execute();
+
+                } else {
+                    Interactions.showError("Please set a map location.", CreateMeetupActivity.this);
                 }
             }
         }
@@ -128,49 +142,9 @@ public class CreateMeetupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
         finish();
-    }
-
-    /**
-     * function to load map. If map is not created it will create it for you
-     * */
-    private void initilizeMap() {
-        if (googleMap == null) {
-            googleMap = ((MapFragment) getFragmentManager().findFragmentById(
-                    R.id.map)).getMap();
-
-            double latitude = 10.342887;
-            double longitude = 123.960722;
-
-            CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                    new LatLng(latitude, longitude)).zoom(12).build();
-
-            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-            /*MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title("Meetmeup developer home");
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-            googleMap.addMarker(marker);*/
-
-            googleMap.setMyLocationEnabled(true);
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setZoomGesturesEnabled(true);
-            googleMap.getUiSettings().setCompassEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            googleMap.getUiSettings().setRotateGesturesEnabled(true);
-            googleMap.getUiSettings().setTiltGesturesEnabled(true);
-            googleMap.getUiSettings().setIndoorLevelPickerEnabled(true);
-
-            // check if map is created successfully or not
-            if (googleMap == null) {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry! unable to create maps", Toast.LENGTH_SHORT)
-                        .show();
-            }
-        }
     }
 
     public void initUI() {
@@ -180,65 +154,89 @@ public class CreateMeetupActivity extends AppCompatActivity {
         txtStartAge = (EditText) findViewById(R.id.txt_min_age);
         txtEndAge = (EditText) findViewById(R.id.txt_max_age);
         spnGender = (Spinner) findViewById(R.id.spn_gender);
+
         spnLocation = (Spinner) findViewById(R.id.spn_location);
 
-        btnFind = (Button) findViewById(R.id.btn_find);
-        btnFind.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v){
-                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
-
-                if (location != null && !location.equals("")) {
-                    isCreate = false;
-                    new GeocoderTask().execute(location);
-                }
-            }
-        });
-
-        btnCreate = (Button) findViewById(R.id.btn_create);
-        btnCreate.setVisibility(View.GONE);
-        btnCreate.setOnClickListener(new View.OnClickListener() {
+        btnSetMapLocation = (Button) findViewById(R.id.btn_set_map);
+        btnSetMapLocation.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view) {
 
-                if (validateForm()) {
+                if(!txtLocation.getText().toString().trim().equals("")) {
+                    Intent intent = new Intent(CreateMeetupActivity.this, MapsActivity.class);
+                    intent.putExtra("TYPE", "creation");
 
-                    location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
-
-                    //Toast.makeText(CreateMeetupActivity.this, location + "!", Toast.LENGTH_SHORT).show();
-
-                    if (location != null && !location.equals("")) {
-                        isCreate = true;
-                        new GeocoderTask().execute(location);
+                    if(!spnLocation.getSelectedItem().toString().contains("Cebu")) {
+                        intent.putExtra("LOCATION", txtLocation.getText().toString() + ", "
+                                + spnLocation.getSelectedItem().toString() + ", Cebu");
+                    } else {
+                        intent.putExtra("LOCATION", txtLocation.getText().toString()
+                                + ", " + spnLocation.getSelectedItem().toString());
                     }
+                    startActivity(intent);
+                    txtLocation.setError(null);
+                } else {
+                    txtLocation.setError("Please set a location first");
                 }
+
+
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setVisibility(View.GONE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
-
-                //Toast.makeText(CreateMeetupActivity.this, location + "!", Toast.LENGTH_SHORT).show();
-
-                if (location != null && !location.equals("")) {
-                    isCreate = true;
-                    new GeocoderTask().execute(location);
-                }
+        btnSetPreferredNationalities = (Button) findViewById(R.id.btn_set_preference);
+        btnSetPreferredNationalities.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                checkNationalities();
             }
         });
 
         loadGender();
         loadLocations();
+        //set cebu as default
+        spnLocation.setSelection(16);
+    }
+
+    public void checkNationalities() {
+        final ArrayList selectedNationalities = new ArrayList();
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select preferred nationalities")
+                .setMultiChoiceItems(ListNationalities.loadNationalitesSequence(), null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                        if (isChecked) {
+                            selectedNationalities.add(indexSelected);
+                        } else if (selectedNationalities.contains(indexSelected)) {
+                            selectedNationalities.remove(Integer.valueOf(indexSelected));
+                        }
+                        //to be finished @ after school
+                        //preferredNationalities = String.join(",",selectedNationalities);
+
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        hasSetNationalities = true;
+                        //location = "("
+                        for(int i=0; i < selectedNationalities.size(); i++) {
+                            location += selectedNationalities.get(i).toString();
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        selectedNationalities.clear();
+                        hasSetNationalities = false;
+                    }
+                }).create();
+        dialog.show();
     }
 
     public void loadGender() {
         List<String> listGender = new ArrayList<>();
 
+        listGender.add("Both");
         listGender.add("Male");
         listGender.add("Female");
-        listGender.add("Both");
 
         ArrayAdapter<String> adapter;
         adapter = new ArrayAdapter<>(getApplicationContext(),
@@ -255,96 +253,7 @@ public class CreateMeetupActivity extends AppCompatActivity {
         spnLocation.setAdapter(adapter);
     }
 
-    private class GeocoderTask extends AsyncTask<String, Void, List<Address>> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(CreateMeetupActivity.this, R.style.progress);
-            pDialog.setCancelable(true);
-            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-            pDialog.setMessage("Searching location...");
-            pDialog.show();
-        }
-
-        @Override
-        protected List<Address> doInBackground(String... locationName) {
-            Geocoder geocoder = new Geocoder(getBaseContext());
-            List<Address> addresses = null;
-
-            try {
-                // Getting a maximum of 3 Address that matches the input text
-                addresses = geocoder.getFromLocationName(locationName[0], 3);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return addresses;
-        }
-
-        @Override
-        protected void onPostExecute(List<Address> addresses) {
-            pDialog.dismiss();
-            if (addresses == null || addresses.size() == 0) {
-                Toast.makeText(CreateMeetupActivity.this, "No Location found", Toast.LENGTH_SHORT).show();
-            } else {
-                char gender = spnGender.getSelectedItem().toString().charAt(0);
-
-                try {
-
-                    googleMap.clear();
-
-                    Address address = addresses.get(0);
-
-                    latLng = new LatLng(address.getLatitude(), address.getLongitude());
-
-                    String addressText = String.format("%s %s",
-                            address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-                            address.getCountryName());
-
-                    CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                            new LatLng(address.getLatitude(),
-                                    address.getLongitude())).zoom(17).build();
-
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                    /*MarkerOptions marker = new MarkerOptions().position(new LatLng(address.getLatitude(),
-                            address.getLongitude()));
-                    marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-                    googleMap.addMarker(marker);*/
-
-                    markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    markerOptions.title(addressText);
-
-                    googleMap.addMarker(markerOptions);
-
-                    //googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                    if(isCreate) {
-                        meetups = new Meetups(txtSubjects.getText().toString(),
-                                txtDetails.getText().toString(),
-                                currentUser.getId(),
-                                location,
-                                //txtLocation.getText().toString(),
-                                new Preference(Integer.parseInt(txtStartAge.getText().toString()),
-                                        Integer.parseInt(txtEndAge.getText().toString()), gender));
-
-                        meetups.setLattitude(address.getLatitude() + "");
-                        meetups.setLongtitude(address.getLongitude() + "");
-
-                        new CreateMeetups().execute();
-                    }
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-                // if btn is click trigger create meetups
-            }
-
-        }
-    }
 
     public boolean validateForm() {
         boolean isReadyToSave = true;
@@ -378,6 +287,14 @@ public class CreateMeetupActivity extends AppCompatActivity {
             isReadyToSave = false;
         } else
             txtEndAge.setError(null);
+
+        try {
+            if(Integer.parseInt(txtStartAge.getText().toString()) > Integer.parseInt(txtEndAge.getText().toString())) {
+                Interactions.showError("Min age must not be greater than Max age", CreateMeetupActivity.this);
+                isReadyToSave = false;
+            }
+        } catch (Exception ex) {}
+
 
         return isReadyToSave;
     }
@@ -415,8 +332,9 @@ public class CreateMeetupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("end_age", meetups.getPreference().getEndAge() + ""));
                 params.add(new BasicNameValuePair("gender", meetups.getPreference().getGender() + ""));
                 params.add(new BasicNameValuePair("user_id", meetups.getPostedBy() + ""));
-                params.add(new BasicNameValuePair("lattitude", meetups.getLattitude() + ""));
-                params.add(new BasicNameValuePair("longtitude", meetups.getLongtitude() + ""));
+                params.add(new BasicNameValuePair("lattitude", Sessions.currentLocationLatitude + ""));
+                params.add(new BasicNameValuePair("longtitude", Sessions.currentLocationLongtitude + ""));
+
 
                 Log.d("request!", "starting");
 
@@ -447,7 +365,6 @@ public class CreateMeetupActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(CreateMeetupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
-                    btnCreate.setEnabled(false);
                     new Thread() {
                         public void run() {
                             try {
@@ -459,6 +376,8 @@ public class CreateMeetupActivity extends AppCompatActivity {
                             }
                         }
                     }.start();
+                } else {
+                    Toast.makeText(getBaseContext(), "Unsuccessful", Toast.LENGTH_LONG).show();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +30,7 @@ import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
+import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
 import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 
 public class EditMeetupActivity extends AppCompatActivity {
@@ -79,6 +82,42 @@ public class EditMeetupActivity extends AppCompatActivity {
         new RetrieveMeetups().execute();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateForm()) {
+
+                char gender = spnGender.getSelectedItem().toString().charAt(0);
+
+                try {
+
+                    updateMeetups = new Meetups(txtSubjects.getText().toString(),
+                            txtDetails.getText().toString(),
+                            currentUser.getId(),
+                            txtLocation.getText().toString(),
+                            new Preference(Integer.parseInt(txtStartAge.getText().toString()),
+                                    Integer.parseInt(txtEndAge.getText().toString()), gender));
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+
+                new UpdateMeetups().execute();
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void initUI() {
         txtSubjects = (EditText) findViewById(R.id.txt_subject);
         txtDetails = (EditText) findViewById(R.id.txt_details);
@@ -89,32 +128,6 @@ public class EditMeetupActivity extends AppCompatActivity {
 
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollView.setVisibility(View.INVISIBLE);
-
-        btnUpdate = (Button) findViewById(R.id.btn_update);
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (validateForm()) {
-
-                    char gender = spnGender.getSelectedItem().toString().charAt(0);
-
-                    try {
-
-                        updateMeetups = new Meetups(txtSubjects.getText().toString(),
-                                txtDetails.getText().toString(),
-                                currentUser.getId(),
-                                txtLocation.getText().toString(),
-                                new Preference(Integer.parseInt(txtStartAge.getText().toString()),
-                                        Integer.parseInt(txtEndAge.getText().toString()), gender));
-
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-
-                    new UpdateMeetups().execute();
-                }
-            }
-        });
 
         loadGender();
     }
@@ -228,7 +241,7 @@ public class EditMeetupActivity extends AppCompatActivity {
                     jUserObject = jUserArray.getJSONObject(0);
 
                     meetups = new Meetups(jUserObject.getString("subject"),
-                            jUserObject.getString("details"),jUserObject.getInt("posted_by"), jUserObject.getString("location"),
+                            jUserObject.getString("details"), jUserObject.getInt("posted_by"), jUserObject.getString("location"),
                             new Preference(Integer.parseInt(jUserObject.getString("pref_start_age")),
                                     Integer.parseInt(jUserObject.getString("pref_end_age")),
                                     jUserObject.getString("pref_gender").charAt(0)));
@@ -260,10 +273,10 @@ public class EditMeetupActivity extends AppCompatActivity {
                     txtDetails.setText(meetups.getDetails());
                     txtLocation.setText(meetups.getLocation());
 
-                    txtStartAge.setText(meetups.getPreference().getStartAge() +"");
-                    txtEndAge.setText(meetups.getPreference().getEndAge() +"");
+                    txtStartAge.setText(meetups.getPreference().getStartAge() + "");
+                    txtEndAge.setText(meetups.getPreference().getEndAge() + "");
 
-                    if(meetups.getPreference().getGender() == 'M')
+                    if (meetups.getPreference().getGender() == 'M')
                         spnGender.setSelection(0);
                     else if (meetups.getPreference().getGender() == 'F')
                         spnGender.setSelection(1);

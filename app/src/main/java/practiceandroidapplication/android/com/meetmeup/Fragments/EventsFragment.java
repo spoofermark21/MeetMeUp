@@ -161,6 +161,8 @@ public class EventsFragment extends Fragment {
 
             final ImageView eventPostedByImage = new ImageView(getActivity());
             eventPostedByImage.setBackgroundColor(Color.parseColor("#E6E9ED"));
+            eventPostedByImage.setLayoutParams(imageEventParams);
+            eventPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
 
             final TextView eventPostedBy = new TextView(getActivity());
             eventPostedBy.setText(event.getPostedByName());
@@ -216,9 +218,20 @@ public class EventsFragment extends Fragment {
 
                 }
 
-                new DownloadEventImage(event.getPostedUserImage() + ".JPG").execute();
-                eventPostedByImage.setLayoutParams(imageEventParams);
-                eventPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                final String image = event.getPostedUserImage();
+                new Thread() {
+                    public void run() {
+                        try {
+                            sleep(600);
+                            new DownloadEventImage(image + ".JPG").execute();
+                        } catch (Exception ex) {
+                        }
+
+                    }
+                }.start();
+
+            } else {
+                eventPostedByImage.setImageResource(R.drawable.user_u);
             }
 
 

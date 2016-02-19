@@ -157,7 +157,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     user.setBirthDate(jUserObject.getString("bdate"));
                     user.setNationality(new Nationality(jUserObject.getInt("natio_id")));
                     user.setGender(jUserObject.getString("gender").charAt(0));
-                    user.setCurrentLocation(jUserObject.getString("current_location"));
+                    user.setCurrentLocation(jUserObject.getString("location"));
                     user.setEmailAddress(jUserObject.getString("email_address"));
                     user.setContactNumber(jUserObject.getString("contact_number"));
                     user.setPrivacyFlag(jUserObject.getString("privacy_flag").charAt(0));

@@ -1,6 +1,7 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,11 +11,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -90,35 +94,41 @@ public class CreateGroupActivity extends AppCompatActivity {
         setSupportActionBar(toolBar);
         toolBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
+                startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
                 finish();
             }
         });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (validateForm() && !isClickSave) {
-
-                    createGroup = new Group(txtGroupName.getText().toString(),
-                            txtDetails.getText().toString(), currentUser.getId());
-
-                    new CreateGroup().execute(createGroup.getGroupName(), createGroup.getDetails(),
-                            createGroup.getCreatedBy() + "");
-                    //boolean flag to avoid multiple creation
-                    isClickSave = true;
-                }
-            }
-        });
-
+        
         initUI();
 
-        //Log.d("Random", Interactions.generateString(new Random(), "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10));
-        //sample download image 22/01/2016
-        //new DownloadGroupImage("file.JPG").execute();
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateForm() && !isClickSave) {
+
+                createGroup = new Group(txtGroupName.getText().toString(),
+                        txtDetails.getText().toString(), currentUser.getId());
+
+                new CreateGroup().execute(createGroup.getGroupName(), createGroup.getDetails(),
+                        createGroup.getCreatedBy() + "");
+                //boolean flag to avoid multiple creation
+                isClickSave = true;
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void initUI() {
@@ -137,22 +147,6 @@ public class CreateGroupActivity extends AppCompatActivity {
             }
         });
 
-        btnSave = (Button) findViewById(R.id.btn_create);
-        btnSave.setVisibility(View.GONE);
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (validateForm() && !isClickSave) {
-
-                    createGroup = new Group(txtGroupName.getText().toString(),
-                            txtDetails.getText().toString(), currentUser.getId());
-
-                    new CreateGroup().execute(createGroup.getGroupName(), createGroup.getDetails(),
-                            createGroup.getCreatedBy() + "");
-                    //boolean flag to avoid multiple creation
-                    isClickSave = true;
-                }
-            }
-        });
     }
 
     public boolean validateForm() {
@@ -212,7 +206,7 @@ public class CreateGroupActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
-        //startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
+        startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
         finish();
     }
 
@@ -292,8 +286,18 @@ public class CreateGroupActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
-                Toast.makeText(CreateGroupActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
-
+                //Toast.makeText(CreateGroupActivity.this, "Upload successful!", Toast.LENGTH_SHORT).show();
+                new Thread() {
+                    public void run() {
+                        try {
+                            sleep(100);
+                            startActivity(new Intent(CreateGroupActivity.this, GroupActivity.class));
+                            finish();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }.start();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -341,7 +345,7 @@ public class CreateGroupActivity extends AppCompatActivity {
         protected void onPostExecute(Bitmap bitmap) {
             pDialog.dismiss();
             try {
-                if(bitmap!=null) {
+                if (bitmap != null) {
                     imgGroup.setImageBitmap(bitmap);
                 }
             } catch (Exception ex) {
@@ -380,8 +384,8 @@ public class CreateGroupActivity extends AppCompatActivity {
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
                 //group image file name
-                if(isNewImage) {
-                    fileName = Interactions.generateString(new Random(),"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
+                if (isNewImage) {
+                    fileName = Interactions.generateString(new Random(), "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
                 } else {
                     fileName = "";
                 }
@@ -419,23 +423,11 @@ public class CreateGroupActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     //upload image to server
-                    if(isNewImage) {
+                    if (isNewImage) {
                         Bitmap image = ((BitmapDrawable) imgGroup.getDrawable()).getBitmap();
                         new UploadGroupImage(image, fileName, "groups").execute();
                     }
-
-
-                    Toast.makeText(CreateGroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
-                    /*new Thread() {
-                        public void run() {
-                            try {
-                                sleep(100);
-                                finish();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }.start();*/
+                    //Toast.makeText(CreateGroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                 } else {
                     isClickSave = false;
                 }
