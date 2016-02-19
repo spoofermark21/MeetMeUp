@@ -142,7 +142,7 @@ public class EventsActivity extends AppCompatActivity {
             eventLocation.setTextColor(Color.BLACK);
 
             final TextView startDate = new TextView(this);
-            startDate.setText("Start Date: " + event.getEndDate());
+            startDate.setText("Start Date: " + event.getStartDate());
             startDate.setTextSize(15);
             startDate.setTextColor(Color.BLACK);
 
@@ -251,9 +251,10 @@ public class EventsActivity extends AppCompatActivity {
                     Intent event = new Intent(EventsActivity.this, EditEventsActivity.class);
                     event.putExtra("EVENT_ID", eventId);
                     startActivity(event);
+                    finish();
 
-                    Toast.makeText(EventsActivity.this, name.getText().toString() + "! "
-                            + key.getText().toString(), Toast.LENGTH_SHORT).show();
+                    /*Toast.makeText(EventsActivity.this, name.getText().toString() + "! "
+                            + key.getText().toString(), Toast.LENGTH_SHORT).show();*/
 
                 }
             });

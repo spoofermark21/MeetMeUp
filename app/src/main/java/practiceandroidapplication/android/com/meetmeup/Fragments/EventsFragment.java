@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -42,6 +43,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 import practiceandroidapplication.android.com.meetmeup.R;
 import practiceandroidapplication.android.com.meetmeup.ViewEventsActivity;
+import practiceandroidapplication.android.com.meetmeup.ViewMapsActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewMeetupsActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewProfileActivity;
 
@@ -97,6 +99,16 @@ public class EventsFragment extends Fragment {
                 new RetrieveEvents().execute();
             }
         });*/
+
+        //refresh thread
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new RetrieveEvents().execute();
+            }
+        });
+
 
         new RetrieveEvents().execute();
     }
@@ -271,6 +283,7 @@ public class EventsFragment extends Fragment {
             LinearLayout options = new LinearLayout(getActivity());
             options.setOrientation(LinearLayout.HORIZONTAL);
             options.setLayoutParams(optionLayout);
+            options.setTag(event.getLattitude() + "," + event.getLongtitude());
 
             final LinearLayout.LayoutParams btnLayout = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
             btnLayout.weight = 1.0f;
@@ -335,8 +348,16 @@ public class EventsFragment extends Fragment {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
 
-                    Intent events = new Intent(getActivity(), ViewEventsActivity.class);
+                    Intent events = new Intent(getActivity(), ViewMapsActivity.class);
                     events.putExtra("EVENTS_ID", parent.getTag() + "");
+
+                    Log.d("Location", parent.getTag() + "");
+
+                    String Str = new String(parent.getTag() + "");
+                    String location[] = Str.split(",", 3);
+
+                    events.putExtra("LATTITUDE", location[0]);
+                    events.putExtra("LONGTITUDE", location[1]);
 
                     Log.d("EVENTS_ID", parent.getTag() + "");
 
@@ -457,6 +478,9 @@ class RetrieveEvents extends AsyncTask<String, String, String> {
                     event.setPostedByName(jUserObject.getString("posted_by_user"));
                     event.setPostedUserImage(jUserObject.getString("user_image"));
                     event.setPostedDate(jUserObject.getString("time_diff"));
+
+                    event.setLattitude(jUserObject.getDouble("lattitude"));
+                    event.setLongtitude(jUserObject.getDouble("longtitude"));
 
                     currentEvents.add(event);
 

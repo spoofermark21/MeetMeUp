@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -98,12 +99,13 @@ public class GroupsFragment extends Fragment {
         listOfGroups.setVisibility(View.INVISIBLE);
         lblMessage.setVisibility(View.GONE);
 
-        /*btnGroup = (Button) getActivity().findViewById(R.id.btn_groups);
-        btnGroup.setOnClickListener(new View.OnClickListener(){
+        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View view) {
                 new RetrieveGroups().execute();
             }
-        });*/
+        });
 
         new RetrieveGroups().execute();
     }

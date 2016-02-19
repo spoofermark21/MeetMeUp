@@ -145,7 +145,7 @@ public class GroupActivity extends AppCompatActivity {
             groupDetails.setTextColor(Color.BLACK);
 
             final TextView groupCreatedBy = new TextView(this);
-            groupCreatedBy.setText(group.getDetails());
+            groupCreatedBy.setText("Created by " + group.getCreatedByName());
             groupCreatedBy.setTextSize(15);
             groupCreatedBy.setTextColor(Color.BLACK);
 
@@ -225,6 +225,7 @@ public class GroupActivity extends AppCompatActivity {
                     Intent group = new Intent(GroupActivity.this, EditGroupActivity.class);
                     group.putExtra("GROUP_ID", parent.getTag() + "");
                     startActivity(group);
+                    finish();
 
                     Toast.makeText(GroupActivity.this, parent.getTag() + "!", Toast.LENGTH_SHORT).show();
 
@@ -318,7 +319,6 @@ public class GroupActivity extends AppCompatActivity {
             //recordOfGroups.addView(groupImage);
             recordOfGroups.addView(groupName);
             recordOfGroups.addView(groupDetails);
-            recordOfGroups.addView(groupCountMembers);
 
             if(group.getCreatedBy() == currentUser.getId()) {
                 options.addView(edit);
@@ -328,10 +328,11 @@ public class GroupActivity extends AppCompatActivity {
                 recordOfGroups.addView(groupCreatedBy);
             }
 
+            recordOfGroups.addView(groupCountMembers);
+
             recordOfGroups.addView(options);
 
             listOfGroups.addView(recordOfGroups);
-
         }
     }
 

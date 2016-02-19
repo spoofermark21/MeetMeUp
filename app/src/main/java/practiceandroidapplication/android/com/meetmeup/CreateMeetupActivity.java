@@ -39,11 +39,14 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Location;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
+import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
@@ -54,6 +57,8 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class CreateMeetupActivity extends AppCompatActivity {
 
     private static final String CREATE_MEETUP_URL = Network.forDeploymentIp + "meetmeup_save.php";
+    private static final String INSERT_PREF_URL = Network.forDeploymentIp + "pref_natio_save.php";
+
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -74,6 +79,9 @@ public class CreateMeetupActivity extends AppCompatActivity {
     Meetups meetups;
     String location;
 
+    List<Nationality> listOfNationalities = new ArrayList<>();
+
+    String randomKey = "";
     private boolean hasSetNationalities = false;
 
     @Override
@@ -116,7 +124,7 @@ public class CreateMeetupActivity extends AppCompatActivity {
                 /*Interactions.showError("Lat " + Sessions.currentLocationLatitude + " Long " +
                 Sessions.currentLocationLongtitude, CreateMeetupActivity.this);*/
 
-                if(Sessions.currentLocationLatitude != 0 && Sessions.currentLocationLongtitude != 0) {
+                if (Sessions.currentLocationLatitude != 0 && Sessions.currentLocationLongtitude != 0) {
 
                     char gender = spnGender.getSelectedItem().toString().charAt(0);
                     meetups = new Meetups(txtSubjects.getText().toString(),
@@ -158,14 +166,14 @@ public class CreateMeetupActivity extends AppCompatActivity {
         spnLocation = (Spinner) findViewById(R.id.spn_location);
 
         btnSetMapLocation = (Button) findViewById(R.id.btn_set_map);
-        btnSetMapLocation.setOnClickListener(new View.OnClickListener(){
+        btnSetMapLocation.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                if(!txtLocation.getText().toString().trim().equals("")) {
+                if (!txtLocation.getText().toString().trim().equals("")) {
                     Intent intent = new Intent(CreateMeetupActivity.this, MapsActivity.class);
                     intent.putExtra("TYPE", "creation");
 
-                    if(!spnLocation.getSelectedItem().toString().contains("Cebu")) {
+                    if (!spnLocation.getSelectedItem().toString().contains("Cebu")) {
                         intent.putExtra("LOCATION", txtLocation.getText().toString() + ", "
                                 + spnLocation.getSelectedItem().toString() + ", Cebu");
                     } else {
@@ -183,8 +191,8 @@ public class CreateMeetupActivity extends AppCompatActivity {
         });
 
         btnSetPreferredNationalities = (Button) findViewById(R.id.btn_set_preference);
-        btnSetPreferredNationalities.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View view){
+        btnSetPreferredNationalities.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
                 checkNationalities();
             }
         });
@@ -210,15 +218,19 @@ public class CreateMeetupActivity extends AppCompatActivity {
                         }
                         //to be finished @ after school
                         //preferredNationalities = String.join(",",selectedNationalities);
-
                     }
                 }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         hasSetNationalities = true;
-                        //location = "("
-                        for(int i=0; i < selectedNationalities.size(); i++) {
-                            location += selectedNationalities.get(i).toString();
+                        for (int i = 0; i < selectedNationalities.size(); i++) {
+                            listOfNationalities.add(
+                                    new Nationality(Integer.parseInt(selectedNationalities.get(i).toString()) + 1));
+
+                            Log.d("nationality", i + " " + Integer.parseInt(selectedNationalities.get(i).toString()) + 1);
+
+                            location += "('" + Integer.parseInt(selectedNationalities.get(i).toString()) +"','M')";
+                            Log.d("location", location);
                         }
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -252,7 +264,6 @@ public class CreateMeetupActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(R.layout.spinner_layout);
         spnLocation.setAdapter(adapter);
     }
-
 
 
     public boolean validateForm() {
@@ -289,11 +300,12 @@ public class CreateMeetupActivity extends AppCompatActivity {
             txtEndAge.setError(null);
 
         try {
-            if(Integer.parseInt(txtStartAge.getText().toString()) > Integer.parseInt(txtEndAge.getText().toString())) {
+            if (Integer.parseInt(txtStartAge.getText().toString()) > Integer.parseInt(txtEndAge.getText().toString())) {
                 Interactions.showError("Min age must not be greater than Max age", CreateMeetupActivity.this);
                 isReadyToSave = false;
             }
-        } catch (Exception ex) {}
+        } catch (Exception ex) {
+        }
 
 
         return isReadyToSave;
@@ -308,7 +320,7 @@ public class CreateMeetupActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(CreateMeetupActivity.this, R.style.progress);
-            pDialog.setCancelable(true);
+            pDialog.setCancelable(false);
             pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
             pDialog.show();
         }
@@ -321,7 +333,7 @@ public class CreateMeetupActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
@@ -334,6 +346,11 @@ public class CreateMeetupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("user_id", meetups.getPostedBy() + ""));
                 params.add(new BasicNameValuePair("lattitude", Sessions.currentLocationLatitude + ""));
                 params.add(new BasicNameValuePair("longtitude", Sessions.currentLocationLongtitude + ""));
+
+                randomKey = Interactions.generateString(new Random(),
+                        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 10);
+
+                params.add(new BasicNameValuePair("random_key", randomKey));
 
 
                 Log.d("request!", "starting");
@@ -365,10 +382,15 @@ public class CreateMeetupActivity extends AppCompatActivity {
             try {
                 if (message.equals("Successful")) {
                     Toast.makeText(CreateMeetupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+
+                    for(Nationality nationality : listOfNationalities) {
+                        new InsertPrefNationalities(nationality.getId() + "").execute();
+                    }
+
                     new Thread() {
                         public void run() {
                             try {
-                                sleep(500);
+                                sleep(100);
                                 startActivity(new Intent(CreateMeetupActivity.this, MeetupsActivity.class));
                                 finish();
                             } catch (Exception ex) {
@@ -376,11 +398,83 @@ public class CreateMeetupActivity extends AppCompatActivity {
                             }
                         }
                     }.start();
+
                 } else {
                     Toast.makeText(getBaseContext(), "Unsuccessful", Toast.LENGTH_LONG).show();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+            }
+        }
+
+        class InsertPrefNationalities extends AsyncTask<String, String, String> {
+
+            String natioId;
+
+            public InsertPrefNationalities(String natioId) {
+                this.natioId = natioId;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                pDialog = new ProgressDialog(CreateMeetupActivity.this, R.style.progress);
+                pDialog.setCancelable(false);
+                pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+                pDialog.show();
+            }
+
+            @Override
+            protected String doInBackground(String... meetupInfo) {
+                // TODO Auto-generated method stub
+
+                int success;
+
+                try {
+                    // Building Parameters
+                    List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+                    Log.d("USER_ID (user)", currentUser.getId() + "");
+
+                    params.add(new BasicNameValuePair("random_key", randomKey));
+                    params.add(new BasicNameValuePair("natio_id", this.natioId));
+                    params.add(new BasicNameValuePair("natio_type", "M"));
+
+                    Log.d("request!", "starting");
+
+                    JSONObject json = jsonParser.makeHttpRequest(
+                            INSERT_PREF_URL, "POST", params);
+
+                    Log.d("Saving...", json.toString());
+
+                    success = json.getInt(TAG_STATUS);
+
+                    if (success == 1) {
+                        Log.d("Success!", json.toString());
+
+                        return json.getString(TAG_RESPONSE);
+                    } else {
+                        Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                        return json.getString(TAG_RESPONSE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+
+            protected void onPostExecute(String message) {
+                pDialog.dismiss();
+                try {
+                    if (message.equals("Successful")) {
+                        Log.d("Pref", "Success");
+                    } else {
+                        //Toast.makeText(getBaseContext(), "Unsuccessful", Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }

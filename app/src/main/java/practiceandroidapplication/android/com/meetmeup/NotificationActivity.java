@@ -85,8 +85,16 @@ public class NotificationActivity extends AppCompatActivity {
         lblMessage = (TextView) findViewById(R.id.lbl_message);
         lblMessage.setVisibility(View.GONE);
 
-        new RetrieveNotifications().execute();
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        new RetrieveNotifications().execute();
     }
 
     public void displayNotifs() {
@@ -267,15 +275,15 @@ public class NotificationActivity extends AppCompatActivity {
                 }
             });
 
-            if(notif.getDetails().contains("join")) {
-                if(notif.getDetails().contains("group")) {
+            if (notif.getDetails().contains("join")) {
+                if (notif.getDetails().contains("group")) {
                     options.addView(acceptGroup);
                 } else {
                     options.addView(acceptEventMeetup);
                 }
 
                 Toast.makeText(NotificationActivity.this, "Join", Toast.LENGTH_SHORT).show();
-            } else if(notif.getDetails().contains("comment")) {
+            } else if (notif.getDetails().contains("comment")) {
                 Toast.makeText(NotificationActivity.this, "Comment", Toast.LENGTH_SHORT).show();
                 options.addView(view);
             }

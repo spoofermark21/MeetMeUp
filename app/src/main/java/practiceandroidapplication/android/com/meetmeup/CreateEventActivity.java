@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -33,7 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
+import practiceandroidapplication.android.com.meetmeup.Entity.Group;
 import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
+import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
@@ -43,6 +47,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 public class CreateEventActivity extends AppCompatActivity {
 
     private static final String CREATE_EVENT_URL = Network.forDeploymentIp + "event_save.php";
+    private static final String RETRIEVE_GROUP_URL = Network.forDeploymentIp + "group_retrieve.php";
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -63,13 +68,21 @@ public class CreateEventActivity extends AppCompatActivity {
 
     Button btnCreate, btnSetMapLocation;
 
+    public static List<Group> listOfGroups = new ArrayList<>();
+
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     Events events = new Events();
     String location;
 
     boolean isCreate = false;
-    boolean isSet = false;
+    boolean hasSetGroup = false;
+    char createdBy = 'A';
+
+    Group group;
+
+    int selectedGroup;
+    //boolean isSet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +108,9 @@ public class CreateEventActivity extends AppCompatActivity {
         loadLocations();
         //set cebu as default
         spnLocation.setSelection(16);
+
+        //retrieve the groups of the user
+        new RetrieveGroups().execute();
     }
 
     @Override
@@ -111,8 +127,8 @@ public class CreateEventActivity extends AppCompatActivity {
             if (validateForm()) {
                 location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
 
-                Interactions.showError("Lat " + Sessions.currentLocationLatitude + " Long " +
-                        Sessions.currentLocationLongtitude, CreateEventActivity.this);
+                /*Interactions.showError("Lat " + Sessions.currentLocationLatitude + " Long " +
+                        Sessions.currentLocationLongtitude, CreateEventActivity.this);*/
 
                 if (Sessions.currentLocationLatitude != 0 && Sessions.currentLocationLongtitude != 0) {
                     if (validateForm()) {
@@ -140,27 +156,24 @@ public class CreateEventActivity extends AppCompatActivity {
                             dlgAlert.setPositiveButton("Your account",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
-                                            isSet = true;
+                                            createdBy = 'U';
+                                            new CreateEvent().execute();
                                         }
                                     });
 
                             dlgAlert.setNegativeButton("Your group",
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
-                                            isSet = true;
+                                            selectGroup();
                                         }
                                     });
 
                             dlgAlert.create().show();
 
-
-                            new CreateEvent().execute();
-
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
 
-                        //new CreateEvent().execute();
                     }
                 } else {
                     Interactions.showError("Please set a map location.", CreateEventActivity.this);
@@ -169,6 +182,46 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void selectGroup() {
+        //final ArrayList selectedGroup = new ArrayList();
+
+        AlertDialog dialog1 = new AlertDialog.Builder(this)
+                .setTitle("Select group")
+                .setSingleChoiceItems(loadGroups(), 1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedGroup = which;
+                        Log.d("Group" , selectedGroup + "");
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        createdBy = 'G';
+                        group = listOfGroups.get(selectedGroup);
+                        Log.d("Group id", group.getId() + "");
+                        new CreateEvent().execute();
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        hasSetGroup = false;
+                        selectedGroup = -1;
+                    }
+                }).create();
+        dialog1.show();
+    }
+
+    public static CharSequence[] loadGroups() {
+        List<String> list = new ArrayList<>();
+
+        for (Group group : listOfGroups) {
+            Log.d(group.getId() + " ", group.getGroupName());
+            list.add(group.getGroupName());
+        }
+
+        return list.toArray(new CharSequence[list.size()]);
     }
 
     public void initUI() {
@@ -287,11 +340,17 @@ public class CreateEventActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
-                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                if(createdBy == 'U') {
+                    params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                } else if(createdBy == 'G') {
+                    params.add(new BasicNameValuePair("user_id", group.getId() + ""));
+                }
+
+                params.add(new BasicNameValuePair("posted_by", createdBy + ""));
                 params.add(new BasicNameValuePair("event_name", events.getEventName()));
                 params.add(new BasicNameValuePair("details", events.getDetails()));
                 params.add(new BasicNameValuePair("location", events.getLocation()));
@@ -350,5 +409,81 @@ public class CreateEventActivity extends AppCompatActivity {
                 ex.printStackTrace();
             }
         }
+    }
+
+    class RetrieveGroups extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(CreateEventActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... userInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("query_type", "create_event"));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        RETRIEVE_GROUP_URL, "POST", params);
+
+                Log.d("Fetching...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    JSONArray jUserArray = json.getJSONArray("group");
+                    JSONObject jUserObject;
+
+                    for (int i = 0; i < jUserArray.length(); i++) {
+                        jUserObject = jUserArray.getJSONObject(i);
+
+                        listOfGroups.add(new Group(jUserObject.getInt("id"),
+                                jUserObject.getString("group_name"), jUserObject.getString("details"),
+                                jUserObject.getInt("created_by"), jUserObject.getString("created_date"),
+                                jUserObject.getInt("count_members")));
+
+                        Log.d("ID:", jUserObject.getInt("id") + "");
+                    }
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
     }
 }

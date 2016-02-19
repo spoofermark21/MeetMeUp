@@ -121,7 +121,7 @@ public class EditEventsActivity extends AppCompatActivity {
                     events.setStartDate(startDate.getYear() + "-" + (startDate.getMonth() + 1)
                             + "-" + startDate.getDayOfMonth());
 
-                    events.setEndDate(endDate.getYear() + "-" + (startDate.getMonth() + 1)
+                    events.setEndDate(endDate.getYear() + "-" + (endDate.getMonth() + 1)
                             + "-" + endDate.getDayOfMonth());
 
                     Log.d("Date", events.getStartDate() + " " + events.getEndDate() + 1);

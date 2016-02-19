@@ -105,6 +105,7 @@ public class EditGroupActivity extends AppCompatActivity {
         toolBar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(EditGroupActivity.this, GroupActivity.class));
                 finish();
             }
         });
@@ -144,13 +145,13 @@ public class EditGroupActivity extends AppCompatActivity {
         txtGroupName = (EditText) findViewById(R.id.txt_group_name);
         txtDetails = (EditText) findViewById(R.id.txt_details);
 
-        listMembers = (ListView) findViewById(R.id.list_members);
-        lblMembers = (TextView) findViewById(R.id.lbl_members);
+        /*listMembers = (ListView) findViewById(R.id.list_members);
+        lblMembers = (TextView) findViewById(R.id.lbl_members);*/
 
         imgGroup = (ImageView) findViewById(R.id.img_group);
 
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
-        scrollView.setVisibility(View.INVISIBLE);
+        scrollView.setVisibility(View.GONE);
 
         btnImage = (Button) findViewById(R.id.btn_image);
         btnImage.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +222,7 @@ public class EditGroupActivity extends AppCompatActivity {
     }
 
     public void onBackPressed() {
+        startActivity(new Intent(EditGroupActivity.this, GroupActivity.class));
         finish();
     }
 
@@ -310,6 +312,7 @@ public class EditGroupActivity extends AppCompatActivity {
         protected void onPostExecute(String message) {
             pDialog.dismiss();
             try {
+                scrollView.setVisibility(View.VISIBLE);
                 if (message.equals("Successful")) {
 
                     Toast.makeText(EditGroupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
@@ -317,7 +320,7 @@ public class EditGroupActivity extends AppCompatActivity {
                     txtGroupName.setText(group.getGroupName());
                     txtDetails.setText(group.getDetails());
 
-                    if(group.getTotalMembers() != 0) {
+                    /*if(group.getTotalMembers() != 0) {
                         groupAdapter = new ArrayAdapter<String>(EditGroupActivity.this,
                                 android.R.layout.simple_list_item_1, memberName);
 
@@ -329,10 +332,8 @@ public class EditGroupActivity extends AppCompatActivity {
                             public void onItemClick(AdapterView<?> parent, View view,
                                                     int position, long id) {
 
-                                // ListView Clicked item index
                                 int itemPosition = position;
 
-                                // ListView Clicked item value
                                 String itemValue = (String) listMembers.getItemAtPosition(position);
 
                                 // Show Alert
@@ -344,7 +345,7 @@ public class EditGroupActivity extends AppCompatActivity {
                     } else {
                         lblMembers.setText("No member");
                         listMembers.setVisibility(View.GONE);
-                    }
+                    }*/
 
                     //sample download image 22/01/2016
                     try {
@@ -476,7 +477,7 @@ public class EditGroupActivity extends AppCompatActivity {
 
                 return BitmapFactory.decodeStream((InputStream) connection.getContent(), null, null);
             } catch (FileNotFoundException ex) {
-                Interactions.showError("File not found", EditGroupActivity.this);
+                //Interactions.showError("File not found", EditGroupActivity.this);
                 return null;
             } catch (Exception e) {
                 e.printStackTrace();

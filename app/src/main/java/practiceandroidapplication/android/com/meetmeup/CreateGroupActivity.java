@@ -99,7 +99,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 finish();
             }
         });
-        
+
         initUI();
 
     }

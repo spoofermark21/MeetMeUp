@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +22,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
+import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
 import practiceandroidapplication.android.com.meetmeup.Entity.User;
 import practiceandroidapplication.android.com.meetmeup.Handles.Interactions;
@@ -71,7 +75,7 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
         txtNewPassword = (EditText) findViewById(R.id.txt_new_password);
         txtRepeatPassword = (EditText) findViewById(R.id.txt_repeat_password);
 
-        btnUpdate = (Button) findViewById(R.id.btn_update);
+        /*btnUpdate = (Button) findViewById(R.id.btn_update);
         btnUpdate.setVisibility(View.GONE);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -79,9 +83,9 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
                     new UpdateUser().execute(txtNewPassword.getText().toString());
                 }
             }
-        });
+        });*/
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
+        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_save);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,10 +93,28 @@ public class UserProfileUpdatePasswordActivity extends AppCompatActivity {
                     new UpdateUser().execute(txtNewPassword.getText().toString());
                 }
             }
-        });
+        });*/
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.only_save_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (formValidation()) {
+                new UpdateUser().execute(txtNewPassword.getText().toString());
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
     public boolean formValidation() {
 
         boolean isReadyToSave = true;
