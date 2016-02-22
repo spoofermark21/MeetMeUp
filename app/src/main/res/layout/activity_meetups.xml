@@ -35,8 +35,7 @@
             android:background="@drawable/main_background"
             android:orientation="vertical"
             android:layout_margin="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp">
+            android:padding="10dp">
 
             <TextView
                 android:id="@+id/lbl_message"

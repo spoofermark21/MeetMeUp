@@ -32,6 +32,8 @@ public class Events {
 
     private int postedBy;
 
+    private int postedByUser;
+
     private String postedByName;
 
     private char postedByType;
@@ -72,6 +74,14 @@ public class Events {
         this.key = key;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public int getPostedByUser() {
+        return postedByUser;
+    }
+
+    public void setPostedByUser(int postedByUser) {
+        this.postedByUser = postedByUser;
     }
 
     public int getId() {

@@ -34,6 +34,7 @@ import java.util.List;
 import practiceandroidapplication.android.com.meetmeup.Entity.Attendees;
 import practiceandroidapplication.android.com.meetmeup.Entity.Comments;
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
+import practiceandroidapplication.android.com.meetmeup.Entity.GroupMember;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Notification;
@@ -47,6 +48,7 @@ public class ViewEventsActivity extends AppCompatActivity {
     private static final String RETRIEVE_EVENT_URL = Network.forDeploymentIp + "events_retrieve.php";
     private static final String RETRIEVE_ATTENDEES_URL = Network.forDeploymentIp + "is_attendee.php";
     private static final String RETRIEVE_COMMENTS_URL = Network.forDeploymentIp + "comments_retrieve.php";
+    private static final String RETRIEVE_MEMBERS_URL = Network.forDeploymentIp + "members_retrieve.php";
 
     private static final String INSERT_COMMENT_URL = Network.forDeploymentIp + "comments_save.php";
     private static final String INSERT_NOTIFICATIONS_URL = Network.forDeploymentIp + "notication_save.php";
@@ -80,6 +82,8 @@ public class ViewEventsActivity extends AppCompatActivity {
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
     String eventId;
+    String groupId;
+
     ArrayAdapter<String> adapter;
     List<Comments> listOfComments = new ArrayList<>();
 
@@ -105,9 +109,9 @@ public class ViewEventsActivity extends AppCompatActivity {
                 isExit = true;
             }
         });
+        initUI();
 
         eventId = getIntent().getStringExtra("EVENTS_ID");
-        initUI();
 
         new RetrieveEvent().execute();
     }
@@ -161,8 +165,14 @@ public class ViewEventsActivity extends AppCompatActivity {
         btnProfile = (Button) findViewById(R.id.btn_view_profile);
         btnProfile.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                startActivity(new Intent(ViewEventsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", event.getPostedBy() + ""));
-                Log.d("USER_ID", event.getPostedBy() + "");
+                if(event.getPostedByType() == 'U') {
+                    startActivity(new Intent(ViewEventsActivity.this, ViewProfileActivity.class).putExtra("USER_ID", event.getPostedBy() + ""));
+                    Log.d("USER_ID", event.getPostedBy() + "");
+                } else if(event.getPostedByType() == 'G') {
+                    startActivity(new Intent(ViewEventsActivity.this, ViewGroupActivity.class).putExtra("GROUP_ID", event.getPostedBy() + ""));
+                    Log.d("GROUP_ID", event.getPostedBy() + "");
+                }
+
             }
         });
 
@@ -378,7 +388,6 @@ public class ViewEventsActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("id", eventId));
                 params.add(new BasicNameValuePair("filter", "individual_join_user"));
 
-
                 Log.d("request!", "starting");
 
                 JSONObject json = jsonParser.makeHttpRequest(
@@ -405,6 +414,20 @@ public class ViewEventsActivity extends AppCompatActivity {
                     event.setPostedBy(jUserObject.getInt("posted_by"));
                     event.setPostedByName(jUserObject.getString("posted_by_user"));
 
+                    event.setPostedBy(jUserObject.getInt("posted_by"));
+                    groupId = event.getPostedBy() + "";
+
+                    if(!jUserObject.getString("posted_by_user").equals("null")) {
+                        Log.d("User", jUserObject.getString("posted_by_user"));
+                        event.setPostedByName(jUserObject.getString("posted_by_user"));
+                    } else if(!jUserObject.getString("group_name").equals("null")) {
+                        Log.d("Group", jUserObject.getString("group_name"));
+                        event.setPostedByName(jUserObject.getString("group_name"));
+
+                        event.setPostedByUser(jUserObject.getInt("created_by"));
+                    }
+
+                    event.setPostedByType(jUserObject.getString("posted_by_type").charAt(0));
                     //set location
                     event.setLattitude(jUserObject.getDouble("lattitude"));
                     event.setLongtitude(jUserObject.getDouble("longtitude"));
@@ -445,7 +468,8 @@ public class ViewEventsActivity extends AppCompatActivity {
 
                     } else {
                         //if not join comments will be disable
-                        new RetrieveAttendees().execute();
+                        //new RetrieveAttendees().execute();
+                        new RetrieveMembers().execute();
                     }
 
                 }
@@ -580,7 +604,6 @@ public class ViewEventsActivity extends AppCompatActivity {
                     Toast.makeText(ViewEventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
                     new RetrieveComments().execute();
 
-
                     //add new notifications
                     if(currentUser.getId() != event.getPostedBy()) {
 
@@ -675,6 +698,7 @@ public class ViewEventsActivity extends AppCompatActivity {
                     displayComments();
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
+                    linearListComments.removeAllViews();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -746,10 +770,10 @@ public class ViewEventsActivity extends AppCompatActivity {
                 lblDetails.setText(event.getDetails());
                 lblLocation.setText(event.getLocation());
                 lblPostedBy.setText(event.getPostedByName());
-                lblEventDate.setText(event.getStartDate() + " - "  + event.getEndDate());
+                lblEventDate.setText(event.getStartDate() + " - " + event.getEndDate());
 
                 if (message.equals("Not yet joined.")) {
-
+                    Log.d("Event attendees", "false");
                     btnJoin.setVisibility(View.VISIBLE);
                     btnJoin.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
@@ -762,11 +786,90 @@ public class ViewEventsActivity extends AppCompatActivity {
 
                 } else if (message.equals("Successful")) {
                     //check if there is comments
+                    Log.d("Event attendees", "true");
                     startRepeatingTask();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        }
+
+    }
+
+    class RetrieveMembers extends AsyncTask<String, String, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(ViewEventsActivity.this, R.style.progress);
+            pDialog.setCancelable(true);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... userInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                params.add(new BasicNameValuePair("id", groupId + ""));
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("query_type", "is_member"));
+
+                Log.d("Group params", currentUser.getId() + " " + groupId);
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        RETRIEVE_MEMBERS_URL, "POST", params);
+
+                Log.d("Fetching...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            Toast.makeText(ViewEventsActivity.this, message + "!", Toast.LENGTH_SHORT).show();
+            try {
+                scrollView.setVisibility(View.VISIBLE);
+                lblEventName.setText(event.getEventName());
+                lblPostedDate.setText(event.getPostedDate());
+                lblDetails.setText(event.getDetails());
+                lblLocation.setText(event.getLocation());
+                lblPostedBy.setText(event.getPostedByName());
+                lblEventDate.setText(event.getStartDate() + " - " + event.getEndDate());
+
+                if (message.equals("Not yet joined.")) {
+                    Log.d("Group member", "False");
+                    new RetrieveAttendees().execute();
+                } else if (message.equals("Successful")) {
+                    Log.d("Group member", "True");
+                    startRepeatingTask();
+                }
+            } catch (Exception ex) {
+                // nothing todo
+            }
+
         }
 
     }
@@ -837,11 +940,20 @@ public class ViewEventsActivity extends AppCompatActivity {
                     String details = currentUser.getFirstName() + " " + currentUser.getLastName()
                             + " wants to join the your events (" + event.getEventName() + ") ";
 
-                    //need to insert the meetup
-                    new InsertNotications(new Notification(event.getId(), event.getPostedBy(),
-                            currentUser.getId(), Integer.parseInt(eventId), 'E', details)).execute();
+                    if(event.getPostedByType() == 'U') {
+                        //need to insert the meetup
+                        new InsertNotications(new Notification(event.getId(), event.getPostedBy(),
+                                currentUser.getId(), Integer.parseInt(eventId), 'E', details)).execute();
 
-                    Toast.makeText(ViewEventsActivity.this, "Request sent.", Toast.LENGTH_SHORT);
+                        Toast.makeText(ViewEventsActivity.this, "Request sent.", Toast.LENGTH_SHORT);
+                    } else {
+                        //need to insert the meetup
+                        new InsertNotications(new Notification(event.getId(), event.getPostedByUser(),
+                                currentUser.getId(), Integer.parseInt(eventId), 'E', details)).execute();
+                        Toast.makeText(ViewEventsActivity.this, "Request sent.", Toast.LENGTH_SHORT);
+                    }
+
+
                 } else if(message.equals("Already sent a request.")) {
                     Toast.makeText(ViewEventsActivity.this, "Already sent a request" + attendees.getPostId()
                             + attendees.getPostType() + attendees.getUserId(), Toast.LENGTH_SHORT).show();

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,6 +46,7 @@ import practiceandroidapplication.android.com.meetmeup.Handles.JSONParser;
 import practiceandroidapplication.android.com.meetmeup.Helpers.ImageHelper;
 import practiceandroidapplication.android.com.meetmeup.R;
 import practiceandroidapplication.android.com.meetmeup.ViewEventsActivity;
+import practiceandroidapplication.android.com.meetmeup.ViewGroupActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewMapsActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewMeetupsActivity;
 import practiceandroidapplication.android.com.meetmeup.ViewProfileActivity;
@@ -65,10 +69,13 @@ public class EventsFragment extends Fragment {
 
     LinearLayout listOfFeeds;
 
-    Button btnEvents;
+    Button btnSearch;
+    EditText txtSearch;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Events> currentEvents = new ArrayList<>();
+
+    String type;
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
@@ -93,24 +100,29 @@ public class EventsFragment extends Fragment {
 
         listOfEvents.setVisibility(View.INVISIBLE);
 
-        /*btnEvents = (Button) getActivity().findViewById(R.id.btn_events);
-        btnEvents.setOnClickListener(new View.OnClickListener() {
+        btnSearch = (Button) getActivity().findViewById(R.id.btn_search);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                new RetrieveEvents().execute();
+                if (!txtSearch.getText().toString().trim().equals("")) {
+                    new RetrieveEvents(txtSearch.getText().toString()).execute();
+                }
             }
-        });*/
+        });
+
+        txtSearch = (EditText) getActivity().findViewById(R.id.txt_search);
+
 
         //refresh thread
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new RetrieveEvents().execute();
+                new RetrieveEvents("").execute();
             }
         });
 
 
-        new RetrieveEvents().execute();
+        new RetrieveEvents("").execute();
     }
 
     @Override
@@ -148,8 +160,23 @@ public class EventsFragment extends Fragment {
             postedByLayout.setTag(event.getPostedBy());
             postedByLayout.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    startActivity(new Intent(getActivity(), ViewProfileActivity.class).putExtra("USER_ID", view.getTag() + "" + ""));
-                    Log.d("USER_ID", view.getTag() + "");
+                    final LinearLayout parent = (LinearLayout) view.getParent();
+                    final LinearLayout postedBy = (LinearLayout) ((LinearLayout) view.getParent()).getChildAt(0);
+
+                    String eventPostedByType = postedBy.getChildAt(0).getTag().toString();
+                    type = eventPostedByType;
+
+                    Log.d("Posted type", eventPostedByType + "");
+
+                    if (eventPostedByType.equals("U")) {
+                        startActivity(new Intent(getActivity(), ViewProfileActivity.class).putExtra("USER_ID", view.getTag() + ""));
+                        Log.d("USER_ID", view.getTag() + "");
+                    } else {
+                        startActivity(new Intent(getActivity(), ViewGroupActivity.class).putExtra("GROUP_ID", view.getTag() + ""));
+                        Log.d("GROUP_ID", view.getTag() + "");
+                    }
+
+
                 }
             });
 
@@ -159,7 +186,6 @@ public class EventsFragment extends Fragment {
             LinearLayout postedByDate = new LinearLayout(getActivity());
             postedByDate.setLayoutParams(linearDate);
             postedByDate.setOrientation(LinearLayout.VERTICAL);
-
 
             Log.d("Event", event.getEventName());
             recordOfEvents.setTag(event.getId());
@@ -175,18 +201,21 @@ public class EventsFragment extends Fragment {
             eventPostedByImage.setBackgroundColor(Color.parseColor("#E6E9ED"));
             eventPostedByImage.setLayoutParams(imageEventParams);
             eventPostedByImage.setScaleType(ImageView.ScaleType.FIT_XY);
+            eventPostedByImage.setTag(event.getPostedByType());
+
 
             final TextView eventPostedBy = new TextView(getActivity());
             eventPostedBy.setText(event.getPostedByName());
             eventPostedBy.setTextSize(17);
             eventPostedBy.setTextColor(Color.BLACK);
 
+
             if (!event.getPostedUserImage().equals("null") && !event.getPostedUserImage().equals("")) {
 
                 class DownloadEventImage extends AsyncTask<Void, Void, Bitmap> {
 
                     String filename;
-
+                    String type;
                     public DownloadEventImage(String filename) {
                         this.filename = filename;
                     }
@@ -194,6 +223,7 @@ public class EventsFragment extends Fragment {
                     @Override
                     protected void onPreExecute() {
                         super.onPreExecute();
+                        type = eventPostedByImage.getTag().toString() + "";
                     }
 
                     @Override
@@ -201,7 +231,15 @@ public class EventsFragment extends Fragment {
                         // TODO Auto-generated method stub
 
                         try {
-                            final String USER_IMAGE_URL = Network.forDeploymentIp + "meetmeup/uploads/users/" + this.filename;
+                            String path;
+
+                            if (type.equals("U")) {
+                                path = "meetmeup/uploads/users/";
+                            } else {
+                                path = "meetmeup/uploads/groups/";
+                            }
+
+                            final String USER_IMAGE_URL = Network.forDeploymentIp + path + this.filename;
                             Log.d("Image", USER_IMAGE_URL);
                             URLConnection connection = new URL(USER_IMAGE_URL).openConnection();
                             connection.setConnectTimeout(1000 * 30);
@@ -257,14 +295,14 @@ public class EventsFragment extends Fragment {
             eventName.setTextColor(Color.BLACK);
             eventName.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    final LinearLayout parent = (LinearLayout) v.getParent().getParent();
+                    final LinearLayout parent = (LinearLayout) v.getParent();
 
-                    Intent meetups = new Intent(getActivity(), ViewEventsActivity.class);
-                    meetups.putExtra("EVENTS_ID", parent.getTag() + "");
+                    Intent events = new Intent(getActivity(), ViewEventsActivity.class);
+                    events.putExtra("EVENTS_ID", parent.getTag() + "");
 
                     Log.d("EVENTS_ID", parent.getTag() + "");
 
-                    startActivity(meetups);
+                    startActivity(events);
                 }
             });
 
@@ -305,9 +343,7 @@ public class EventsFragment extends Fragment {
 
                     Intent events = new Intent(getActivity(), ViewEventsActivity.class);
                     events.putExtra("EVENTS_ID", parent.getTag() + "");
-
                     Log.d("EVENTS_ID", parent.getTag() + "");
-
                     startActivity(events);
                 }
             });
@@ -371,10 +407,11 @@ public class EventsFragment extends Fragment {
 
 
             recordOfEvents.addView(postedByLayout);
-            postedByLayout.addView(eventPostedByImage);
 
+            postedByLayout.addView(eventPostedByImage); // event handler
             postedByLayout.addView(postedByDate);
-            postedByDate.addView(eventPostedBy);
+
+            postedByDate.addView(eventPostedBy); // set tag
             postedByDate.addView(eventPostedDate);
 
 
@@ -386,7 +423,6 @@ public class EventsFragment extends Fragment {
             listOfEvents.addView(recordOfEvents);
         }
         currentEvents.clear();
-
         /*Button btnSeeMore = new Button(getActivity());
         btnSeeMore.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         btnSeeMore.setText("see more");
@@ -406,7 +442,7 @@ public class EventsFragment extends Fragment {
         String date[] = Str.split(":", 3);
         String time = "";
 
-        if(Integer.parseInt(date[0]) > 24) {
+        if (Integer.parseInt(date[0]) > 24) {
             time = Integer.parseInt(date[0]) / 24 + " d";
         } else if (Integer.parseInt(date[0]) < 24 && Integer.parseInt(date[0]) > 0) {
             time = Integer.parseInt(date[0]) + " h";
@@ -423,101 +459,120 @@ public class EventsFragment extends Fragment {
         thread
      */
 
-class RetrieveEvents extends AsyncTask<String, String, String> {
+    class RetrieveEvents extends AsyncTask<String, String, String> {
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-        pDialog = new ProgressDialog(getActivity(), R.style.progress);
-        pDialog.setCancelable(false);
-        pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
-        pDialog.show();
-    }
+        String searchParameters;
 
-    @Override
-    protected String doInBackground(String... userInfo) {
-        // TODO Auto-generated method stub
+        public RetrieveEvents(String searchParameters) {
+            this.searchParameters = searchParameters;
+        }
 
-        int success;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(getActivity(), R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
 
-        try {
-            // Building Parameters
-            List<NameValuePair> params = new ArrayList<>();
+        @Override
+        protected String doInBackground(String... userInfo) {
+            // TODO Auto-generated method stub
 
-            Log.d("USER_ID (user)", currentUser.getId() + "");
-            params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
-            params.add(new BasicNameValuePair("filter", "newsfeed"));
-            params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+            int success;
 
-            Log.d("request!", "starting");
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
 
-            JSONObject json = jsonParser.makeHttpRequest(
-                    RETRIEVE_EVENTS_URL, "POST", params);
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("filter", "newsfeed"));
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("search", searchParameters));
 
-            Log.d("Fetching...", json.toString());
+                Log.d("request!", "starting");
 
-            success = json.getInt(TAG_STATUS);
+                JSONObject json = jsonParser.makeHttpRequest(
+                        RETRIEVE_EVENTS_URL, "POST", params);
 
-            if (success == 1) {
-                Log.d("Success!", json.toString());
+                Log.d("Fetching...", json.toString());
 
-                JSONArray jUserArray = json.getJSONArray("events");
-                JSONObject jUserObject;
+                success = json.getInt(TAG_STATUS);
 
-                //sessions.removeGroups();
-                currentEvents.clear();
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
 
-                for (int i = 0; i < jUserArray.length(); i++) {
-                    jUserObject = jUserArray.getJSONObject(i);
+                    JSONArray jUserArray = json.getJSONArray("events");
+                    JSONObject jUserObject;
 
-                    Events event = new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
-                            jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key"),
-                            jUserObject.getString("start_date"), jUserObject.getString("end_date"));
+                    //sessions.removeGroups();
+                    currentEvents.clear();
 
-                    event.setPostedBy(jUserObject.getInt("posted_by"));
-                    event.setPostedByName(jUserObject.getString("posted_by_user"));
-                    event.setPostedUserImage(jUserObject.getString("user_image"));
-                    event.setPostedDate(jUserObject.getString("time_diff"));
+                    for (int i = 0; i < jUserArray.length(); i++) {
+                        jUserObject = jUserArray.getJSONObject(i);
 
-                    event.setLattitude(jUserObject.getDouble("lattitude"));
-                    event.setLongtitude(jUserObject.getDouble("longtitude"));
+                        Events event = new Events(jUserObject.getInt("id"), jUserObject.getString("event_name"),
+                                jUserObject.getString("details"), jUserObject.getString("location"), jUserObject.getString("key"),
+                                jUserObject.getString("start_date"), jUserObject.getString("end_date"));
 
-                    currentEvents.add(event);
+                        event.setPostedBy(jUserObject.getInt("posted_by"));
+
+                        if(!jUserObject.getString("posted_by_user").equals("null")) {
+                            Log.d("User", jUserObject.getString("posted_by_user"));
+                            event.setPostedByName(jUserObject.getString("posted_by_user"));
+                            event.setPostedUserImage(jUserObject.getString("user_image"));
+                        } else if(!jUserObject.getString("group_name").equals("null")) {
+                            Log.d("Group", jUserObject.getString("group_name"));
+                            event.setPostedByName(jUserObject.getString("group_name"));
+                            event.setPostedUserImage(jUserObject.getString("group_image"));
+                        }
+
+                        event.setPostedDate(jUserObject.getString("time_diff"));
+                        event.setPostedByType(jUserObject.getString("posted_by_type").charAt(0));
+
+                        Log.d("Posted type", jUserObject.getString("posted_by_type").charAt(0) + "");
+
+                        event.setLattitude(jUserObject.getDouble("lattitude"));
+                        event.setLongtitude(jUserObject.getDouble("longtitude"));
+
+                        currentEvents.add(event);
 
 
-                    Log.d("ID:", jUserObject.getInt("id") + "");
+                        Log.d("ID:", jUserObject.getInt("id") + "");
+                    }
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
                 }
-
-                return json.getString(TAG_RESPONSE);
-            } else {
-                Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
-                return json.getString(TAG_RESPONSE);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
-    }
 
 
-    protected void onPostExecute(String message) {
-        pDialog.dismiss();
-        try {
-            listOfFeeds.setVisibility(View.VISIBLE);
-            listOfEvents.setVisibility(View.VISIBLE);
-            if (message.equals("Successful")) {
-                Toast.makeText(getActivity(), message + "!", Toast.LENGTH_SHORT).show();
-                displayEvents();
-            } else if (message.equals("No events")) {
-                lblMessage.setVisibility(View.VISIBLE);
-            } else {
-                lblMessage.setVisibility(View.VISIBLE);
-                lblMessage.setText("Please check your internet connection");
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                listOfFeeds.setVisibility(View.VISIBLE);
+                listOfEvents.setVisibility(View.VISIBLE);
+                if (message.equals("Successful")) {
+                    Toast.makeText(getActivity(), message + "!", Toast.LENGTH_SHORT).show();
+                    displayEvents();
+                } else if (message.equals("No events")) {
+                    lblMessage.setVisibility(View.VISIBLE);
+                } else {
+                    lblMessage.setVisibility(View.VISIBLE);
+                    lblMessage.setText(message);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
-    }
 
-} // end of thread retrieve user
+    } // end of thread retrieve user
 }

@@ -107,21 +107,7 @@ public class MeetupsFragment extends Fragment {
             }
         });
 
-        txtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //new RetrieveMeetups().execute();
-            }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.e("TextWatcherTest", "afterTextChanged:\t" + s.toString());
-            }
-        });
 
 
         //refresh thread
@@ -180,7 +166,7 @@ public class MeetupsFragment extends Fragment {
             });
 
             final LinearLayout.LayoutParams linearDate = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            //linearMeetups.setMargins(0, 0, 0, 30);
+            linearDate.setMargins(0, 0, 0, 30);
 
             LinearLayout postedByDate = new LinearLayout(getActivity());
             postedByDate.setLayoutParams(linearDate);
@@ -376,8 +362,8 @@ public class MeetupsFragment extends Fragment {
             options.addView(view);
             options.addView(map);
 
-
             recordOfMeetups.addView(postedByLayout);
+
             postedByLayout.addView(meetupPostedByImage);
             postedByLayout.addView(postedByDate);
 

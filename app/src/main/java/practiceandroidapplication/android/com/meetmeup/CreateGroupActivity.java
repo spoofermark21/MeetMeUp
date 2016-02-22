@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -67,6 +68,8 @@ public class CreateGroupActivity extends AppCompatActivity {
     EditText txtGroupName, txtDetails;
     Button btnImage, btnSave;
     ImageView imgGroup;
+
+    Spinner spnType;
 
     User currentUser = Sessions.getSessionsInstance().currentUser;
 
@@ -117,11 +120,13 @@ public class CreateGroupActivity extends AppCompatActivity {
         if (id == R.id.action_save) {
             if (validateForm() && !isClickSave) {
 
+                char type = spnType.getSelectedItem().toString().charAt(0);
+
                 createGroup = new Group(txtGroupName.getText().toString(),
                         txtDetails.getText().toString(), currentUser.getId());
 
                 new CreateGroup().execute(createGroup.getGroupName(), createGroup.getDetails(),
-                        createGroup.getCreatedBy() + "");
+                        createGroup.getCreatedBy() + "", type + "");
                 //boolean flag to avoid multiple creation
                 isClickSave = true;
             }
@@ -147,6 +152,19 @@ public class CreateGroupActivity extends AppCompatActivity {
             }
         });
 
+        spnType = (Spinner) findViewById(R.id.spn_type);
+        loadGroupType();
+    }
+
+
+    public void loadGroupType() {
+        ArrayAdapter<String> adapter;
+        String[] eventType = {"Missionaries", "Adventurers", "Vacationers"};
+
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, eventType);
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnType.setAdapter(adapter);
     }
 
     public boolean validateForm() {
@@ -379,7 +397,7 @@ public class CreateGroupActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
@@ -394,6 +412,7 @@ public class CreateGroupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("details", groupInfo[1]));
                 params.add(new BasicNameValuePair("user_id", groupInfo[2]));
                 params.add(new BasicNameValuePair("file_name", fileName));
+                params.add(new BasicNameValuePair("type", groupInfo[3]));
 
                 Log.d("request!", "starting");
 

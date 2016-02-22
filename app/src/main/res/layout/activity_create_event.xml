@@ -26,8 +26,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginTop="60dp"
-        android:paddingTop="5dp">
+        android:layout_marginTop="60dp">
 
         <LinearLayout
             android:background="@drawable/main_background"

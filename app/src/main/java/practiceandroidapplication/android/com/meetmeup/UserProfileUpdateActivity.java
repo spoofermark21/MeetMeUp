@@ -282,7 +282,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     //Toast.makeText(UserProfileUpdateActivity.this,"Disabled", Toast.LENGTH_SHORT).show();
-                                    new PrivacyEnable().execute();
+                                    new PrivacyEnable("N").execute();
                                 }
                             });
 
@@ -292,6 +292,41 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                                     privacyFlag.setChecked(false);
                                 }
                             });
+
+                    dlgAlert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+                        public void onCancel(DialogInterface dialog) {
+                            privacyFlag.setChecked(false);
+                        }
+                    });
+                    dlgAlert.create().show();
+                } else if (isChecked){
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(UserProfileUpdateActivity.this);
+                    dlgAlert.setMessage("The following will be visible: Mobile number and Email add. Are you sure to proceed?");
+                    dlgAlert.setTitle("Warning!");
+                    dlgAlert.setCancelable(true);
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Toast.makeText(UserProfileUpdateActivity.this,"Disabled", Toast.LENGTH_SHORT).show();
+                                    new PrivacyEnable("Y").execute();
+                                }
+                            });
+
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    privacyFlag.setChecked(true);
+                                }
+                            });
+
+                    dlgAlert.setOnCancelListener(new DialogInterface.OnCancelListener() {
+
+                        public void onCancel(DialogInterface dialog) {
+                            privacyFlag.setChecked(true);
+                        }
+                    });
+
 
                     dlgAlert.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
@@ -533,6 +568,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     currentUser.setEmailAddress(jUserObject.getString("email_address"));
                     currentUser.setContactNumber(jUserObject.getString("contact_number"));
                     currentUser.setUserImage(jUserObject.getString("user_image"));
+
                     currentUser.setPrivacyFlag(jUserObject.getString("privacy_flag").charAt(0));
 
                     currentUser.setUsername(jUserObject.getString("username"));
@@ -584,9 +620,9 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                     //.showError(currentUser.getPrivacyFlag() + "", UserProfileUpdateActivity.this);
 
                     if(currentUser.getPrivacyFlag() == 'Y') {
-                        privacyFlag.setChecked(true);
-                    } else {
                         privacyFlag.setChecked(false);
+                    } else {
+                        privacyFlag.setChecked(true);
                     }
 
                     try {
@@ -756,6 +792,12 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
 
     class PrivacyEnable extends AsyncTask<String, String, String> {
 
+        String type;
+
+        public PrivacyEnable(String type) {
+            this.type = type;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -776,6 +818,7 @@ public class UserProfileUpdateActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<>();
 
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("type", type + ""));
                 Log.d("User id", currentUser.getId() + "");
 
                 Log.d("request!", "starting");

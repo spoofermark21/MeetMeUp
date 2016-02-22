@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:fitsSystemWindows="true"
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            android:elevation="10dp"
             app:popupTheme="@style/MyMaterialTheme.PopupOverlay">
 
         </android.support.v7.widget.Toolbar>
@@ -24,16 +26,17 @@
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:background="@drawable/main_background">
+        android:layout_height="fill_parent"
+        android:layout_marginTop="60dp">
 
         <LinearLayout
+            android:background="@drawable/main_background"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
+            android:layout_margin="5dp"
             android:paddingLeft="10dp"
-            android:paddingRight="15dp">
+            android:paddingRight="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -92,7 +95,48 @@
                 android:scrollbars="vertical"
                 android:textSize="15sp" />
 
-            <EditText
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/txt_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight=".60"
+                    android:background="@drawable/edit_text"
+                    android:hint="Specific location"
+                    android:inputType="text"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/spn_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="10dip"
+                    android:layout_weight=".40"
+                    android:background="@drawable/edit_text"
+                    android:padding="10dp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_set_map"
+                android:padding="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="Set map"
+                android:textColor="@color/colorPrimaryDark"
+                android:background="@color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- <EditText
                 android:id="@+id/txt_location"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -102,7 +146,7 @@
                 android:inputType="text"
                 android:padding="15dp"
                 android:singleLine="true"
-                android:textSize="15sp" />
+                android:textSize="15sp" /> -->
 
             <TextView
                 android:layout_width="wrap_content"
@@ -137,18 +181,16 @@
                 android:datePickerMode="spinner"></DatePicker>
 
 
-            <!--
-            <Button
-                android:id="@+id/btn_disable"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:background="@color/colorPrimary"
-                android:text="Disable"
-                android:textColor="@color/white" /> -->
-
         </LinearLayout>
 
     </ScrollView>
 
-</LinearLayout>
+    <!--<android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_save_white_24dp" />-->
+
+</android.support.design.widget.CoordinatorLayout>

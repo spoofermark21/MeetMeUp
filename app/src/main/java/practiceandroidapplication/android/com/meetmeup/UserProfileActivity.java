@@ -198,7 +198,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     currentUser.setCurrentLocation(jUserObject.getString("location"));
                     currentUser.setEmailAddress(jUserObject.getString("email_address"));
                     currentUser.setContactNumber(jUserObject.getString("contact_number"));
-                    currentUser.setPrivacyFlag(jUserObject.getString("privacy_flag").charAt(0));
+                    //currentUser.setPrivacyFlag(jUserObject.getString("privacy_flag").charAt(0));
                     currentUser.setUserImage(jUserObject.getString("user_image"));
 
                     return json.getString(TAG_RESPONSE);

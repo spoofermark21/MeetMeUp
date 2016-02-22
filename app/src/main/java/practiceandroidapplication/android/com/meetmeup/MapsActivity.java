@@ -49,6 +49,7 @@ public class MapsActivity extends AppCompatActivity {
 
     String type;
     String location;
+    String locationSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -30,6 +30,10 @@ public class Group {
 
     private int totalMembers;
 
+    private char collaborationStatus;
+
+    private char groupType;
+
 
     private List<GroupMember> members = new ArrayList<>();
 
@@ -67,6 +71,14 @@ public class Group {
         this.groupImage = groupImage;
     }
 
+    public char getCollaborationStatus() {
+        return collaborationStatus;
+    }
+
+    public void setCollaborationStatus(char collaborationStatus) {
+        this.collaborationStatus = collaborationStatus;
+    }
+
     public Group(int id, String groupName, String details,int createdBy,
                  String createdDate, int totalMembers, String groupImage,
                  String createdByName, String createdByNameImage) {
@@ -98,6 +110,15 @@ public class Group {
         this.groupName = groupName;
         this.details = details;
         this.createdBy = createdBy;
+    }
+
+
+    public char getGroupType() {
+        return groupType;
+    }
+
+    public void setGroupType(char groupType) {
+        this.groupType = groupType;
     }
 
     public String getCreatedByNameImage() {

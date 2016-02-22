@@ -12,6 +12,8 @@ import android.app.Fragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -67,7 +70,8 @@ public class GroupsFragment extends Fragment {
 
     LinearLayout listOfFeeds;
 
-    Button btnGroup;
+    Button btnSearch;
+    EditText txtSearch;
 
     Sessions sessions = Sessions.getSessionsInstance();
     List<Group> currentGroups = new ArrayList<>();
@@ -77,6 +81,7 @@ public class GroupsFragment extends Fragment {
     //int index = 0;
 
     //Bitmap image;
+    int selectedType;
 
 
     @Override
@@ -99,15 +104,74 @@ public class GroupsFragment extends Fragment {
         listOfGroups.setVisibility(View.INVISIBLE);
         lblMessage.setVisibility(View.GONE);
 
+        btnSearch = (Button) getActivity().findViewById(R.id.btn_search);
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (!txtSearch.getText().toString().trim().equals("")) {
+                    new RetrieveGroups(txtSearch.getText().toString()).execute();
+                }
+            }
+        });
+
+        txtSearch = (EditText) getActivity().findViewById(R.id.txt_search);
+
+
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new RetrieveGroups().execute();
+                new RetrieveGroups("").execute();
+                selectType();
             }
         });
 
-        new RetrieveGroups().execute();
+        new RetrieveGroups("").execute();
+
+        selectType();
+
+    }
+
+    public static CharSequence[] loadGroups() {
+        List<String> list = new ArrayList<>();
+        list.add("Missionaries");
+        list.add("Adventurers");
+        list.add("Vacationers");
+
+        return list.toArray(new CharSequence[list.size()]);
+    }
+
+    public void selectType() {
+        //final ArrayList selectedGroup = new ArrayList();
+
+        AlertDialog dialog1 = new AlertDialog.Builder(getActivity())
+                .setTitle("Select type")
+                .setSingleChoiceItems(loadGroups(), 1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        selectedType = which;
+                        Log.d("Type" , selectedType + "");
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Log.d("Selected type", selectedType + "");
+
+                        if(selectedType == 0) {
+                            new RetrieveGroupsType("M").execute();
+                        } else if(selectedType == 1) {
+                            new RetrieveGroupsType("A").execute();
+                        } else if (selectedType == 2) {
+                            new RetrieveGroupsType(("V")).execute();
+                        }
+
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                }).create();
+        dialog1.show();
     }
 
     @Override
@@ -118,10 +182,6 @@ public class GroupsFragment extends Fragment {
     }
 
     /* thread */
-
-    public void retrieve() {
-        new RetrieveGroups().execute();
-    }
 
     public void displayGroups() {
 
@@ -154,7 +214,7 @@ public class GroupsFragment extends Fragment {
             });
 
             final LinearLayout.LayoutParams linearDate = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            //linearGroups.setMargins(0, 0, 0, 30);
+            linearDate.setMargins(0, 0, 0, 30);
 
             LinearLayout postedByDate = new LinearLayout(getActivity());
             postedByDate.setLayoutParams(linearDate);
@@ -260,12 +320,12 @@ public class GroupsFragment extends Fragment {
                 public void onClick(View v) {
                     final LinearLayout parent = (LinearLayout) v.getParent();
 
-                    Intent meetups = new Intent(getActivity(), ViewGroup.class);
-                    meetups.putExtra("GROUP_ID", parent.getTag() + "");
+                    Intent groups = new Intent(getActivity(), ViewGroupActivity.class);
+                    groups.putExtra("GROUP_ID", parent.getTag() + "");
 
                     Log.d("GROUP_ID", parent.getTag() + "");
 
-                    startActivity(meetups);
+                    startActivity(groups);
                     //getActivity().finish();
                 }
             });
@@ -274,6 +334,27 @@ public class GroupsFragment extends Fragment {
             groupDetails.setText(group.getDetails());
             groupDetails.setTextSize(15);
             groupDetails.setTextColor(Color.BLACK);
+
+            final TextView joinStatus = new TextView(getActivity());
+            joinStatus.setText("Not yet joined.");
+            joinStatus.setTextSize(15);
+            joinStatus.setTextColor(Color.parseColor("#D46A6A"));
+
+            String type = "";
+
+            if(group.getGroupType() == 'M') {
+                type = "Missionaries";
+            } else if(group.getGroupType() == 'A') {
+                type = "Adventurer";
+            } else if(group.getGroupType() == 'V') {
+                type = "Vacationers";
+            }
+
+            final TextView typeView = new TextView(getActivity());
+            typeView.setText("Type: "  + type);
+            typeView.setTextSize(15);
+            typeView.setTextColor(Color.BLACK);
+
 
             final LinearLayout.LayoutParams imageGroupParams1 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             imageGroupParams1.weight = 1.0f;
@@ -349,7 +430,7 @@ public class GroupsFragment extends Fragment {
 
             final LinearLayout.LayoutParams btnLayout = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
             btnLayout.weight = 1.0f;
-            btnLayout.setMargins(10, 10, 10, 10);
+            btnLayout.setMargins(5, 5, 5, 5);
 
             final Button view = new Button(getActivity());
             view.setLayoutParams(btnLayout);
@@ -357,7 +438,7 @@ public class GroupsFragment extends Fragment {
             view.setTextSize(15);
             view.setAllCaps(false);
             view.setBackgroundColor(Color.parseColor("#00000000"));
-            view.setGravity(Gravity.LEFT);
+            view.setGravity(Gravity.CENTER);
             view.setTextColor(Color.BLACK);
 
             view.setOnClickListener(new View.OnClickListener() {
@@ -374,6 +455,7 @@ public class GroupsFragment extends Fragment {
                 }
             });
 
+            view.setVisibility(View.INVISIBLE);
             options.addView(view);
 
             recordOfGroups.addView(postedByLayout);
@@ -385,6 +467,11 @@ public class GroupsFragment extends Fragment {
 
             recordOfGroups.addView(groupName);
             recordOfGroups.addView(groupDetails);
+            recordOfGroups.addView(typeView);
+
+            if(group.getCollaborationStatus() != 'A' || group.getCollaborationStatus() == 'n') {
+                recordOfGroups.addView(joinStatus);
+            }
             //recordOfGroups.addView(groupImage);
 
             recordOfGroups.addView(options);
@@ -439,6 +526,12 @@ public class GroupsFragment extends Fragment {
 
     class RetrieveGroups extends AsyncTask<String, String, String> {
 
+        String searchParameter;
+
+        public RetrieveGroups(String searchParameter){
+            this.searchParameter = searchParameter;
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -456,11 +549,13 @@ public class GroupsFragment extends Fragment {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
                 params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
                 params.add(new BasicNameValuePair("query_type", "newsfeed"));
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("search", searchParameter));
 
                 Log.d("request!", "starting");
 
@@ -482,12 +577,119 @@ public class GroupsFragment extends Fragment {
                     for (int i = 0; i < jUserArray.length(); i++) {
                         jUserObject = jUserArray.getJSONObject(i);
 
-
-                        currentGroups.add(new Group(jUserObject.getInt("id"),
+                        Group group = new Group(jUserObject.getInt("id"),
                                 jUserObject.getString("group_name"), jUserObject.getString("details"),
                                 jUserObject.getInt("created_by"), jUserObject.getString("time_diff"),
                                 jUserObject.getInt("count_members"), jUserObject.getString("group_image"),
-                                jUserObject.getString("created_by_user"), jUserObject.getString("user_image")));
+                                jUserObject.getString("created_by_user"), jUserObject.getString("user_image"));
+
+                        group.setCollaborationStatus(jUserObject.getString("collaboration_status").charAt(0));
+                        group.setGroupType(jUserObject.getString("type").charAt(0));
+
+                        currentGroups.add(group);
+
+                        Log.d("ID:", jUserObject.getInt("id") + "");
+                    }
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                listOfFeeds.setVisibility(View.VISIBLE);
+                listOfGroups.setVisibility(View.VISIBLE);
+
+                if (message.equals("Successful")) {
+                    Toast.makeText(getActivity(), message + "!", Toast.LENGTH_SHORT).show();
+                    displayGroups();
+
+
+                } else if (message.equals("No group")) {
+                    lblMessage.setVisibility(View.VISIBLE);
+                } else {
+                    lblMessage.setVisibility(View.VISIBLE);
+                    lblMessage.setText("Please check your internet connection");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    } // end of thread group activity
+
+    class RetrieveGroupsType extends AsyncTask<String, String, String> {
+
+        String searchParameter;
+
+        public RetrieveGroupsType(String searchParameter){
+            this.searchParameter = searchParameter;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(getActivity(), R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... userInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+                params.add(new BasicNameValuePair("id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("query_type", "type"));
+                params.add(new BasicNameValuePair("user_id", currentUser.getId() + ""));
+                params.add(new BasicNameValuePair("search", searchParameter));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        RETRIEVE_GROUP_URL, "POST", params);
+
+                Log.d("Fetching...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    JSONArray jUserArray = json.getJSONArray("group");
+                    JSONObject jUserObject;
+
+                    currentGroups.clear();
+                    for (int i = 0; i < jUserArray.length(); i++) {
+                        jUserObject = jUserArray.getJSONObject(i);
+
+                        Group group = new Group(jUserObject.getInt("id"),
+                                jUserObject.getString("group_name"), jUserObject.getString("details"),
+                                jUserObject.getInt("created_by"), jUserObject.getString("time_diff"),
+                                jUserObject.getInt("count_members"), jUserObject.getString("group_image"),
+                                jUserObject.getString("created_by_user"), jUserObject.getString("user_image"));
+
+                        group.setCollaborationStatus(jUserObject.getString("collaboration_status").charAt(0));
+                        group.setGroupType(jUserObject.getString("type").charAt(0));
+
+                        currentGroups.add(group);
 
                         Log.d("ID:", jUserObject.getInt("id") + "");
                     }

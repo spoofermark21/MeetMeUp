@@ -133,7 +133,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 if (Sessions.currentLocationLatitude != 0 && Sessions.currentLocationLongtitude != 0) {
                     if (validateForm()) {
                         try {
-                            location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
+                            location = txtLocation.getText().toString();
 
                             events.setEventName(txtEventName.getText().toString());
                             events.setDetails(txtDetails.getText().toString());
@@ -200,6 +200,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         createdBy = 'G';
                         group = listOfGroups.get(selectedGroup);
+                        listOfGroups.clear();
                         Log.d("Group id", group.getId() + "");
                         new CreateEvent().execute();
                     }
@@ -247,6 +248,7 @@ public class CreateEventActivity extends AppCompatActivity {
                             Intent intent = new Intent(CreateEventActivity.this, MapsActivity.class);
                             intent.putExtra("TYPE", "creation");
 
+
                             if (!spnLocation.getSelectedItem().toString().contains("Cebu")) {
                                 intent.putExtra("LOCATION", txtLocation.getText().toString() + ", "
                                         + spnLocation.getSelectedItem().toString() + ", Cebu");
@@ -254,6 +256,7 @@ public class CreateEventActivity extends AppCompatActivity {
                                 intent.putExtra("LOCATION", txtLocation.getText().toString()
                                         + ", " + spnLocation.getSelectedItem().toString());
                             }
+
                             startActivity(intent);
                             txtLocation.setError(null);
                         } else {
@@ -399,6 +402,7 @@ public class CreateEventActivity extends AppCompatActivity {
                                 sleep(100);
                                 startActivity(new Intent(CreateEventActivity.this, EventsActivity.class));
                                 finish();
+                                listOfGroups.clear();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
@@ -478,7 +482,7 @@ public class CreateEventActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-
+                    // to do
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

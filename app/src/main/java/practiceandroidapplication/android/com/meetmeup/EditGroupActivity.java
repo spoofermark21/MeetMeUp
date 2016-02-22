@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +88,8 @@ public class EditGroupActivity extends AppCompatActivity {
     String imgDecodableString;
     String encodedImage;
 
+    Spinner spnType;
+
     String fileName;
 
     boolean isNewImage = false;
@@ -130,11 +133,13 @@ public class EditGroupActivity extends AppCompatActivity {
 
         if (id == R.id.action_save) {
             if (validateForm()) {
+                char type = spnType.getSelectedItem().toString().charAt(0);
+
                 Group updateGroup = new Group(txtGroupName.getText().toString(),
                         txtDetails.getText().toString(), currentUser.getId());
 
                 new UpdateGroup().execute(updateGroup.getGroupName(), updateGroup.getDetails(),
-                        currentGroupId);
+                        currentGroupId, type + "");
             }
         }
 
@@ -163,6 +168,19 @@ public class EditGroupActivity extends AppCompatActivity {
             }
         });
 
+        spnType = (Spinner) findViewById(R.id.spn_type);
+        loadGroupType();
+
+    }
+
+    public void loadGroupType() {
+        ArrayAdapter<String> adapter;
+        String[] eventType = {"Missionaries", "Adventurers", "Vacationers"};
+
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, eventType);
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnType.setAdapter(adapter);
     }
 
     public boolean validateForm() {
@@ -252,7 +270,7 @@ public class EditGroupActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("USER_ID (user)", currentUser.getId() + "");
 
@@ -283,6 +301,8 @@ public class EditGroupActivity extends AppCompatActivity {
                             jUserObject.getString("group_name"), jUserObject.getString("details"),
                             jUserObject.getInt("created_by"), jUserObject.getString("created_date"),
                             jUserObject.getInt("count_members"), jUserObject.getString("group_image"));
+
+                    group.setGroupType(jUserObject.getString("type").charAt(0));
 
                     if(group.getTotalMembers() != 0) {
                         JSONArray groupMembers = jUserObject.getJSONArray("members");
@@ -319,6 +339,14 @@ public class EditGroupActivity extends AppCompatActivity {
 
                     txtGroupName.setText(group.getGroupName());
                     txtDetails.setText(group.getDetails());
+
+                    if(group.getGroupType() == 'M') {
+                        spnType.setSelection(0);
+                    } else if(group.getGroupType() == 'A') {
+                        spnType.setSelection(1);
+                    } else if(group.getGroupType() == 'V') {
+                        spnType.setSelection(2);
+                    }
 
                     /*if(group.getTotalMembers() != 0) {
                         groupAdapter = new ArrayAdapter<String>(EditGroupActivity.this,
@@ -528,6 +556,7 @@ public class EditGroupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("details", groupInfo[1]));
                 params.add(new BasicNameValuePair("id", groupInfo[2]));
                 params.add(new BasicNameValuePair("group_image", fileName));
+                params.add(new BasicNameValuePair("type", groupInfo[3]));
 
                 params.add(new BasicNameValuePair("query_type", "update"));
 

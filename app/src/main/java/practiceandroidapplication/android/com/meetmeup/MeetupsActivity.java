@@ -244,6 +244,7 @@ public class MeetupsActivity extends AppCompatActivity {
                     Intent meetups = new Intent(MeetupsActivity.this, EditMeetupActivity.class);
                     meetups.putExtra("MEETUPS_ID", parent.getTag() + "");
                     startActivity(meetups);
+                    finish();
 
                     Toast.makeText(MeetupsActivity.this, parent.getTag() + "! "
                             , Toast.LENGTH_SHORT).show();

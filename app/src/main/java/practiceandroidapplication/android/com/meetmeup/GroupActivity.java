@@ -145,7 +145,7 @@ public class GroupActivity extends AppCompatActivity {
             groupDetails.setTextColor(Color.BLACK);
 
             final TextView groupCreatedBy = new TextView(this);
-            groupCreatedBy.setText("Created by " + group.getCreatedByName());
+            groupCreatedBy.setText("Created by: " + group.getCreatedByName());
             groupCreatedBy.setTextSize(15);
             groupCreatedBy.setTextColor(Color.BLACK);
 

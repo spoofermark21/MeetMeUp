@@ -625,6 +625,7 @@ public class ViewMeetupsActivity extends AppCompatActivity {
                     displayComments();
                 } else if (message.equals("No comments")) {
                     lblComments.setText("No Comments");
+                    linearListComments.removeAllViews();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:fitsSystemWindows="true"
+    tools:context="practiceandroidapplication.android.com.meetmeup.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,23 +17,27 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            android:elevation="10dp"
             app:popupTheme="@style/MyMaterialTheme.PopupOverlay">
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
     <ScrollView
-        android:background="@drawable/main_background"
         android:id="@+id/scroll_view"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp">
+        android:layout_height="fill_parent"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:background="@drawable/main_background"
             android:orientation="vertical"
-            android:padding="5dp">
+            android:layout_margin="5dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -72,17 +77,46 @@
                 android:scrollbars="vertical"
                 android:textSize="15sp" />
 
-            <EditText
-                android:id="@+id/txt_location"
+            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:hint="Location"
-                android:inputType="text"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp"  />
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/txt_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight=".60"
+                    android:background="@drawable/edit_text"
+                    android:hint="Specific location"
+                    android:inputType="text"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+                <Spinner
+                    android:id="@+id/spn_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="10dip"
+                    android:layout_weight=".40"
+                    android:background="@drawable/edit_text"
+                    android:padding="5dp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_set_map"
+                android:padding="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="Set map"
+                android:textColor="@color/colorPrimary"
+                android:background="@color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -94,29 +128,56 @@
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
-            <EditText
-                android:id="@+id/txt_min_age"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:hint="Minimum age"
-                android:inputType="number"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/txt_max_age"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/edit_text"
-                android:hint="Maximum age"
-                android:inputType="number"
-                android:padding="15dp"
-                android:singleLine="true"
-                android:textSize="15sp" />
+                <EditText
+                    android:id="@+id/txt_min_age"
+                    android:layout_width="0dp"
+                    android:layout_weight=".40"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/edit_text"
+                    android:hint="Min age"
+                    android:inputType="number"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:gravity="center"
+                    android:text="to"
+                    android:layout_width="0dp"
+                    android:layout_weight=".10"
+                    android:layout_height="wrap_content" />
+
+                <EditText
+                    android:gravity="center"
+                    android:id="@+id/txt_max_age"
+                    android:layout_width="0dp"
+                    android:layout_weight=".40"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/edit_text"
+                    android:hint="Max age"
+                    android:inputType="number"
+                    android:padding="15dp"
+                    android:singleLine="true"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_set_preference"
+                android:padding="10dp"
+                android:layout_marginBottom="5dp"
+                android:text="Set nationalities"
+                android:textColor="@color/colorPrimary"
+                android:background="@color/transparent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -131,7 +192,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:layout_marginBottom="10dip"
+                android:layout_marginBottom="15dp"
                 android:background="@drawable/edit_text"
                 android:padding="5dp" />
 
@@ -139,4 +200,5 @@
 
     </ScrollView>
 
-</LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,8 +1,10 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -25,7 +27,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
+import practiceandroidapplication.android.com.meetmeup.Entity.ListNationalities;
+import practiceandroidapplication.android.com.meetmeup.Entity.Location;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
+import practiceandroidapplication.android.com.meetmeup.Entity.Nationality;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
 import practiceandroidapplication.android.com.meetmeup.Entity.Sessions;
@@ -37,6 +43,10 @@ public class EditMeetupActivity extends AppCompatActivity {
 
     private static final String UPDATE_MEETUPS_URL = Network.forDeploymentIp + "meetups_update.php";
     private static final String RETRIEVE_MEETUPS_URL = Network.forDeploymentIp + "meetups_retrieve.php";
+    private static final String INSERT_PREF_URL = Network.forDeploymentIp + "pref_natio_save.php";
+    private static final String INSERT_PREF_URL1 = Network.forDeploymentIp + "pref_natio_save1.php";
+    private static final String DELETE_PREF_URL = Network.forDeploymentIp + "delete_pref_natio.php";
+
     private static final String TAG_STATUS = "status";
     private static final String TAG_RESPONSE = "response";
 
@@ -46,19 +56,25 @@ public class EditMeetupActivity extends AppCompatActivity {
     EditText txtSubjects, txtDetails, txtLocation, txtStartAge,
             txtEndAge;
 
-    Spinner spnGender;
+    Spinner spnGender, spnLocation;
 
-    Button btnUpdate;
+    Button btnSetMapLocation, btnSetPreferredNationalities;
 
     ScrollView scrollView;
 
     Sessions sessions = Sessions.getSessionsInstance();
-    //List<Meetups> currentMeetups = new ArrayList<>();
+
     User currentUser = Sessions.getSessionsInstance().currentUser;
+
+    String location;
+
+    List<Nationality> listOfNationalities = new ArrayList<>();
 
     Meetups meetups;
     Meetups updateMeetups;
+    String randomKey = "";
 
+    private boolean hasSetNationalities = false;
     String meetupId;
 
     @Override
@@ -129,7 +145,83 @@ public class EditMeetupActivity extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollView.setVisibility(View.INVISIBLE);
 
+        spnLocation = (Spinner) findViewById(R.id.spn_location);
+
+        btnSetMapLocation = (Button) findViewById(R.id.btn_set_map);
+        btnSetMapLocation.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+
+                if (!txtLocation.getText().toString().trim().equals("")) {
+                    Intent intent = new Intent(EditMeetupActivity.this, MapsActivity.class);
+                    intent.putExtra("TYPE", "creation");
+
+                    if (!spnLocation.getSelectedItem().toString().contains("Cebu")) {
+                        intent.putExtra("LOCATION", txtLocation.getText().toString() + ", "
+                                + spnLocation.getSelectedItem().toString() + ", Cebu");
+                    } else {
+                        intent.putExtra("LOCATION", txtLocation.getText().toString()
+                                + ", " + spnLocation.getSelectedItem().toString());
+                    }
+                    startActivity(intent);
+                    txtLocation.setError(null);
+                } else {
+                    txtLocation.setError("Please set a location first");
+                }
+
+
+            }
+        });
+
+        btnSetPreferredNationalities = (Button) findViewById(R.id.btn_set_preference);
+        btnSetPreferredNationalities.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                checkNationalities();
+            }
+        });
+
         loadGender();
+        loadLocations();
+        spnLocation.setSelection(16);
+    }
+
+    public void checkNationalities() {
+        final ArrayList selectedNationalities = new ArrayList();
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("Select preferred nationalities")
+                .setMultiChoiceItems(ListNationalities.loadNationalitesSequence(), null, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {
+                        if (isChecked) {
+                            selectedNationalities.add(indexSelected);
+                        } else if (selectedNationalities.contains(indexSelected)) {
+                            selectedNationalities.remove(Integer.valueOf(indexSelected));
+                        }
+                        //to be finished @ after school
+                        //preferredNationalities = String.join(",",selectedNationalities);
+                    }
+                }).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        hasSetNationalities = true;
+                        for (int i = 0; i < selectedNationalities.size(); i++) {
+                            listOfNationalities.add(
+                                    new Nationality(Integer.parseInt(selectedNationalities.get(i).toString()) + 1));
+
+                            Log.d("nationality", i + " " + Integer.parseInt(selectedNationalities.get(i).toString()) + 1);
+
+                            location += "('" + Integer.parseInt(selectedNationalities.get(i).toString()) +"','M')";
+                            Log.d("location", location);
+                        }
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        selectedNationalities.clear();
+                        hasSetNationalities = false;
+                    }
+                }).create();
+        dialog.show();
     }
 
     public void loadGender() {
@@ -146,6 +238,13 @@ public class EditMeetupActivity extends AppCompatActivity {
         spnGender.setAdapter(adapter);
     }
 
+    public void loadLocations() {
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListLocations.getInstanceListLocations().loadLocations());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnLocation.setAdapter(adapter);
+    }
     public boolean validateForm() {
         boolean isReadyToSave = true;
 
@@ -194,9 +293,6 @@ public class EditMeetupActivity extends AppCompatActivity {
 
     class RetrieveMeetups extends AsyncTask<String, String, String> {
 
-        String[] groups = new String[9999];
-        ArrayAdapter<String> meetupAdapter;
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -240,11 +336,19 @@ public class EditMeetupActivity extends AppCompatActivity {
 
                     jUserObject = jUserArray.getJSONObject(0);
 
+                    String loc = jUserObject.getString("location");
+
+                    for(Location location : ListLocations.getInstanceListLocations().locations) {
+                       loc = loc.replaceAll(", " + location.getLocation(), "");
+                    }
+
                     meetups = new Meetups(jUserObject.getString("subject"),
-                            jUserObject.getString("details"), jUserObject.getInt("posted_by"), jUserObject.getString("location"),
+                            jUserObject.getString("details"), jUserObject.getInt("posted_by"), loc,
                             new Preference(Integer.parseInt(jUserObject.getString("pref_start_age")),
                                     Integer.parseInt(jUserObject.getString("pref_end_age")),
                                     jUserObject.getString("pref_gender").charAt(0)));
+
+                    meetups.setKey("key");
 
                     Log.d("ID:", jUserObject.getInt("id") + "");
 
@@ -271,6 +375,8 @@ public class EditMeetupActivity extends AppCompatActivity {
                     //displayMeetups();
                     txtSubjects.setText(meetups.getSubject());
                     txtDetails.setText(meetups.getDetails());
+
+
                     txtLocation.setText(meetups.getLocation());
 
                     txtStartAge.setText(meetups.getPreference().getStartAge() + "");
@@ -319,6 +425,9 @@ public class EditMeetupActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("end_age", updateMeetups.getPreference().getEndAge() + ""));
                 params.add(new BasicNameValuePair("gender", updateMeetups.getPreference().getGender() + ""));
 
+                params.add(new BasicNameValuePair("lattitude", Sessions.currentLocationLatitude + ""));
+                params.add(new BasicNameValuePair("longtitude", Sessions.currentLocationLongtitude + ""));
+
                 params.add(new BasicNameValuePair("id", meetupId));
 
                 params.add(new BasicNameValuePair("query_type", "update"));
@@ -351,19 +460,7 @@ public class EditMeetupActivity extends AppCompatActivity {
             pDialog.dismiss();
             try {
                 if (message.equals("Successful")) {
-                    Toast.makeText(EditMeetupActivity.this, message + "!", Toast.LENGTH_SHORT).show();
-                    /*btnUpdate.setEnabled(false);
-                    new Thread() {
-                        public void run() {
-                            try {
-                                sleep(500);
-                                startActivity(new Intent(EditMeetupActivity.this, MeetupsActivity.class));
-                                finish();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }.start();*/
+                    new DeletePrefNatio("").execute();
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -371,5 +468,160 @@ public class EditMeetupActivity extends AppCompatActivity {
         }
     }
 
+    class InsertPrefNationalities extends AsyncTask<String, String, String> {
+
+        String natioId;
+
+        public InsertPrefNationalities(String natioId) {
+            this.natioId = natioId;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(EditMeetupActivity.this, R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+
+                params.add(new BasicNameValuePair("meetup_id", meetupId + ""));
+                params.add(new BasicNameValuePair("natio_id", this.natioId));
+                params.add(new BasicNameValuePair("natio_type", "M"));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        INSERT_PREF_URL1, "POST", params);
+
+                Log.d("Saving...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Log.d("Pref", "Success");
+                } else {
+                    //Toast.makeText(getBaseContext(), "Unsuccessful", Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    class DeletePrefNatio extends AsyncTask<String, String, String> {
+
+        String id;
+
+        public DeletePrefNatio(String id) {
+            this.id = id;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(EditMeetupActivity.this, R.style.progress);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(android.R.style.Widget_Material_ProgressBar_Large);
+            pDialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... meetupInfo) {
+            // TODO Auto-generated method stub
+
+            int success;
+
+            try {
+                // Building Parameters
+                List<NameValuePair> params = new ArrayList<>();
+
+                Log.d("USER_ID (user)", currentUser.getId() + "");
+
+                params.add(new BasicNameValuePair("id", meetupId));
+
+                Log.d("request!", "starting");
+
+                JSONObject json = jsonParser.makeHttpRequest(
+                        DELETE_PREF_URL, "POST", params);
+
+                Log.d("Saving...", json.toString());
+
+                success = json.getInt(TAG_STATUS);
+
+                if (success == 1) {
+                    Log.d("Success!", json.toString());
+
+                    return json.getString(TAG_RESPONSE);
+                } else {
+                    Log.d("Fetching failed...", json.getString(TAG_RESPONSE));
+                    return json.getString(TAG_RESPONSE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        protected void onPostExecute(String message) {
+            pDialog.dismiss();
+            try {
+                if (message.equals("Successful")) {
+                    Log.d("Pref", "Success");
+
+                    for(Nationality nationality : listOfNationalities) {
+                        new InsertPrefNationalities(nationality.getId() + "").execute();
+                    }
+
+                    new Thread() {
+                        public void run() {
+                            try {
+                                sleep(100);
+                                startActivity(new Intent(EditMeetupActivity.this, MeetupsActivity.class));
+                                finish();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    }.start();
+                } else {
+                    //Toast.makeText(getBaseContext(), "Unsuccessful", Toast.LENGTH_LONG).show();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
 }

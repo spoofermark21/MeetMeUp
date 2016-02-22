@@ -205,10 +205,11 @@ public class ViewGroupActivity extends AppCompatActivity {
                         lblDetails.setText(group.getDetails());
                         lblPostedBy.setText(group.getCreatedByName());
 
-                        if(!group.getGroupImage().equals("") && !group.getGroupImage().equals("null")) {
+                        if(!group.getGroupImage().equals("null") && !group.getGroupImage().equals("")) {
                             new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                        } else {
+                            imgGroup.setImageResource(R.drawable.user_u);
                         }
-
                     } else {
                         //if not join comments will be disable
                         new RetrieveMembers().execute();
@@ -285,7 +286,12 @@ public class ViewGroupActivity extends AppCompatActivity {
                 lblPostedDate.setText(group.getCreatedDate());
                 lblDetails.setText(group.getDetails());
                 lblPostedBy.setText(group.getCreatedByName());
-                new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+
+                if(!group.getGroupImage().equals("null") && !group.getGroupImage().equals("")) {
+                    new DownloadGroupImage(group.getGroupImage() + ".JPG").execute();
+                } else {
+                    imgGroup.setImageResource(R.drawable.user_u);
+                }
 
                 if (message.equals("Not yet joined.")) {
 

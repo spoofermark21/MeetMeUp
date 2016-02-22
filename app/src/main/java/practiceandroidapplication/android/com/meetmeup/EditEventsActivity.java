@@ -1,8 +1,10 @@
 package practiceandroidapplication.android.com.meetmeup;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -28,6 +30,8 @@ import java.util.List;
 
 import practiceandroidapplication.android.com.meetmeup.Entity.Events;
 import practiceandroidapplication.android.com.meetmeup.Entity.Group;
+import practiceandroidapplication.android.com.meetmeup.Entity.ListLocations;
+import practiceandroidapplication.android.com.meetmeup.Entity.Location;
 import practiceandroidapplication.android.com.meetmeup.Entity.Meetups;
 import practiceandroidapplication.android.com.meetmeup.Entity.Network;
 import practiceandroidapplication.android.com.meetmeup.Entity.Preference;
@@ -50,12 +54,14 @@ public class EditEventsActivity extends AppCompatActivity {
     Toolbar toolBar;
 
     EditText txtEventName, txtLocation, txtDetails;
-    Spinner spnEventType;
+    Spinner spnEventType, spnLocation;
     DatePicker startDate, endDate;
 
-    Button btnUpdate;//, btnDisable;
+    Button btnCreate, btnSetMapLocation;
 
     ScrollView scrollView;
+
+    public static List<Group> listOfGroups = new ArrayList<>();
 
     Sessions sessions = Sessions.getSessionsInstance();
 
@@ -66,7 +72,15 @@ public class EditEventsActivity extends AppCompatActivity {
     Events events = new Events();
     String[] eventType = {"Traditional", "Personal", "Blah"};
 
+    boolean isCreate = false;
+    boolean hasSetGroup = false;
+    char createdBy = 'A';
+
     String currentEventId;
+    int selectedGroup;
+
+    String location;
+    Group group;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +103,7 @@ public class EditEventsActivity extends AppCompatActivity {
 
         initUI();
         loadEventType();
-
+        loadLocations();
         //init
         Intent intent = getIntent();
         currentEventId = intent.getStringExtra("EVENT_ID");
@@ -110,13 +124,15 @@ public class EditEventsActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-            if (validateForm()) {
+            if (validateForm() ) {
                 //events = new Events(txtEventName.getText().toString(), txtDetails.getText().toString(),
                 //        txtLocation.getText().toString());
                 try {
+                    location = txtLocation.getText().toString() + ", " + spnLocation.getSelectedItem().toString();
+
                     events.setEventName(txtEventName.getText().toString());
                     events.setDetails(txtDetails.getText().toString());
-                    events.setLocation(txtLocation.getText().toString());
+                    events.setLocation(location);
 
                     events.setStartDate(startDate.getYear() + "-" + (startDate.getMonth() + 1)
                             + "-" + startDate.getDayOfMonth());
@@ -157,6 +173,8 @@ public class EditEventsActivity extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollView.setVisibility(View.INVISIBLE);
 
+        spnLocation = (Spinner) findViewById(R.id.spn_location);
+
         /*btnUpdate = (Button) findViewById(R.id.btn_create);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -183,6 +201,56 @@ public class EditEventsActivity extends AppCompatActivity {
 
             }
         });*/
+
+        btnSetMapLocation = (Button) findViewById(R.id.btn_set_map);
+
+        btnSetMapLocation.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+
+                        if (!txtLocation.getText().toString().trim().equals("")) {
+                            Intent intent = new Intent(EditEventsActivity.this, MapsActivity.class);
+                            intent.putExtra("TYPE", "creation");
+
+                            if (!spnLocation.getSelectedItem().toString().contains("Cebu")) {
+                                intent.putExtra("LOCATION", txtLocation.getText().toString() + ", "
+                                        + spnLocation.getSelectedItem().toString() + ", Cebu");
+                            } else {
+                                intent.putExtra("LOCATION", txtLocation.getText().toString()
+                                        + ", " + spnLocation.getSelectedItem().toString());
+                            }
+                            startActivity(intent);
+                            txtLocation.setError(null);
+                        } else {
+                            txtLocation.setError("Please set a location first");
+                        }
+
+
+                    }
+                }
+
+        );
+    }
+
+
+    public void loadLocations() {
+        ArrayAdapter<String> adapter;
+        adapter = new ArrayAdapter<>(getApplicationContext(),
+                R.layout.spinner_layout, ListLocations.getInstanceListLocations().loadLocations());
+        adapter.setDropDownViewResource(R.layout.spinner_layout);
+        spnLocation.setAdapter(adapter);
+    }
+
+    public static CharSequence[] loadGroups() {
+        List<String> list = new ArrayList<>();
+
+        for (Group group : listOfGroups) {
+            Log.d(group.getId() + " ", group.getGroupName());
+            list.add(group.getGroupName());
+        }
+        listOfGroups.clear();
+
+        return list.toArray(new CharSequence[list.size()]);
     }
 
     public void loadEventType() {
@@ -257,7 +325,7 @@ public class EditEventsActivity extends AppCompatActivity {
 
             try {
                 // Building Parameters
-                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<>();
 
                 Log.d("EVENT_ID (event)", currentEventId);
 
@@ -282,8 +350,15 @@ public class EditEventsActivity extends AppCompatActivity {
                     JSONObject jUserObject = jUserArray.getJSONObject(0);
 
                     events.setEventName(jUserObject.getString("event_name"));
-                    events.setDetails(jUserObject.getString("location"));
-                    events.setLocation(jUserObject.getString("details"));
+                    events.setDetails(jUserObject.getString("details"));
+
+                    String loc = jUserObject.getString("location");
+
+                    for(Location location : ListLocations.getInstanceListLocations().locations) {
+                        loc = loc.replaceAll(", " + location.getLocation(), "");
+                    }
+
+                    events.setLocation(loc);
                     // set date
                     events.setStartDate(jUserObject.getString("start_date"));
                     events.setEndDate(jUserObject.getString("end_date"));
@@ -313,6 +388,7 @@ public class EditEventsActivity extends AppCompatActivity {
 
                     txtEventName.setText(events.getEventName());
                     txtDetails.setText(events.getDetails());
+
                     txtLocation.setText(events.getLocation());
 
                     spnEventType.setSelection(selectEventType());
@@ -368,6 +444,9 @@ public class EditEventsActivity extends AppCompatActivity {
                 params.add(new BasicNameValuePair("type", events.getEventType() + ""));
                 params.add(new BasicNameValuePair("start_date", events.getStartDate()));
                 params.add(new BasicNameValuePair("end_date", events.getEndDate()));
+
+                params.add(new BasicNameValuePair("lattitude", Sessions.currentLocationLatitude + ""));
+                params.add(new BasicNameValuePair("longtitude", Sessions.currentLocationLongtitude + ""));
 
                 params.add(new BasicNameValuePair("query_type", "update"));
 
